@@ -11,7 +11,7 @@ ifdef::arc42help[]
 .Content
 The deployment view describes:
 
- 1. technical infrastructure used to execute your system, with infrastructure elements like geographical locations, environments, computers, processors, channels and net topologies as well as other infrastructure elements and
+1. technical infrastructure used to execute your system, with infrastructure elements like geographical locations, environments, computers, processors, channels and net topologies as well as other infrastructure elements and
 
 2. mapping of (software) building blocks to that infrastructure elements.
 
@@ -64,15 +64,31 @@ _**<Overview Diagram>**_
 
 Motivation::
 
-_<explanation in text form>_
+The diagram above represents the initial version of our architecture, outlining the separation between its components. Our design follows a client-server model, where the server communicates with Wikidata to retrieve questions. This clear distinction between the frontend (client) and backend (server) ensures modularity, allowing different implementations to remain interchangeable as long as they adhere to the common API.
+
+We utilize an Ubuntu server hosted on Azure, providing an isolated and pre-configured environment optimized for running our services. Hosting on Azure helps reduce infrastructure costs by reducing concerns such as security, availability, and maintenance.
+
+We use Docker because it helps package our application and its dependencies into a standardized unit, ensuring it runs consistently across different environments, regardless of the machine's setup. Instead of using a monolithic architecture, we’ve chosen a microservices approach with Docker containers. This allows each service to be isolated, with its own resources, preventing conflicts and improving scalability and resilience. Each service has its own Docker image, which gives us flexibility in development and deployment. Our project includes services like the web application, gateway, user authentication, and MongoDB server. This Docker-based setup makes deployment, management, and resource use more efficient, while boosting flexibility and scalability.
 
 Quality and/or Performance Features::
 
-_<explanation in text form>_
+Our Docker-based microservices architecture enhances both quality and performance by ensuring each service runs independently in its own container, optimizing resource allocation and preventing conflicts. This setup improves scalability, allowing services to scale as needed without affecting others. Additionally, it streamlines deployment and maintenance, reducing downtime and ensuring a consistent, high-performing system across different environments.
 
 Mapping of Building Blocks to Infrastructure::
-_<description of the mapping>_
+The web app, gateway, and services run within Docker containers, all hosted on a server. The server manages these containers and communicates with Wikidata to retrieve questions. The gateway connects the web app with the services, while the services handle user data and generate questions.
 
+[options="header"]
+|===
+| Component          | Description  
+| Web App           | User interface that interacts with the rest of the application.  
+| Gateway           | Manages communication between the web app and various services.  
+| Auth Service      | Handles user authentication.  
+| User Service      | Manages users and their history, providing some functions for API consumers.  
+| Users Database    | Stores user data and game history.   
+| WikiData         | External API used to retrieve information from WikiData.  
+| Question Service  | Generates questions using WikiData, with functionality available for API consumers.  
+| Question Database | Stores templates and queries for WikiData.  
+|===
 
 === Infrastructure Level 2
 
