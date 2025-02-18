@@ -460,11 +460,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_technical_context">3.3. Technical Context</a></li>
 </ul>
 </li>
-<li><a href="#section-solution-strategy">4. Solution Strategy</a>
-<ul class="sectlevel2">
-<li><a href="#_how_we_will_achieve_our_quality_goals">4.1. How we will achieve our quality goals</a></li>
-</ul>
-</li>
+<li><a href="#section-solution-strategy">4. Solution Strategy</a></li>
 <li><a href="#section-building-block-view">5. Building Block View</a>
 <ul class="sectlevel2">
 <li><a href="#_whitebox_overall_system">5.1. Whitebox Overall System</a></li>
@@ -759,7 +755,7 @@ These stakeholders determine the extent and the level of detail of your work and
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Development team</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">· Víctor Llana Pérez - <a href="mailto:uo294629@uniovi.es">uo294629@uniovi.es</a> · Lara Haya Santiago - <a href="mailto:uo289684@uniovi.es">uo289684@uniovi.es</a> · Alba González Arango - <a href="mailto:uo289041@uniovi.es">uo289041@uniovi.es</a> · Marco Lorenzo Martínez - <a href="mailto:uo294324@uniovi.es">uo294324@uniovi.es</a> · Javier Menéndez Osendi - <a href="mailto:uo294866@uniovi.es">uo294866@uniovi.es</a> · Daniel Rodríguez Fernández - <a href="mailto:uo293655@uniovi.es">uo293655@uniovi.es</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">expectations</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- Clear requirements and deadlines - Collaboration and timely feedback - Efficient code reviews and testing</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Wikidata (Data Provider)</p></td>
@@ -1050,70 +1046,6 @@ together with a mapping table showing the relationships between channels and inp
 <div class="sect1">
 <h2 id="section-solution-strategy">4. Solution Strategy</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>The application is built on the MERN stack, a full-stack combination of source-available technologies used for building web-based applications on a simpler and more agile manner. It consists of:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>MongoDB</strong>: A NoSQL database product that uses JSON-like documents with optional schemas.</p>
-</li>
-<li>
-<p><strong>Express.js</strong>: : A web application framework for <em>Node.js</em> that is used to build the server API and backend in a simpler way.</p>
-</li>
-<li>
-<p><strong>React.js</strong>: An open-source frontend JavaScript library that aims to make developing faster and more efficient User Interfaces easier. It is maintained by Meta.</p>
-</li>
-<li>
-<p><strong>Node.js</strong>: An open-sourced cross-platform JavaScript Runtime environmet which we will use for the backend of the application.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Even though the team is more familiar with other database environments, MongoDB offers better horizontal scalability and a flexible development experience. Even though it comes at a cost of security when it comes to referential integrity and it could also complicate scalability, it is still worth it for the project.</p>
-</div>
-<div class="paragraph">
-<p>Node.js and Express.js will make the backend of the application. The reason for not choosing Java and other compiled garbage-collected languages is because it would complicate the development process in the long run, and since we don’t have to deal with legacy code, it makes more sense to go with the modern option. Languages like Rust or Zig would allow for a very memory-secure and fast backend, but these benefits just don’t justify their learning curve.</p>
-</div>
-<div class="paragraph">
-<p>For the front-end, even though React comes with a significant load time increase, the simplification and modernization that brings to the UI justifies the overhead. We could also use libraries like Angular.js, but they aren’t as modern as React.</p>
-</div>
-<div class="sect2">
-<h3 id="_how_we_will_achieve_our_quality_goals">4.1. How we will achieve our quality goals</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top"><strong>Quality goal</strong></th>
-<th class="tableblock halign-left valign-top"><strong>How will we achieve it?</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Testability</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">We will follow Test Driven Development, and try to hit very high percentage of test-covered code.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Usability</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">We will run usability tests, with dummy-users and external testers.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Security</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">We will follow the best security practices and use all tools at our disposal to make the app as secure as it can be.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Portability</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">We will test the application in different test environments to make sure the application is usable from different browsers and screen sizes.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Performance</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">We will perform load tests in order to assure that the application runs smoothly under the expected traffic.</p></td>
-</tr>
-</tbody>
-</table>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -1156,7 +1088,6 @@ Refer to details in the following sections.</p>
 </div>
 </div>
 <div style="page-break-after: always;"></div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -1655,18 +1586,66 @@ when your infrastructure is more complex.</p>
 <dl>
 <dt class="hdlist1">Motivation</dt>
 <dd>
-<p><em>&lt;explanation in text form&gt;</em></p>
-</dd>
-<dt class="hdlist1">Quality and/or Performance Features</dt>
-<dd>
-<p><em>&lt;explanation in text form&gt;</em></p>
-</dd>
-<dt class="hdlist1">Mapping of Building Blocks to Infrastructure</dt>
-<dd>
-<p><em>&lt;description of the mapping&gt;</em></p>
+<p>The diagram above represents the initial version of our architecture, outlining the separation between its components. Our design follows a client-server model, where the server communicates with Wikidata to retrieve questions. This clear distinction between the frontend (client) and backend (server) ensures modularity, allowing different implementations to remain interchangeable as long as they adhere to the common API.</p>
 </dd>
 </dl>
 </div>
+<div class="paragraph">
+<p>We utilize an Ubuntu server hosted on Azure, providing an isolated and pre-configured environment optimized for running our services. Hosting on Azure helps reduce infrastructure costs by reducing concerns such as security, availability, and maintenance.</p>
+</div>
+<div class="paragraph">
+<p>We use Docker because it helps package our application and its dependencies into a standardized unit, ensuring it runs consistently across different environments, regardless of the machine&#8217;s setup. Instead of using a monolithic architecture, we’ve chosen a microservices approach with Docker containers. This allows each service to be isolated, with its own resources, preventing conflicts and improving scalability and resilience. Each service has its own Docker image, which gives us flexibility in development and deployment. Our project includes services like the web application, gateway, user authentication, and MongoDB server. This Docker-based setup makes deployment, management, and resource use more efficient, while boosting flexibility and scalability.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Quality and/or Performance Features</dt>
+<dd>
+<p>Our Docker-based microservices architecture enhances both quality and performance by ensuring each service runs independently in its own container, optimizing resource allocation and preventing conflicts. This setup improves scalability, allowing services to scale as needed without affecting others. Additionally, it streamlines deployment and maintenance, reducing downtime and ensuring a consistent, high-performing system across different environments.</p>
+</dd>
+<dt class="hdlist1">Mapping of Building Blocks to Infrastructure</dt>
+<dd>
+<p>The web app, gateway, and services run within Docker containers, all hosted on a server. The server manages these containers and communicates with Wikidata to retrieve questions. The gateway connects the web app with the services, while the services handle user data and generate questions.</p>
+</dd>
+</dl>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Component</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web App</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User interface that interacts with the rest of the application.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gateway</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manages communication between the web app and various services.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Auth Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handles user authentication.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manages users and their history, providing some functions for API consumers.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Users Database</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stores user data and game history.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WikiData</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">External API used to retrieve information from WikiData.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect2">
 <h3 id="_infrastructure_level_2">7.2. Infrastructure Level 2</h3>
@@ -2078,7 +2057,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 <div id="footer">
 <div id="footer-text">
 Version 8.2 EN<br>
-Last updated 2025-02-13 09:38:02 +0100
+Last updated 2025-02-06 12:29:14 +0100
 </div>
 </div>
 </body>
