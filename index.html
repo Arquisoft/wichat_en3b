@@ -485,8 +485,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#section-deployment-view">7. Deployment View</a>
 <ul class="sectlevel2">
-<li><a href="#_infrastructure_level_1">7.1. Infrastructure Level 1</a></li>
-<li><a href="#_infrastructure_level_2">7.2. Infrastructure Level 2</a></li>
+<li><a href="#_infrastructure">7.1. Infrastructure</a></li>
 </ul>
 </li>
 <li><a href="#section-concepts">8. Cross-cutting Concepts</a>
@@ -1271,7 +1270,7 @@ In the best case you will get away with examples or simple signatures.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Overview.png" alt="Overview" width="1001" height="638">
+<img src="./images/diag-plantuml-md5-561a65af3d42e72e6828ebbbda4bb0c9.png" alt="Diagram" width="207" height="219">
 </div>
 </div>
 <div class="dlist">
@@ -1297,15 +1296,15 @@ In the best case you will get away with examples or simple signatures.</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>WIChat</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> Central web Application, acts as the primary interface for the user and acts as mediator between external data sources and services.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Central web Application, acts as the primary interface for the user and acts as mediator between external data sources and services.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Wikidata</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> Repository of factual, well-organized, and machine-readable data that can be queried and leveraged to support the system’s functionality.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Repository of factual, well-organized, and machine-readable data that can be queried and leveraged to support the system’s functionality.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>LLM</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> Will generate appropiate hints in response to user queries, will also process data from Wikidata to generate said hints.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Will generate appropiate hints in response to user queries, will also process data from Wikidata to generate said hints.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1340,11 +1339,11 @@ responsibility according to the following schema:</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;black box 1&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> <em>&lt;Text&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Text&gt;</em></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;black box 2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"> <em>&lt;Text&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Text&gt;</em></p></td>
 </tr>
 </tbody>
 </table>
@@ -1442,8 +1441,33 @@ Leave out normal, simple, boring or standardized parts of your system</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_white_box_building_block_1">5.2.1. White Box <em>&lt;building block 1&gt;</em></h4>
+<div class="paragraph">
+<p>@startuml</p>
+</div>
+<div class="paragraph">
+<p>actor User</p>
+</div>
+<div class="paragraph">
+<p>rectangle WiChat {
+    rectangle "Web Application" as Web
+    rectangle "Backend Service" as Backend
+    database Database
+}</p>
+</div>
+<div class="paragraph">
+<p>rectangle Wikidata
+rectangle LLM</p>
+</div>
+<div class="paragraph">
+<p>User &lt;&#8594; Web : HTTP
+Web &lt;&#8594; Backend
+Backend &lt;&#8594; Database : MongoDB
+Backend &lt;..&gt; Wikidata : SPARQL
+Backend &lt;..&gt; LLM</p>
+</div>
+<div class="paragraph">
+<p>@enduml</p>
+</div>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -1454,18 +1478,11 @@ Leave out normal, simple, boring or standardized parts of your system</p>
 <div class="paragraph">
 <p><em>&lt;white box template&gt;</em></p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_2">5.2.2. White Box <em>&lt;building block 2&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
 <div class="paragraph">
 <p>&#8230;&#8203;</p>
 </div>
-</div>
 <div class="sect3">
-<h4 id="_white_box_building_block_m">5.2.3. White Box <em>&lt;building block m&gt;</em></h4>
+<h4 id="_white_box_building_block_m">5.2.1. White Box <em>&lt;building block m&gt;</em></h4>
 <div class="paragraph">
 <p><em>&lt;white box template&gt;</em></p>
 </div>
@@ -1482,6 +1499,11 @@ Leave out normal, simple, boring or standardized parts of your system</p>
 <p>When you need more detailed levels of your architecture please copy this
 part of arc42 for additional levels.</p>
 </div>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/diag-plantuml-md5-23d71a621e66f8e455e6c94cf50ad7f4.png" alt="Diagram" width="889" height="454">
 </div>
 </div>
 <div class="sect3">
@@ -1696,7 +1718,7 @@ when your infrastructure is more complex.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_infrastructure_level_1">7.1. Infrastructure Level 1</h3>
+<h3 id="_infrastructure">7.1. Infrastructure</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -1723,8 +1745,10 @@ when your infrastructure is more complex.</p>
 </div>
 </div>
 </div>
-<div class="paragraph">
-<p><em><strong>&lt;Overview Diagram&gt;</strong></em></p>
+<div class="imageblock">
+<div class="content">
+<img src="./images/Deployment-View.png" alt="Deployment View" width="825" height="1011">
+</div>
 </div>
 <div class="dlist">
 <dl>
@@ -1790,9 +1814,6 @@ when your infrastructure is more complex.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect2">
-<h3 id="_infrastructure_level_2">7.2. Infrastructure Level 2</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -1803,28 +1824,7 @@ when your infrastructure is more complex.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_infrastructure_element_1">7.2.1. <em>&lt;Infrastructure Element 1&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_infrastructure_element_2">7.2.2. <em>&lt;Infrastructure Element 2&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_infrastructure_element_n">7.2.3. <em>&lt;Infrastructure Element n&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
 <div style="page-break-after: always;"></div>
-</div>
 </div>
 </div>
 </div>
@@ -2201,7 +2201,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 <div id="footer">
 <div id="footer-text">
 Version 8.2 EN<br>
-Last updated 2025-02-13 09:38:02 +0100
+Last updated 2025-02-09 20:20:02 +0100
 </div>
 </div>
 </body>
