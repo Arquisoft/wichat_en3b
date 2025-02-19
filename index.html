@@ -1697,6 +1697,57 @@ when your infrastructure is more complex.</p>
 <div class="paragraph">
 <p><em><strong>&lt;Overview Diagram&gt;</strong></em></p>
 </div>
+<div class="paragraph">
+<p>@startuml
+title Deployment Diagram</p>
+</div>
+<div class="paragraph">
+<p>cloud "User" as user #lightgreen</p>
+</div>
+<div class="paragraph">
+<p>node Device as device #lightgreen {
+    node "Web Browser" as browser
+  }</p>
+</div>
+<div class="paragraph">
+<p>cloud "Azure Ubuntu Server" as server #lightyellow {
+    node "Docker" as docker #lightblue {
+        node "WebApp" as webapp
+        node "Gateway" as gateway
+        database "MongoDB" as db</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    folder "Microservices" as microservices #pink {
+        component "AuthService" as authservice
+        component "UserService" as userservice
+        component "LLMservice" as llmservice
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>}</p>
+</div>
+<div class="paragraph">
+<p>cloud "External Service" #orange {
+    node "WikiData" as wikidata
+}</p>
+</div>
+<div class="paragraph">
+<p>user -&#8594; device : Interacts With
+browser -&#8594; webapp : HTTPS Request
+webapp -&#8594; gateway : Uses
+gateway -&#8594; authservice : Handles Authentication
+gateway -&#8594; userservice : Handles User Data
+gateway -&#8594; llmservice : Handles Hints
+microservices -&#8594; wikidata : Retrieves Questions &amp; Answers
+userservice &#8592;&#8594; db : Stores/Retrieves User Data
+authservice &#8592;&#8594; db : Authenticates User Data</p>
+</div>
+<div class="paragraph">
+<p>@enduml</p>
+</div>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Motivation</dt>
@@ -2172,7 +2223,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 <div id="footer">
 <div id="footer-text">
 Version 8.2 EN<br>
-Last updated 2025-02-12 09:18:37 +0100
+Last updated 2025-02-07 11:16:46 +0100
 </div>
 </div>
 </body>
