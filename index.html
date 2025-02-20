@@ -485,8 +485,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#section-deployment-view">7. Deployment View</a>
 <ul class="sectlevel2">
-<li><a href="#_infrastructure_level_1">7.1. Infrastructure Level 1</a></li>
-<li><a href="#_infrastructure_level_2">7.2. Infrastructure Level 2</a></li>
+<li><a href="#_infrastructure">7.1. Infrastructure</a></li>
 </ul>
 </li>
 <li><a href="#section-concepts">8. Cross-cutting Concepts</a>
@@ -955,18 +954,25 @@ The title of the table is the name of your system, the three columns contain the
 </div>
 </div>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/diag-plantuml-md5-4def294a1a2d4446fd150325eb2fd0c0.png" alt="Diagram" width="543" height="213">
+</div>
+</div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
 <col style="width: 33.3334%;">
 </colgroup>
-<tbody>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Communication Partners</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Input</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Output</p></td>
+<th class="tableblock halign-left valign-top">Communication Partners</th>
+<th class="tableblock halign-left valign-top">Input</th>
+<th class="tableblock halign-left valign-top">Output</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">User</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The user sees the web application in real time and makes decisions accordingly.</p></td>
@@ -1014,16 +1020,23 @@ together with a mapping table showing the relationships between channels and inp
 </div>
 </div>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/diag-plantuml-md5-377173e88bf99af086ab3ff51b5c93e3.png" alt="Diagram" width="580" height="225">
+</div>
+</div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
 </colgroup>
-<tbody>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Communication Partners</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Explanation</p></td>
+<th class="tableblock halign-left valign-top">Communication Partners</th>
+<th class="tableblock halign-left valign-top">Explanation</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Web Application</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The user can play the game using Internet, via HTTP.</p></td>
@@ -1648,7 +1661,7 @@ when your infrastructure is more complex.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_infrastructure_level_1">7.1. Infrastructure Level 1</h3>
+<h3 id="_infrastructure">7.1. Infrastructure</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -1675,8 +1688,10 @@ when your infrastructure is more complex.</p>
 </div>
 </div>
 </div>
-<div class="paragraph">
-<p><em><strong>&lt;Overview Diagram&gt;</strong></em></p>
+<div class="imageblock">
+<div class="content">
+<img src="./images/Deployment-View.png" alt="Deployment View" width="825" height="1011">
+</div>
 </div>
 <div class="dlist">
 <dl>
@@ -1742,9 +1757,6 @@ when your infrastructure is more complex.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect2">
-<h3 id="_infrastructure_level_2">7.2. Infrastructure Level 2</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -1755,28 +1767,7 @@ when your infrastructure is more complex.</p>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_infrastructure_element_1">7.2.1. <em>&lt;Infrastructure Element 1&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_infrastructure_element_2">7.2.2. <em>&lt;Infrastructure Element 2&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_infrastructure_element_n">7.2.3. <em>&lt;Infrastructure Element n&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
 <div style="page-break-after: always;"></div>
-</div>
 </div>
 </div>
 </div>
@@ -2153,7 +2144,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 <div id="footer">
 <div id="footer-text">
 Version 8.2 EN<br>
-Last updated 2025-02-09 20:20:02 +0100
+Last updated 2025-02-20 09:12:09 +0100
 </div>
 </div>
 </body>
