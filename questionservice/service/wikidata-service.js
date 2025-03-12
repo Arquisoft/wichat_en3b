@@ -1,5 +1,13 @@
-const axios = require("axios");
+const axios = require('axios');
+const express = require('express');
+
+const app = express();
 const City = require("../model/wikidata-model");
+
+const port = 8004;
+
+// Middleware to parse JSON in request body
+app.use(express.json());
 
 // SPARQL endpoint for WikiData
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
@@ -38,7 +46,7 @@ async function getImageDescription(imageUrl) {
 }
 
 // Function to fetch cities from WikiData and store them in MongoDB
-async function fetchAndStoreCities() {
+app.post('/load', async (req, res) => {
     try {
         // Fetch city data from WikiData
         const response = await axios.get(SPARQL_ENDPOINT, {
@@ -51,12 +59,13 @@ async function fetchAndStoreCities() {
             const imageUrl = city.image.value;
             const imageAltText = await getImageDescription(imageUrl); // Fetch alternative text for the image
 
-            return {
+            const cityData = {
                 id: city.city.value.split("/").pop(), // Extract city ID from the URL
                 name: city.cityLabel.value, // Get city name
                 imageUrl, // Store image URL
                 imageAltText // Store alternative image description
             };
+            
         }));
 
         // Insert or update city data in MongoDB
@@ -69,13 +78,14 @@ async function fetchAndStoreCities() {
         }
 
         console.log("Cities successfully stored in MongoDB");
+        res.status(200);
     } catch (error) {
-        console.error("Error fetching and storing cities:", error);
+        res.status(400).json({ error: error.message });
     }
-}
+});
 
 
-async function getRandomCitiesWithImage() {
+app.post('/getRound', async (req, res) => {
     try {
         // 4 random rows from the data base
         const cities = await City.aggregate([{ $sample: { size: 4 } }]);
@@ -83,7 +93,7 @@ async function getRandomCitiesWithImage() {
         // Pick one randomly and get its url for the picture
         const randomCityIndex = Math.floor(Math.random() * cities.length); // Pick a random index
         const randomCity = cities[randomCityIndex];
-        return {
+        const roundData = {
             cities: cities.map(city => ({
                 id: city.id,
                 name: city.name,
@@ -91,11 +101,12 @@ async function getRandomCitiesWithImage() {
             imageUrl: randomCity.imageUrl
             //cityWithImage: randomCity  another approach returning the entire row
         };
+        res.json(roundData);
     } catch (error) {
         console.error("Error fetching random cities:", error);
         throw error;
     }
-}
+});
 
 async function getCityNameById(cityId) {
     try {
@@ -112,5 +123,8 @@ async function getCityNameById(cityId) {
         throw error;
     }
 }
-// Exporting the function so that it can be used in other files
-module.exports = { fetchAndStoreCities , getRandomCitiesWithImage, getCityNameById };
+const server = app.listen(port, () => {
+    console.log(`WikiData Service listening at http://localhost:${port}`);
+  });
+  
+ module.exports = server;

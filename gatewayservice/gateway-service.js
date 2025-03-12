@@ -15,7 +15,6 @@ const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost:8004'; //added a new url for the new service
 
-
 app.use(cors());
 app.use(express.json());
 
@@ -58,6 +57,23 @@ app.post('/askllm', async (req, res) => {
   }
 });
 
+app.post('/loadcities', async (req, res) =>{
+  try{
+    const citiesResponse = await axios.post(questionServiceUrl + '/load', req.body);
+    res.json(citiesResponse.data);
+  }catch(error){
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.get('/getRound', async (req, res) =>{
+  try{
+    const roundResponse = await axios.post(questionServiceUrl + '/getRound', req.body);
+    res.json(roundResponse.data);
+  }catch(error){
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
 // Add the /question endpoint
 app.get('/question', async (req, res) => {
   try {

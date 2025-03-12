@@ -1,8 +1,13 @@
 import "./GameModeSelection.css";
 import React, { useState } from "react";
+import axios from 'axios';
 
 import Game from './Game';
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
+const fetchAndStoreCities = async () =>{
+  return await axios.post(`${apiEndpoint}/loadcities`);
+}
 
 function GameModeSelection() {
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -20,6 +25,7 @@ function GameModeSelection() {
   const handleWildSelection = () => {
     setIsWild(true);
     setSelectedTopic("all");
+    fetchAndStoreCities();
   };
 
   const handleCustomSelection = () => {

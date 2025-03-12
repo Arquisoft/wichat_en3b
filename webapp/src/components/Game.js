@@ -1,10 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./GameStyles.css";
 import Chat from './LLMChat/LLMChat';
+import axios from 'axios';
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+
 
 function Game() {
     const [round, setRound] = useState(1);
     const totalRounds = 10;
+    const [rounds, setRounds] = useState(Array(totalRounds + 1).fill(null));
+
+    //Handles the question logic
+    useEffect(() => {
+        const fetchRounds = async () => {
+            const newRounds = await Promise.all(
+                rounds.map(async (_, index) => {
+                    const response = await axios.post(`${apiEndpoint}/getRound`);
+                    return response.data;
+                })
+            );
+            setRounds(newRounds);
+        };
+
+        fetchRounds();
+    }, []); 
+
+    //Handles the buttons and the round logic
+    const handleOptionClick = async () => {
+        if (round < totalRounds) {
+            const response = await axios.post(`${apiEndpoint}/getRound`);
+            const newRounds = [...rounds];
+            newRounds[round + 1] = response.data;
+            setRounds(newRounds);
+            setRound(round + 1);
+        }else {
+            setIsGameVisible(false);
+            setRounds(Array(totalRounds + 1).fill(null));
+            setRound(1);
+        };
+    }
+    
 
     return (
         <div className="app-container">
@@ -31,17 +66,21 @@ function Game() {
 
                 {/* Game Area */}
                 <div className="game-area">
+                    <script>
+                        let round = axios.post('${apiEndpoint}/getRound');
+                    </script>
                     <h2 className="round-info">
                         Round {round}/{totalRounds}
                     </h2>
                     <div className="image-container">
-                        <img src={"paris.jpg"} alt="Paris" className="game-image" />
+                        {rounds[round] && (
+                            <img src={rounds[round].imageUrl} alt="City" className="game-image" />
+                        )}
                     </div>
                     <div className="options-grid">
-                        <button className="btn option">Option A</button>
-                        <button className="btn option">Option B</button>
-                        <button className="btn option">Option C</button>
-                        <button className="btn option">Option D</button>
+                        {rounds[round] && rounds[round].cities.map((city, index) => (
+                            <button key={index} className="btn option" onClick={handleOptionClick}>{city.name}</button>
+                        ))}
                     </div>
                 </div>
 
