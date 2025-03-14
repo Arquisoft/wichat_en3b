@@ -32,7 +32,7 @@ function GameModeSelection() {
   };
 
   const handleStartGame = () => {
-    alert("Game is about to start"); // Here we will redirect to game
+    //alert("Game is about to start"); // Here we will redirect to game
     setShowGame(true);
   };
 

@@ -70,3 +70,7 @@ button {
 .link:hover {
   color: darkgray;
 }
+
+nav a {
+  padding: 1em;
+}
