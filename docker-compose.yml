@@ -51,7 +51,7 @@ services:
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+      MONGODB_URI: mongodb://mongodb:27017/mongo-db-wichat_en3b
 
   llmservice:
     container_name: llmservice-wichat_en3b
