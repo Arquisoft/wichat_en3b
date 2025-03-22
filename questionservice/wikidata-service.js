@@ -18,59 +18,57 @@ const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
 // Global variable to store the selected game modes
 let selectedModes = []; 
 
+// Define the SPARQL queries to fetch data from Wikidata
 const QUERIES = {
     city: `SELECT ?city ?cityLabel ?image WHERE {
-  ?city wdt:P31 wd:Q515;  # La entidad es una ciudad
-        wikibase:sitelinks ?sitelinks;  # Número de enlaces en Wikipedia
-        wdt:P18 ?image.  # La ciudad tiene una imagen
+  ?city wdt:P31 wd:Q515;  # The entity is a city
+        wikibase:sitelinks ?sitelinks;  # Number of Wikipedia links
+        wdt:P18 ?image.  # The city has an image
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
 ORDER BY DESC(?sitelinks)
-LIMIT 50`,
+LIMIT 200
+`,
 
     flag: `SELECT ?flag ?flagLabel ?image WHERE {
-  ?flag wdt:P31 wd:Q6256;  # La entidad es un país
-           wikibase:sitelinks ?sitelinks;  # Número de enlaces en Wikipedia
-           wdt:P41 ?image.  # Imagen de la bandera del país
+  ?flag wdt:P31 wd:Q6256;  # The entity is a country
+           wikibase:sitelinks ?sitelinks;  # Number of Wikipedia links
+           wdt:P41 ?image.  # Country flag image
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
-ORDER BY DESC(?sitelinks)  # Ordenamos por popularidad
-LIMIT 50
+ORDER BY DESC(?sitelinks)  # Order by popularity
+LIMIT 200
 `,
 
     athlete: `SELECT DISTINCT ?athlete ?athleteLabel ?image WHERE {
-  ?athlete wdt:P31 wd:Q5;  # Es una persona
-           wdt:P106 ?sport;  # Es un deportista
-           wikibase:sitelinks ?sitelinks;  # Número de enlaces en Wikipedia
-           wdt:P18 ?image;  # Tiene imagen obligatoria
-           wdt:P166 ?award.  # Ha ganado un premio importante
+  ?athlete wdt:P31 wd:Q5;  # The entity is a person
+           wdt:P106 ?sport;  # The person is an athlete
+           wikibase:sitelinks ?sitelinks;  # Number of Wikipedia links
+           wdt:P18 ?image;  # The athlete must have an image
+           wdt:P166 ?award.  # The athlete has won a major award
 
-  # Filtrar por tipos de deportistas
+  # Filter by types of athletes
   VALUES ?sport { wd:Q937857 wd:Q10833314 wd:Q3665646 }  
-  # Q937857 = Futbolista
-  # Q10833314 = Tenista
-  # Q3665646 = Baloncestista
+  # Q937857 = Footballer
+  # Q10833314 = Tennis player
+  # Q3665646 = Basketball player
 
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
-ORDER BY DESC(?sitelinks)  # Ordenamos por popularidad
-LIMIT 50
+ORDER BY DESC(?sitelinks)  # Order by popularity
+LIMIT 200
 `,
 
-    singer: `SELECT ?singer ?singerLabel ?image (COUNT(?sitelink) AS ?numLangs) WHERE {
-  ?singer wdt:P31 wd:Q5;  # Es una persona
-          wdt:P106 wd:Q177220;  # Es un cantante
-          wdt:P18 ?image.  # Tiene una imagen asociada
-
-  OPTIONAL {
-    ?sitelink schema:about ?singer.
-  }
+    singer: `SELECT ?singer ?singerLabel ?image WHERE {
+  ?singer wdt:P31 wd:Q5;  # The entity is a person
+          wdt:P106 wd:Q177220;  # The person is a singer
+          wikibase:sitelinks ?sitelinks;  # Number of Wikipedia links
+          wdt:P18 ?image.  # The person has an image
 
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
-GROUP BY ?singer ?singerLabel ?image
-ORDER BY DESC(?numLangs)  # Ordenamos por cantidad de enlaces en Wikipedia
-LIMIT 50
+ORDER BY DESC(?sitelinks)
+LIMIT 200
 `
 };
 
@@ -79,6 +77,15 @@ mongoose.connect(mongoDB)
     .then(() => console.log('Connected'))
     .catch(err => console.log('Error on the connection to the DB. ', err)); 
 
+
+// Function to clear the database
+async function clearDatabase() {
+    try {
+        await WikidataObject.deleteMany({});
+    } catch (error) {
+        console.error("Error clearing the database:", error);
+    }
+}
 
 // Function to fetch the alternative description of an image from Wikimedia Commons
 async function getImageDescription(imageUrl) {
@@ -101,50 +108,45 @@ async function getImageDescription(imageUrl) {
     }
 }
 
-async function fetchAndStoreData(modes) {
+async function fetchAndStoreData() {
+    console.log("Fetching data from Wikidata and storing it in the database");
     try {
-        console.log("---------------------------------------------------------------------------");
-        console.log("Fetching data from Wikidata and storing it in the database");
-        const fetchPromises = modes.map(async (mode) => {
-            if (!QUERIES[mode]) return;
+        const fetchPromises = Object.entries(QUERIES).map(async ([mode, query]) => {
+            console.log(`-> Fetching data for mode: ${mode}`);
+            console.time(`Time taken for ${mode}`);
 
             const response = await axios.get(SPARQL_ENDPOINT, {
-                params: { query: QUERIES[mode], format: "json" },
+                params: { query, format: "json" },
                 headers: { "User-Agent": "QuizGame/1.0 (student project)" }
             });
 
-            const items = await Promise.all(response.data.results.bindings.map(async (item) => {
-                const id = item[mode]?.value?.split("/").pop() || "Unknown";
-                const name = item[`${mode}Label`]?.value || "No Name";
-                const imageUrl = item.image?.value || "";
-                const imageAltText = item.image?.value ? await getImageDescription(item.image.value) : "No alternative text available";
+            const items = response.data.results.bindings.map(item => ({
+                id: item[mode]?.value?.split("/").pop() || "Unknown",
+                name: item[`${mode}Label`]?.value || "No Name",
+                imageUrl: item.image?.value || "",
+                mode
+            }));
 
-                return { id, name, imageUrl, imageAltText, mode };
-            }));            
-            
-            for (const item of items) {
-                await WikidataObject.updateOne(
-                    { id: item.id }, // Match existing document by ID
-                    { $set: item },  // Update existing fields or insert if not found
-                    { upsert: true } // Insert if not found
-                ).catch(err => console.log("Error upserting item: ", err));
-            }       
-            console.log(`        *${mode} items stored in the database`);
+            const bulkOps = items.map(item => ({
+                updateOne: {
+                    filter: { id: item.id },
+                    update: { $set: item },
+                    upsert: true
+                }
+            }));
+
+            if (bulkOps.length > 0) {
+                await WikidataObject.bulkWrite(bulkOps);
+            }
+
+            console.timeEnd(`Time taken for ${mode}`);
+            console.log(`✔ Finished storing ${mode} data.`);
         });
 
         await Promise.all(fetchPromises);
-        console.log("Data successfully stored in the database");
+        console.log("✅ Data successfully stored in the database.");
     } catch (error) {
-        console.error("Error obtaining data from Wikidata:", error);
-    }
-}
-
-// Función para vaciar la base de datos
-async function clearDatabase() {
-    try {
-        await WikidataObject.deleteMany({});
-    } catch (error) {
-        console.error("Error clearing the database:", error);
+        console.error("❌ Error obtaining data from Wikidata:", error);
     }
 }
 
@@ -157,8 +159,8 @@ app.post("/load", async (req, res) => {
         }
 
         selectedModes = modes; // Store the selected modes in the global variable
-        await clearDatabase(); // Clear the database before loading new data
-        await fetchAndStoreData(modes); // Fetch data and store it in MongoDB
+        //await clearDatabase(); // Clear the database before loading new data
+        //await fetchAndStoreData(modes); // Fetch data and store it in MongoDB
         
         res.status(200).json({ message: "Data successfully stored" });
     } catch (error) {
@@ -202,6 +204,10 @@ app.get("/getRound", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+// Call `loadAllData()` immediately on server startup
+clearDatabase();
+fetchAndStoreData();
 
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
