@@ -15,7 +15,7 @@ app.use(express.json());
 const port = 8004; 
 
 //Define the connection to DB
-const mongoDB = process.env.mongoDB || 'mongodb://localhost:27017/mongo-db-wichat_en3b'; 
+const mongoDB = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongo-db-wichat_en3b'; 
 
 // SPARQL endpoint for WikiData
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
