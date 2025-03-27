@@ -38,32 +38,34 @@ app.post('/adduser', async (req, res) => {
             username: req.body.username,
             password: hashedPassword,
         });
-
+        
         await newUser.save();
+        //Add statistics for the new user
+        await new(UserStatistics({ username: newUser.username })).save();
         res.json(newUser);
     } catch (error) {
         res.status(400).json({ error: error.message }); 
     }});
 
-
-app.post('/addGame', async (req, res) => {
+//Saves a completed game to the database and updates the user stats
+app.post('/addgame', async (req, res) => {
     try {
-        validateRequiredFields(req, ['userId', 'playedAt', 'score', 'correctRate', 'gameMode']);
+        validateRequiredFields(req, ['username', 'score', 'correctRate', 'gameMode']);
 
         const MAX_GAMES = 100;
 
-        const gameCount = await Game.countDocuments({ userId: req.body.userId });
+        const gameCount = await Game.countDocuments({ username: req.body.username });
 
         //Deletes the oldest game when max capacity is reached
         if (gameCount >= MAX_GAMES) {
-          const oldestGame = await Game.findOne({ userId: req.body.userId }).sort({ createdAt: 1 });
+          const oldestGame = await Game.findOne({ username: req.body.username }).sort({ createdAt: 1 });
           if (oldestGame) {
             await Game.findByIdAndDelete(oldestGame._id);
           }
         }
 
         const newGame = new Game({
-            userId: req.body.userId,
+            username: req.body.username,
             score: req.body.score,
             correctRate: req.body.correctRate,
             gameMode: req.body.gameMode,
@@ -80,55 +82,50 @@ app.post('/addGame', async (req, res) => {
 //Function only called when a new game is added
 async function calculateUserStatistics(newGame) {
   try{
-    /* const userStats = await UserStatistics.findOneAndDelete({ userId: newGame.userId });
+    
+    const userStats = await UserStatistics.findOne({ username: newGame.username });
 
-    if (!userStats) {
-      userStats = new UserStatistics({
-        userId: newGame.userId
-      });
-    }
+    let oldTotalGamesPlayed = userStats.totalGamesPlayed;
+    let oldAvgScore = userStats.avgScore;
+    let oldHighScore = userStats.highScore;
+    let oldCorrectRate = userStats.correctRate;
 
-    userStats.totalGamesPlayed += 1;
-    userStats.avgScore = calculateAvgScore(newGame.score, userStats.totalGamesPlayed, userStats.avgScore);
-    userStats.highScore = userStats.highScore < newGame.score ? newGame.score : userStats.highScore;
-    userStats.correctRate = calculateCorrectRate(newGame.correctRate, userStsats.totalGamesPlayed, userStats.correctRate);
-
-    await userStats.save();  */
-    const userStats = await UserStatistics.findOne({ userId: newGame.userId });
-
-    let oldTotalGamesPlayed = userStats?.totalGamesPlayed || 0;
-    let oldAvgScore = userStats?.avgScore || 0;
-    let oldHighScore = userStats?.highScore || 0;
-    let oldCorrectRate = userStats?.correctRate || 0;
-
-    const newuserStats = await UserStatistics.findOneAndUpdate({ userId: newGame.userId }, {
-      $setOnInsert: { userId: newGame.userId },
+    await UserStatistics.findOneAndUpdate({ username: newGame.username }, {
+      $inc: { totalGamesPlayed: 1 },
       $set:{
-        totalGamesPlayed: oldTotalGamesPlayed + 1,
-        avgScore: calculateAvgScore(newGame.score, oldTotalGamesPlayed, oldAvgScore),
+        avgScore: calculateNewAvg(newGame.score, oldTotalGamesPlayed, oldAvgScore),
         highscore : oldHighScore < newGame.score ? newGame.score : oldHighScore,
-        correctRate: calculateCorrectRate(newGame.correctRate, oldTotalGamesPlayed, oldCorrectRate)
+        correctRate: calculateNewAvg(newGame.correctRate, oldTotalGamesPlayed, oldCorrectRate)
       }
-    }, { upsert: true, new: true });
+    });
   }catch(error){
     console.log(error);
   }
 
 }
 
-function calculateCorrectRate(gameRate, totalGamesPlayed, CorrectRate) {
+function calculateNewAvg(newRate, totalGamesPlayed, oldAvg) {
 
-    let newCorrectRate = (totalGamesPlayed * CorrectRate + gameRate) / (totalGamesPlayed + 1);
+    let newAvg = (totalGamesPlayed * oldAvg + newRate) / (totalGamesPlayed + 1);
 
-    return newCorrectRate;
+    return newAvg;
 }
 
-function calculateAvgScore(newScore, totalGamesPlayed, avgScore) {
+app.get('/userstats/:username', async (req, res) => {
+  try {
+      const userId = req.params.username;
 
-    let newAvgScore = (totalGamesPlayed * avgScore + newScore) / (totalGamesPlayed + 1);
+      const userStats = await UserStatistics.findOne({ username: userId });
 
-    return newAvgScore;
-}
+      if (!userStats) {
+          return res.status(404).json({ error: 'User statistics not found' });
+      }
+
+      res.json(userStats);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
 
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);

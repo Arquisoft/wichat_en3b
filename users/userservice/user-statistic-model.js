@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const userStatisticSchema = new mongoose.Schema({
-    userId: {
+    username: {
       type: String,
       required: true,
       unique: true,
