@@ -3,35 +3,30 @@ import React, { useState, useEffect } from 'react';
 import { Container, Button } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { Typewriter } from "react-simple-typewriter";
-import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
 
 const Welcome = () => {
-  const { setAuth } = useAuth();
   const axios = useAxios();
 
   const [message, setMessage] = useState('');
   const [messageCreated, isMessageCreated] = useState(false);
 
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-
   useEffect(() => {
+    const createMessage = async () => {
+      try {
+        const question = "Please, generate a greeting message for a student called Guest tell them how fun they are going to have using this game. Explain that they have to press the button to start playing. Really short and make it casual. REALLY SHORT";
+        const prompt = "You are a helpful assistant";
+        const msg = await axios.post("/askllm", { question, prompt });
+        setMessage(msg.data.answer);
+
+        isMessageCreated(true);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     createMessage();
   }, []);
-
-  const createMessage = async () => {
-    try {
-      const question = "Please, generate a greeting message for a student called Guest tell them how fun they are going to have using this game. Explain that they have to press the button to start playing. Really short and make it casual. REALLY SHORT";
-      const model = "empathy";
-      const msg = await axios.post(`${apiEndpoint}/askllm`, { question, model });
-      setMessage(msg.data.answer);
-
-      isMessageCreated(true);
-    } catch (error) {
-      console.error(error);
-      if (error.response.status === 403) setAuth({});
-    }
-  };
 
   return (
     <Container component="main" maxWidth="xs" sx={{ marginTop: 4 }}>

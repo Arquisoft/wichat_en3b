@@ -1,10 +1,8 @@
 // src/components/AddUser.js
 import React, { useState } from 'react';
-import axios from 'axios';
-import { Container, Typography, TextField, Button, Snackbar, Link } from '@mui/material';
+import axios from '../api/axios';
+import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
 import { NavLink } from 'react-router';
-
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 const AddUser = () => {
   const [username, setUsername] = useState('');
@@ -14,7 +12,7 @@ const AddUser = () => {
 
   const addUser = async () => {
     try {
-      await axios.post(`${apiEndpoint}/adduser`, { username, password });
+      await axios.post("/adduser", { username, password });
       setOpenSnackbar(true);
     } catch (error) {
       setError(error.response.data.error);

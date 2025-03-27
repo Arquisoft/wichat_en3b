@@ -10,9 +10,6 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents"
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn"
 import Chat from "./LLMChat"
 import useAxios from "../hooks/useAxios"
-import useAuth from "../hooks/useAuth"
-
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000"
 
 // Custom styled components
 const GameContainer = styled(Container)(({ theme }) => ({
@@ -138,12 +135,12 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
 }))
 
 function Game() {
-  const { setAuth } = useAuth();
   const axios = useAxios();
 
   const totalRounds = 10;
   const [round, setRound] = useState(1);
   const [roundData, setRoundData] = useState(null);
+  const [roundPrompt, setRoundPrompt] = useState("");
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false);
@@ -158,14 +155,13 @@ function Game() {
     try {
       setLoading(true)
       setChatKey(chatKey + 1);
-      
-      const response = await axios.get(`${apiEndpoint}/getRound`)
+
+      const response = await axios.get("/getRound")
       setHiddenOptions([])
       return response.data
     } catch (error) {
       console.error("Error fetching data from question service:", error)
       setLoading(false)
-      if (error.response.status === 403) setAuth({});
     }
   }
 
@@ -188,6 +184,8 @@ function Game() {
   // Check if the game is still loading after modifying the round data
   useEffect(() => {
     if (roundData && roundData.items.length > 0) {
+      let wh = (roundData.mode === "athlete" || roundData.mode === "singer") ? "Who" : "What";
+      setRoundPrompt(`${wh} is this ${roundData.mode}?`);
       setLoading(false);
     } else {
       setLoading(true);
@@ -197,7 +195,7 @@ function Game() {
   // Load data every 500ms while the game is loading
   useEffect(() => {
     let intervalId;
-  
+
     if (loading) {
       intervalId = setInterval(async () => {
         try {
@@ -210,7 +208,7 @@ function Game() {
         }
       }, 500);
     }
-  
+
     return () => {
       if (intervalId) {
         clearInterval(intervalId); // Cleanup interval on unmount or when loading stops
@@ -384,6 +382,9 @@ function Game() {
                         alt={roundData.itemWithImage.imageAltText || "Item image"}
                       />
                     </ImageContainer>
+                    <Container sx={{ textAlign: "center", mb: 2 }}>
+                      <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
+                    </Container>
                     <Grid container spacing={2}>
                       {roundData.items.map((item, index) => (
                         <Grid item xs={6} key={index}>
@@ -413,7 +414,7 @@ function Game() {
         <Grid item xs={12} md={3}>
           <Card elevation={3} sx={{ height: "100%" }}>
             <CardContent>
-              <Chat key={chatKey} />
+              {roundData && <Chat key={chatKey} roundData={roundData} />}
             </CardContent>
           </Card>
         </Grid>

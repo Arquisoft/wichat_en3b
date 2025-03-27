@@ -1,11 +1,9 @@
 "use client"
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Container, CssBaseline, Typography, Button, Box, Paper, Grid, Divider } from "@mui/material"
+
+import { Container, CssBaseline, Typography, Button, Box, Paper, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { Outlet, NavLink } from "react-router"
 import { School, Login, Person } from "@mui/icons-material"
-import { Typewriter } from "react-simple-typewriter";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),

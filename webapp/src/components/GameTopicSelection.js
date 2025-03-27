@@ -5,11 +5,7 @@ import { Container, Typography, Radio, RadioGroup, FormControlLabel, FormControl
 import { styled } from "@mui/material/styles"
 import { NavLink } from "react-router-dom"
 import { LocationCity, Flag, SportsBasketball, MusicNote } from "@mui/icons-material"
-import useRefreshToken from "../hooks/useRefreshToken"
 import useAxios from "../hooks/useAxios"
-import useAuth from "../hooks/useAuth"
-
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -100,8 +96,6 @@ const TopicButton = styled(Button, {
 }))
 
 const GameTopicSelection = () => {
-  const { setAuth } = useAuth();
-  const refresh = useRefreshToken();
   const axios = useAxios();
 
   const [selectedTopics, setSelectedTopics] = useState([])
@@ -133,9 +127,8 @@ const GameTopicSelection = () => {
 
   const startGame = async () => {
     try {
-      const response = await axios.post(`${apiEndpoint}/loadQuestion`, { modes: selectedTopics });
+      await axios.post("/loadQuestion", { modes: selectedTopics });
     } catch (error) {
-      if (error.response.status === 403) setAuth({});
       console.error("Error fetching game data:", error);
     }
   };

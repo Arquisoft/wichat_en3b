@@ -51,25 +51,6 @@ const StyledButton = styled(Button)(({ theme }) => ({
   }),
 }))
 
-const TopicOption = styled(FormControlLabel, {
-  shouldForwardProp: (prop) => prop !== "isSelected",
-})(({ theme, isSelected }) => ({
-  marginTop: theme.spacing(1),
-  marginBottom: theme.spacing(1),
-  padding: theme.spacing(1),
-  borderRadius: theme.shape.borderRadius,
-  background: isSelected ? "linear-gradient(to right, #2196f3, #9c27b0)" : theme.palette.background.paper,
-  color: isSelected ? theme.palette.common.white : theme.palette.text.primary,
-  width: "100%",
-  margin: 0,
-  transition: theme.transitions.create(["background", "color"], {
-    duration: theme.transitions.duration.short,
-  }),
-  "& .MuiFormControlLabel-label": {
-    fontWeight: "bold",
-  },
-}))
-
 function GameModeSelection() {
   const [selectedMode, setSelectedMode] = useState(null)
 

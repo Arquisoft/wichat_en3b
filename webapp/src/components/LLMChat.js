@@ -2,19 +2,15 @@ import { useState, useEffect, useRef } from "react";
 
 import { Button, Container, Divider, TextField, Typography } from "@mui/material";
 import { Typewriter } from "react-simple-typewriter";
-import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
 
-const LLMChat = () => {
-    const { setAuth } = useAuth();
+const LLMChat = (roundData) => {
     const axios = useAxios();
 
     const [messages, setMessages] = useState([]);
     const [question, setQuestion] = useState("");
-
     const [autoScroll, setAutoScroll] = useState(true); // track auto scroll when generating messages
-
-    const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+    const [prompt, setPrompt] = useState("");
 
     const sendMessage = async () => {
         if (!question.trim()) return;
@@ -26,13 +22,12 @@ const LLMChat = () => {
         try {
             // create the history of messages (the memory of the llm) and send it through the gateway
             const history = [...messages, newMessage].map(message => `${message.sender}: ${message.text}`).join("\n");
-            const response = await axios.post(`${apiEndpoint}/askllm`, { question: history, model: "empathy" });
+            const response = await axios.post("/askllm", { question: history, prompt });
             
             setMessages(previous => [...previous, { sender: "llm", text: response.data.answer }]);
         } catch (error) {
             console.error("Error sending message to LLM:", error.message || error);
             setMessages(previous => [...previous, { sender: "llm", text: "An unexpected error has occurred." }]);
-            if (error.response.status === 403) setAuth({});
         }
     }
 
@@ -50,6 +45,17 @@ const LLMChat = () => {
             setAutoScroll(scrollHeight - scrollTop <= clientHeight + 5);
         }
     }
+
+    useEffect(() => {
+        if (roundData) {
+            const data = roundData.roundData;
+            setPrompt(`You are an assistant that helps a user get the correct answer in a trivia game. 
+                The user is shown a picture of an item and has to guess what it is given four options. 
+                This round of the game is about ${data.mode} and the answer is ${data.itemWithImage.name}. 
+                YOU MUST NEVER SAY THE ANSWER UNDER ANY CIRCUMSTANCE, but you can give vague hints to help them guess the answer. 
+                Keep your answers short to a few words.`);
+        }
+    }, [roundData]);
 
     return (
         <Container sx={{
