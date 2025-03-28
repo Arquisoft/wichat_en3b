@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Container, Typography, FormControlLabel, FormControl, Checkbox, Button, Paper, Box } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(4),
