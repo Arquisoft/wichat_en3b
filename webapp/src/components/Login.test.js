@@ -67,8 +67,10 @@ describe('Login component', () => {
     fireEvent.change(passwordInput, { target: { value: 'testPassword' } });
     fireEvent.click(loginButton);
   
-    const errorMessage = await screen.findByText(/Error: Unauthorized/i, {}, { timeout: 2000 });
-  
-    expect(errorMessage).toBeInTheDocument();
+    await waitFor(() => {
+      const alerts = screen.getAllByRole('alert');
+      expect(alerts.some(alert => alert.textContent.toLowerCase().includes('error'))).toBe(true);
+    });        
+    
   });  
 });

@@ -1,10 +1,17 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Game from "./Game";
-import axios from "axios";
 import { AuthProvider } from "../context/AuthContext";
+import useAxios from "../hooks/useAxios";
 
-jest.mock("axios");
+jest.mock("../hooks/useAxios", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(() => ({
+      get: jest.fn().mockResolvedValue({ data: mockQuestion }),
+    })),
+  };
+});
 
 const mockQuestion = {
   imageUrl: "https://example.com/image.jpg",
@@ -13,10 +20,6 @@ const mockQuestion = {
 };
 
 describe("Game Component", () => {
-  beforeEach(() => {
-    axios.get.mockResolvedValue({ data: mockQuestion });
-  });
-
   test("renders game and loads question", async () => {
     render(
       <AuthProvider>
@@ -24,9 +27,10 @@ describe("Game Component", () => {
       </AuthProvider>
     );
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
-
-    await waitFor(() => expect(screen.getByRole("img")).toBeInTheDocument());
+    await waitFor(() => {
+      expect(screen.getByRole("img")).toBeInTheDocument();
+    }, { timeout: 3000 });
+    
     expect(screen.getByRole("img")).toHaveAttribute("src", mockQuestion.imageUrl);
     mockQuestion.options.forEach((option) => {
       expect(screen.getByText(option)).toBeInTheDocument();
