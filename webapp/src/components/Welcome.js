@@ -1,7 +1,7 @@
 // src/components/Welcome.js
 import React, { useState, useEffect } from 'react';
 import { Container, Button } from '@mui/material';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 import { Typewriter } from "react-simple-typewriter";
 import useAxios from "../hooks/useAxios";
 

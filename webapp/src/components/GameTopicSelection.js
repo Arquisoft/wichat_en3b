@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Container, Typography, Radio, RadioGroup, FormControlLabel, FormControl, Button, Paper, Box, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { NavLink } from "react-router-dom"
+import { NavLink } from "react-router"
 import { LocationCity, Flag, SportsBasketball, MusicNote } from "@mui/icons-material"
 import useAxios from "../hooks/useAxios"
 
