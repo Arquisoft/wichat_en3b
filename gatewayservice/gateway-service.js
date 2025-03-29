@@ -48,7 +48,7 @@ app.post('/login', async (req, res) => {
     const authResponse = await axios.post(authServiceUrl + '/login', req.body, { withCredentials: true, headers: { ...req.headers } });
 
     // Forward the cookie to the client from the authentication service
-    if (authResponse.headers["set-cookie"])
+    if (authResponse.headers && authResponse.headers["set-cookie"])
       res.setHeader("Set-Cookie", authResponse.headers["set-cookie"]);
 
     res.json(authResponse.data);
@@ -63,7 +63,7 @@ app.post('/logout', async (req, res) => {
     const authResponse = await axios.post(authServiceUrl + '/logout', req.body, { withCredentials: true, headers: { ...req.headers } });
 
     // Forward the cookie to the client from the authentication service
-    if (authResponse.headers["set-cookie"])
+    if (authResponse.headers && authResponse.headers["set-cookie"])
       res.setHeader("Set-Cookie", authResponse.headers["set-cookie"]);
     
     res.json(authResponse.data);

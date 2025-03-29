@@ -24,7 +24,8 @@ const Login = () => {
       // redirect to the page the user was trying to access before logging in
       navigate(from, { replace: true });
     } catch (error) {
-      setError(error.message);
+      const errorMessage = error.response?.data?.error || "Unknown error";
+      setError(errorMessage);
       setAuth(false);
     }
 

@@ -15,7 +15,7 @@ const AddUser = () => {
       await axios.post("/adduser", { username, password });
       setOpenSnackbar(true);
     } catch (error) {
-      setError(error.response.data.error);
+      setError(error.response?.data?.error || 'Unknown error');
     }
   };
 

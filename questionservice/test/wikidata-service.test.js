@@ -1,99 +1,76 @@
-const { fetchAndStoreCities, getRandomCitiesWithImage, getCityNameById } = require("../service/wikidata-service");
-const City = require("../model/wikidata-model");
+const request = require("supertest");
+const mongoose = require("mongoose");
+const server = require("../wikidata-service");
+const WikidataObject = require("../wikidata-model");
 
-// Import axios for mocking
-const axios = require("axios");
-// Mock axios to avoid real API calls
-jest.mock("axios");
+// Mock the database methods to prevent actual DB operations
+describe("Express Service API Tests", () => {
+    beforeAll(async () => {
+        if (mongoose.connection.readyState === 0) {
+            await mongoose.connect("mongodb://localhost:27017/test-db", {
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+            });
 
-// Mock Mongoose to avoid real database interactions
-jest.mock("../model/wikidata-model");
-
-describe("WikiData Service Tests", () => {
-  
-  // Silence console.error before each test
-  beforeEach(() => {
-    jest.spyOn(console, "error").mockImplementation(() => {});
-  });
-
-  // Restore console.error after each test
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  // Test 1: fetchAndStoreCities should fetch and store cities in MongoDB
-  test("fetchAndStoreCities should fetch data from WikiData and store it in MongoDB", async () => {
-    // Mock WikiData API response
-    axios.get.mockResolvedValueOnce({
-      data: {
-        results: {
-          bindings: [
-            {
-              city: { value: "https://wikidata.org/wiki/Q1" }, // City ID
-              cityLabel: { value: "Test City" }, // City Name
-              image: { value: "url1" } // City Image URL
-            }
-          ]
+            // Assure that the connection is completely open
+            await new Promise((resolve) => mongoose.connection.once("open", resolve));
         }
-      }
+    });    
+
+    afterAll(async () => {
+        await mongoose.disconnect();
+        server.close();
     });
 
-    // Mock the database update operation
-    City.findOneAndUpdate.mockResolvedValueOnce({ id: "Q1", name: "Test City", imageUrl: "url1" });
+    beforeEach(() => {
+        jest.clearAllMocks(); // Clear mocks before each test
+    });
 
-    // Call the function to test
-    await fetchAndStoreCities();
+    // Test the /load endpoint with valid data
+    it("should return 200 when valid modes are provided", async () => {
+        const response = await request(server)
+            .post("/load")
+            .send({ modes: ["city", "flag"] });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("message", "Data successfully stored");
+    });
 
-    // Verify that findOneAndUpdate was called with the correct parameters
-    expect(City.findOneAndUpdate).toHaveBeenCalledWith(
-      { id: "Q1" }, // Search criteria
-      { id: "Q1", name: "Test City", imageUrl: "url1", imageAltText: expect.any(String) }, // Data to store
-      { upsert: true, new: true } // Options: insert if not found, return updated document
-    );
-  });
+    // Test /load with invalid data
+    it("should return 400 for invalid modes parameter", async () => {
+        const response = await request(server)
+            .post("/load")
+            .send({ modes: "invalid" });
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty("error", "Invalid modes parameter");
+    });
 
-  // Test 2: getRandomCitiesWithImage should return 4 random cities and an image URL
-  test("getRandomCitiesWithImage should return 4 random cities", async () => {
-    // Mock database response with 4 cities
-    const mockCities = [
-      { id: "Q1", name: "City1", imageUrl: "url1" },
-      { id: "Q2", name: "City2", imageUrl: "url2" },
-      { id: "Q3", name: "City3", imageUrl: "url3" },
-      { id: "Q4", name: "City4", imageUrl: "url4" }
+    // Mock data for /getRound
+    const mockItems = [
+        { name: "Paris", mode: "city", imageUrl: "https://example.com/paris.jpg" },
+        { name: "London", mode: "city", imageUrl: "https://example.com/london.jpg" },
+        { name: "New York", mode: "city", imageUrl: "https://example.com/nyc.jpg" },
+        { name: "Tokyo", mode: "city", imageUrl: "https://example.com/tokyo.jpg" }
     ];
-    
-    City.aggregate.mockResolvedValueOnce(mockCities);
-    
-    // Call the function
-    const result = await getRandomCitiesWithImage();
-    
-    // Verify that 4 cities are returned
-    expect(result.cities).toHaveLength(4);
-    
-    // Verify that an image URL is included
-    expect(result.imageUrl).toBeDefined();
-  });
 
-  // Test 3: getCityNameById should return the correct city name
-  test("getCityNameById should return city name for valid id", async () => {
-    // Mock database response for a valid city
-    const mockCity = { id: "Q1", name: "Test City" };
-    City.findOne.mockResolvedValueOnce(mockCity);
-    
-    // Call the function
-    const name = await getCityNameById("Q1");
+    // Mock the database call to return mockItems
+    jest.spyOn(WikidataObject, "aggregate").mockResolvedValue(mockItems);
 
-    // Verify the correct city name is returned
-    expect(name).toBe("Test City");
-  });
+    // Test /getRound endpoint
+    it("should return a valid game round", async () => {
+        const response = await request(server).get("/getRound");
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("mode");
+        expect(response.body.items.length).toBe(4);
+        expect(response.body.itemWithImage).toHaveProperty("imageUrl");
+    });
 
-  // Test 4: getCityNameById should throw an error if the city is not found
-  test("getCityNameById should throw error if city not found", async () => {
-    // Mock database response with no city found
-    City.findOne.mockResolvedValueOnce(null);
-
-    // Call the function and expect an error to be thrown
-    await expect(getCityNameById("Q99")).rejects.toThrow("City with id Q99 not found");
-  });
-
+    // Test error handling in /getRound
+    it("should return 500 if an error occurs", async () => {
+        const consoleErrorMock = jest.spyOn(console, "error").mockImplementation(() => {}); // Suppress console.error
+        jest.spyOn(WikidataObject, "aggregate").mockRejectedValue(new Error("Database error"));
+        const response = await request(server).get("/getRound");
+        expect(response.status).toBe(500);
+        expect(response.body).toHaveProperty("error", "Internal server error");
+        consoleErrorMock.mockRestore(); // Restore the original console.error
+    });
 });

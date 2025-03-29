@@ -74,9 +74,17 @@ LIMIT 200
 
 
 mongoose.connect(mongoDB)
-    .then(() => console.log('Connected'))
-    .catch(err => console.log('Error on the connection to the DB. ', err)); 
+    .then(async () => {
+        console.log("✅ Connected to MongoDB");
 
+        if (process.env.NODE_ENV === "test") { // If the environment is test, do not load data
+            return;
+        }
+
+        await clearDatabase(); // Clear the database before loading new data
+        await fetchAndStoreData(); // Fetch data and store it in MongoDB when the service starts
+    })
+    .catch(err => console.error("❌ Error connecting to the DB:", err));
 
 // Function to clear the database
 async function clearDatabase() {
@@ -204,10 +212,6 @@ app.get("/getRound", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-// Call `loadAllData()` immediately on server startup
-clearDatabase();
-fetchAndStoreData();
 
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
