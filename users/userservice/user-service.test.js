@@ -158,4 +158,31 @@ describe('User Service', () => {
   });
 
   
+  describe('User Statistics endpoint', () => {
+    it('should return user statistics on GET /userstats/:username', async () => {
+      
+      const newUser = { username: 'statsuser', password: 'secret' };
+      await request(app).post('/adduser').send(newUser);
+      
+      const newGameData = {
+        username: 'statsuser',
+        score: 70,
+        correctRate: 0.9,
+        gameMode: 'survival',
+      };
+      await request(app).post('/addgame').send(newGameData);
+
+      const response = await request(app).get('/userstats/statsuser');
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('username', 'statsuser');
+      expect(response.body.totalGamesPlayed).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should return 404 if user statistics not found on GET /userstats/:username', async () => {
+      const response = await request(app).get('/userstats/nonexistentuser');
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty('error', 'User statistics not found');
+    });
+  });
+  
 });
