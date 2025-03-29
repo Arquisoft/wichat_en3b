@@ -6,14 +6,12 @@ import MockAdapter from 'axios-mock-adapter';
 import Login from './Login';
 import useAuth from '../hooks/useAuth';
 
-// Mock de Axios
 const mockAxios = new MockAdapter(axios);
 
-// Mock de useAuth para evitar el error de `setAuth is not a function`
 jest.mock('../hooks/useAuth', () => ({
   __esModule: true,
   default: () => ({
-    setAuth: jest.fn(),  // Mock de la función setAuth
+    setAuth: jest.fn(),
     persist: false,
     setPersist: jest.fn(),
   }),
@@ -39,7 +37,6 @@ describe('Login component', () => {
     const passwordInput = screen.getByLabelText(/Password/i);
     const loginButton = screen.getByRole('button', { name: /Login/i });
 
-    // Mock del login
     mockAxios.onPost('/login').reply(200, { accessToken: 'fakeAccessToken' });
 
     await act(async () => {
@@ -48,7 +45,6 @@ describe('Login component', () => {
       fireEvent.click(loginButton);
     });
 
-    // Esperar a que aparezca el Snackbar con el mensaje
     await waitFor(() => {
       expect(screen.getByText(/Login successful/i)).toBeInTheDocument();
     });

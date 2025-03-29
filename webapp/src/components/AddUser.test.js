@@ -23,17 +23,13 @@ describe('AddUser component', () => {
     const passwordInput = screen.getByLabelText(/Password/i);
     const addUserButton = screen.getByRole('button', { name: /Add User/i });
 
-    // Mock: la URL debe coincidir con la del custom axios
     mockAxios.onPost("/adduser").reply(200);
 
-    // Simular entrada de usuario
     fireEvent.change(usernameInput, { target: { value: 'testUser' } });
     fireEvent.change(passwordInput, { target: { value: 'testPassword' } });
 
-    // Simular click
     fireEvent.click(addUserButton);
 
-    // Espera a que se muestre el Snackbar de éxito
     await waitFor(() => {
       expect(screen.getByText(/User added successfully/i)).toBeInTheDocument();
     });
@@ -50,7 +46,6 @@ describe('AddUser component', () => {
     const passwordInput = screen.getByLabelText(/Password/i);
     const addUserButton = screen.getByRole('button', { name: /Add User/i });
 
-    // Mock del error: la URL también debe coincidir
     mockAxios.onPost("/adduser").reply(500, { error: 'Internal Server Error' });
 
     fireEvent.change(usernameInput, { target: { value: 'testUser' } });
