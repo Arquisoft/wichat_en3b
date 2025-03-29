@@ -106,13 +106,12 @@ describe("Game component", () => {
     await waitFor(() => expect(fiftyFiftyButton).toBeDisabled());
 
     await waitFor(() => {
-      const visibleCities = ["Paris", "London", "Berlin", "Madrid"].filter((city) => {
-        const element = screen.queryByText(city);
-        return element && window.getComputedStyle(element).display !== "none" && element.offsetHeight > 0;
-      });
+      const remainingOptions = screen.getAllByRole("button", { name: /Paris|London|Berlin|Madrid/i })
+        .filter((btn) => !btn.disabled);
     
-      expect(visibleCities.length).toBe(2);
+      expect(remainingOptions.length).toBe(2);
     });
+    
         
   });
 });
