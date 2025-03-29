@@ -132,6 +132,24 @@ app.get('/getRound', async (req, res) => {
   }
 });
 
+app.post('/addgame', async (req, res) => {
+  try{
+    const gameResponse = await axios.post(userServiceUrl + '/addgame', req.body);
+    res.json(gameResponse.data);
+  }catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.get('/userstats/:username', async (req, res) => {
+  try {
+    const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username);
+    res.json(statsResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
 
 // Read the OpenAPI YAML file synchronously
 openapiPath = './openapi.yaml'
