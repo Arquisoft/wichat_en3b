@@ -12,7 +12,7 @@ import Login from './components/Login';
 import SignUp from './components/AddUser';
 import GameModeSelection from './components/GameModeSelection';
 import Game from './components/Game';
-import Home from './components/Home2';
+import Home from './components/Home';
 import Layout from './components/Layout';
 import GameTopicSelection from './components/GameTopicSelection';
 import PersistentLogin from './components/PersistentLogin';
