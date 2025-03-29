@@ -41,7 +41,7 @@ app.post('/adduser', async (req, res) => {
         
         await newUser.save();
         //Add statistics for the new user
-        await new(UserStatistics({ username: newUser.username })).save();
+        await (new UserStatistics({ username: newUser.username })).save();
         res.json(newUser);
     } catch (error) {
         res.status(400).json({ error: error.message }); 

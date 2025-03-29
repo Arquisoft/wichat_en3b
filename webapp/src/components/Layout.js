@@ -40,7 +40,7 @@ const Layout = () => {
                 padding: "0.5rem",
                 background: "linear-gradient(to right,rgb(70, 80, 180),rgb(100, 90, 200))"
             }}>
-                <StyledNavlink to="/" label="Home" icon={<HomeIcon />} />
+                <StyledNavlink to="/home" label="Home" icon={<HomeIcon />} />
                 <Box sx={{ ml: "auto" }}>
                     <>
                         {auth.username
