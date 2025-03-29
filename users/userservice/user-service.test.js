@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
 const User = require('./user-model');
+const Game = require('./game-model');
+const UserStatistics = require('./user-statistic-model');
 
 
 let mongoServer;
@@ -56,7 +58,6 @@ describe('User Service', () => {
     const response = await request(app).post('/adduser').send({});
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error');
-    // Se espera que se lance el error al faltar el primer campo requerido, en este caso "username"
     expect(response.body.error).toMatch(/Missing required field: username/i);
   });
 
@@ -68,5 +69,93 @@ describe('User Service', () => {
     expect(response.body.error).toMatch(/Missing required field: password/i);
   });
   
+  describe('Game endpoints', () => {
+    
+    beforeEach(async () => {
+      await Game.deleteMany({});
+      await UserStatistics.deleteMany({});
+
+      const newUser = { username: 'gameuser', password: 'secret' };
+      await request(app).post('/adduser').send(newUser);
+    });
+
+    it('should add a new game on POST /addgame and update user statistics', async () => {
+      const newGameData = {
+        username: 'gameuser',
+        score: 50,
+        correctRate: 0.8,
+        gameMode: 'arcade',
+      };
+
+      const response = await request(app).post('/addgame').send(newGameData);
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('username', 'gameuser');
+      expect(response.body).toHaveProperty('score', 50);
+      expect(response.body).toHaveProperty('correctRate', 0.8);
+      expect(response.body).toHaveProperty('gameMode');
+      expect(response.body.gameMode).toEqual(['arcade']);
+
+      
+      const savedGame = await Game.findOne({ username: 'gameuser' });
+      expect(savedGame).not.toBeNull();
+
+      
+      const stats = await UserStatistics.findOne({ username: 'gameuser' });
+      expect(stats).not.toBeNull();
+      expect(stats.totalGamesPlayed).toBe(1);
+      expect(stats.avgScore).toBe(50);
+      //expect(stats.highScore).toBe(50);
+      expect(stats.correctRate).toBe(0.8);
+    });
+
+    it('should return error on POST /addgame when required fields are missing', async () => {
+      
+      const incompleteGameData = {
+        username: 'gameuser',
+        correctRate: 0.9,
+        gameMode: 'arcade'
+      };
+
+      const response = await request(app).post('/addgame').send(incompleteGameData);
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error');
+      expect(response.body.error).toMatch(/Missing required field/i);
+    });
+
+    it('should delete the oldest game when MAX_GAMES is reached', async () => {
+      
+      const MAX_GAMES = 100;
+      for (let i = 0; i < MAX_GAMES; i++) {
+        await new Game({
+          username: 'gameuser',
+          score: i,
+          correctRate: 0.5,
+          gameMode: 'classic',
+          createdAt: new Date(Date.now() - 1000 * (MAX_GAMES - i)) 
+        }).save();
+      }
+
+      
+      let count = await Game.countDocuments({ username: 'gameuser' });
+      expect(count).toBe(MAX_GAMES);
+
+      const newGameData = {
+        username: 'gameuser',
+        score: 200,
+        correctRate: 0.95,
+        gameMode: 'classic',
+      };
+
+      const response = await request(app).post('/addgame').send(newGameData);
+      expect(response.status).toBe(200);
+
+      count = await Game.countDocuments({ username: 'gameuser' });
+      expect(count).toBe(MAX_GAMES);
+
+      const oldestGame = await Game.findOne({ username: 'gameuser' }).sort({ createdAt: 1 });
+      expect(oldestGame.score).not.toBe(0);
+    });
+  });
+
   
 });
