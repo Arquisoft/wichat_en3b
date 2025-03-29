@@ -17,9 +17,9 @@ describe("PersistentLogin", () => {
         jest.spyOn(console, "error").mockImplementation(() => {});
       });
       
-      afterAll(() => {
-        console.error.mockRestore();
-      });
+    afterAll(() => {
+      console.error.mockRestore();
+    });
 
       
   afterEach(() => {

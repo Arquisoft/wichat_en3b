@@ -20,8 +20,12 @@ jest.mock('../hooks/useAuth', () => ({
 }));
 
 describe('Login component', () => {
-  beforeEach(() => {
-    mockAxios.reset();
+  beforeAll(() => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+  
+  afterAll(() => {
+    console.error.mockRestore();
   });
 
   it('should log in successfully', async () => {
