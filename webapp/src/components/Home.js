@@ -11,70 +11,7 @@ const Home = () => {
     const [activeTab, setActiveTab] = useState(0);
     const [gamemode, setGamemode] = useState("");
     const [stat, setStat] = useState("points");
-    const [ranking, setRanking] = useState([{
-        rank: 1,
-        name: "Sarah Kim",
-        points: 7250,
-        precision: 94,
-        avgTime: "18s",
-        gamesPlayed: 120,
-        avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-        rank: 2,
-        name: "Mike Chen",
-        points: 6840,
-        precision: 91,
-        avgTime: "20s",
-        gamesPlayed: 105,
-        avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-        rank: 3,
-        name: "Taylor Swift",
-        points: 6210,
-        precision: 88,
-        avgTime: "19s",
-        gamesPlayed: 98,
-        avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-        rank: 4,
-        name: "Alex Johnson",
-        points: 4850,
-        precision: 82,
-        avgTime: "24s",
-        gamesPlayed: 42,
-        avatar: "/placeholder.svg?height=40&width=40",
-        isCurrentUser: true,
-    },
-    {
-        rank: 5,
-        name: "Jordan Lee",
-        points: 4720,
-        precision: 85,
-        avgTime: "22s",
-        gamesPlayed: 65,
-        avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-        rank: 5,
-        name: "Jordan Lee",
-        points: 4720,
-        precision: 85,
-        avgTime: "22s",
-        gamesPlayed: 65,
-        avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-        rank: 5,
-        name: "Jordan Lee",
-        points: 4720,
-        precision: 85,
-        avgTime: "22s",
-        gamesPlayed: 65,
-        avatar: "/placeholder.svg?height=40&width=40",
-    },]);
+    const [ranking, setRanking] = useState([]);
 
     const gamemodes = ["cities", "flags", "athletes", "singers"];
     const stats = ["points", "accuracy", "avgTime", "gamesPlayed"];
