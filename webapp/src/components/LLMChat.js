@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { Button, Container, Divider, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, Divider, TextField, Typography } from "@mui/material";
 import { Typewriter } from "react-simple-typewriter";
 import useAxios from "../hooks/useAxios";
 
@@ -71,7 +71,7 @@ const LLMChat = (roundData) => {
                 <Typography variant="h3" align="center">TipBot</Typography>
             </Container>
             <Divider />
-            <Container ref={chatContainer} onScroll={handleScroll} sx={{display: "flex", flexDirection: "column", overflow: "hidden", overflowY: "auto", height: "30vh"}}>
+            <Box ref={chatContainer} onScroll={handleScroll} sx={{display: "flex", flexDirection: "column", overflow: "hidden", overflowY: "auto", height: "30vh"}}>
                 {messages.map((message, index) => (
                     message.sender === "user" ? (
                         <Typography key={index} sx={{
@@ -104,7 +104,7 @@ const LLMChat = (roundData) => {
                         </Typography>
                     )
                 ))}
-            </Container>
+            </Box>
             <Divider />
             <TextField
                 fullWidth
