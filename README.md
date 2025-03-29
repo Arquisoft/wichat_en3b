@@ -8,7 +8,7 @@
 | Alba González Arango     | uo289041@uniovi.es           |
 | Marco Lorenzo Martínez   | uo294324@uniovi.es           |
 | Javier Menéndez Osendi   | uo294866@uniovi.es           |
-| Daniel Rodríguez Fernández| uo293655@uniovi.es           |
+| Daniel Rodríguez Fernández| uo293655@uniovi.es          |
 
 [Link to our game 👾](https://arquisoft.github.io/wichat_en3b/)
 
