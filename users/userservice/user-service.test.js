@@ -104,6 +104,7 @@ describe('User Service', () => {
       expect(stats).not.toBeNull();
       expect(stats.totalGamesPlayed).toBe(1);
       expect(stats.avgScore).toBe(50);
+      
       //expect(stats.highScore).toBe(50);
       expect(stats.correctRate).toBe(0.8);
     });
