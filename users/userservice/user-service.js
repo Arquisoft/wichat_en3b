@@ -19,111 +19,141 @@ mongoose.connect(mongoUri);
 
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
-    for (const field of requiredFields) {
-      if (!(field in req.body)) {
-        throw new Error(`Missing required field: ${field}`);
-      }
+  for (const field of requiredFields) {
+    if (!(field in req.body)) {
+      throw new Error(`Missing required field: ${field}`);
     }
+  }
 }
 
 app.post('/adduser', async (req, res) => {
-    try {
-        // Check if required fields are present in the request body
-        validateRequiredFields(req, ['username', 'password']);
+  try {
+    // Check if required fields are present in the request body
+    validateRequiredFields(req, ['username', 'password']);
 
-        // Encrypt the password before saving it
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    // Encrypt the password before saving it
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-        const newUser = new User({
-            username: req.body.username,
-            password: hashedPassword,
-        });
-        
-        await newUser.save();
-        //Add statistics for the new user
-        await (new UserStatistics({ username: newUser.username })).save();
-        res.json(newUser);
-    } catch (error) {
-        res.status(400).json({ error: error.message }); 
-    }});
+    const newUser = new User({
+      username: req.body.username,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+    res.json(newUser);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 //Saves a completed game to the database and updates the user stats
 app.post('/addgame', async (req, res) => {
-    try {
-        validateRequiredFields(req, ['username', 'score', 'correctRate', 'gameMode']);
+  try {
+    validateRequiredFields(req, ['username', 'score', 'correctRate', 'gameMode']);
 
-        const MAX_GAMES = 100;
+    const MAX_GAMES = 100;
 
-        const gameCount = await Game.countDocuments({ username: req.body.username });
+    const gameCount = await Game.countDocuments({ username: req.body.username });
 
-        //Deletes the oldest game when max capacity is reached
-        if (gameCount >= MAX_GAMES) {
-          const oldestGame = await Game.findOne({ username: req.body.username }).sort({ createdAt: 1 });
-          if (oldestGame) {
-            await Game.findByIdAndDelete(oldestGame._id);
-          }
-        }
-
-        const newGame = new Game({
-            username: req.body.username,
-            score: req.body.score,
-            correctRate: req.body.correctRate,
-            gameMode: req.body.gameMode,
-        });
-
-        await newGame.save();
-        calculateUserStatistics(newGame);
-        res.json(newGame);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+    //Deletes the oldest game when max capacity is reached
+    if (gameCount >= MAX_GAMES) {
+      const oldestGame = await Game.findOne({ username: req.body.username }).sort({ createdAt: 1 });
+      if (oldestGame) {
+        await Game.findByIdAndDelete(oldestGame._id);
+      }
     }
+
+    const newGame = new Game({
+      username: req.body.username,
+      score: req.body.score,
+      correctRate: req.body.correctRate,
+      gameMode: req.body.gameMode,
+    });
+
+    await newGame.save();
+    calculateUserStatistics(newGame);
+    res.json(newGame);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 //Function only called when a new game is added
 async function calculateUserStatistics(newGame) {
-  try{
-    
-    const userStats = await UserStatistics.findOne({ username: newGame.username });
+  try {
+    const userStats = await UserStatistics.findOne({ username: newGame.username, mode: newGame.gameMode });
+
+    // Create a new user statistics entry if it doesn't exist
+    if (!userStats) {
+      const newUserStats = new UserStatistics({
+        username: newGame.username,
+        mode: newGame.gameMode[0], // temporary fix for mode (this depends on how we save the stats for each question during game)
+        totalScore: newGame.score,
+        correctRate: newGame.correctRate,
+        totalGamesPlayed: 1,
+      });
+      await newUserStats.save();
+      return;
+    }
 
     let oldTotalGamesPlayed = userStats.totalGamesPlayed;
-    let oldAvgScore = userStats.avgScore;
-    let oldHighScore = userStats.highScore;
+    let oldTotalScore = userStats.totalScore;
     let oldCorrectRate = userStats.correctRate;
 
-    await UserStatistics.findOneAndUpdate({ username: newGame.username }, {
+    await UserStatistics.findOneAndUpdate({ username: newGame.username, mode: newGame.gameMode }, {
       $inc: { totalGamesPlayed: 1 },
-      $set:{
-        avgScore: calculateNewAvg(newGame.score, oldTotalGamesPlayed, oldAvgScore),
-        highscore : oldHighScore < newGame.score ? newGame.score : oldHighScore,
+      $set: {
+        totalScore: oldTotalScore + newGame.score,
         correctRate: calculateNewAvg(newGame.correctRate, oldTotalGamesPlayed, oldCorrectRate)
       }
     });
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-
 }
 
 function calculateNewAvg(newRate, totalGamesPlayed, oldAvg) {
-
-    let newAvg = (totalGamesPlayed * oldAvg + newRate) / (totalGamesPlayed + 1);
-
-    return newAvg;
+  return (totalGamesPlayed * oldAvg + newRate) / (totalGamesPlayed + 1);
 }
 
-app.get('/userstats/:username', async (req, res) => {
+app.get('/userstats/user/:username', async (req, res) => {
   try {
-      const userId = req.params.username;
+    const username = req.params.username;
 
-      const userStats = await UserStatistics.findOne({ username: userId });
+    const userStats = await UserStatistics.find({ username: username });
 
-      if (!userStats) {
-          return res.status(404).json({ error: 'User statistics not found' });
-      }
-
-      res.json(userStats);
+    res.json({message: `Fetched statistics for user: ${username}`, stats: userStats});
   } catch (error) {
-      res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/userstats/mode/:mode', async (req, res) => {
+  try {
+    const mode = req.params.mode;
+
+    let userStats;
+    if (mode === "all") {
+      // Aggregate user statistics for all modes
+      userStats = await UserStatistics.aggregate([
+        {
+          $group: {
+            _id: "$username",
+            username: { $first: "$username" },
+            totalScore: { $sum: "$totalScore" },
+            correctRate: { $avg: "$correctRate" },
+            totalGamesPlayed: { $sum: "$totalGamesPlayed" },
+          }
+        },
+      ]);
+    } else {
+      // Find user statistics for a specific mode
+      userStats = await UserStatistics.find({ mode: mode });
+    }
+
+    res.json({message: `Fetched statistics for mode: ${mode}`, stats: userStats});
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -133,8 +163,8 @@ const server = app.listen(port, () => {
 
 // Listen for the 'close' event on the Express.js server
 server.on('close', () => {
-    // Close the Mongoose connection
-    mongoose.connection.close();
-  });
+  // Close the Mongoose connection
+  mongoose.connection.close();
+});
 
 module.exports = server

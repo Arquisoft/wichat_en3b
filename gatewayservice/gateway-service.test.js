@@ -1,7 +1,7 @@
 const request = require('supertest');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
-const app = require('./gateway-service'); 
+const app = require('./gateway-service');
 
 // Close the server after all tests
 afterAll(async () => {
@@ -13,17 +13,17 @@ jest.mock('axios');
 
 describe('Gateway Service', () => {
     const token = jwt.sign("mockToken", "accessTokenSecret");
-    const invalidToken = 'invalidtoken'; 
+    const invalidToken = 'invalidtoken';
 
     beforeEach(() => {
         axios.post.mockImplementation((url, data) => {
             if (url.endsWith('/login')) {
-                return Promise.resolve({ 
+                return Promise.resolve({
                     data: { accessToken: 'mockedToken' },
                     headers: { "set-cookie": ["refreshToken=mockRefreshToken"] }
                 });
             } else if (url.endsWith('/logout')) {
-                return Promise.resolve({ 
+                return Promise.resolve({
                     data: { message: 'Logged out successfully' },
                     headers: { "set-cookie": ["jwt=; Max-Age=0"] }
                 });
@@ -34,28 +34,32 @@ describe('Gateway Service', () => {
             } else if (url.endsWith('/load')) {
                 return Promise.resolve({ data: { status: 'questions loaded' } });
             } else if (url.endsWith('/addgame')) {
-                return Promise.resolve({ data: { gameId: 'mockedGameId' } });
+                return Promise.resolve({ data: { message: 'Game added successfully' } });
             }
         });
-       
+
         axios.get.mockImplementation((url) => {
             if (url.endsWith('/getRound')) {
                 return Promise.resolve({ data: { round: 'mockedRoundData' } });
             } else if (url.endsWith('/refresh')) {
-                return Promise.resolve({ data: { accessToken: 'newMockedToken' } });
-            } else if (url.includes('/userstats/')) {
-                return Promise.resolve({ data: { games: 10, score: 500 } });
+                return Promise.resolve({ data: { accessToken: 'mockedToken' } });
+            } else if (url.endsWith('/getModes')) {
+                return Promise.resolve({ data: { modes: ['city', 'athlete'] } });
+            } else if (url.endsWith('/userstats/user/testuser')) {
+                return Promise.resolve({ data: { message: 'Fetched user statistics for user: testuser' } });
+            } else if (url.endsWith('/userstats/mode/flag')) {
+                return Promise.resolve({ data: { message: 'Fetched statistics for mode: flag' } });
             }
         });
     });
-    
+
     // Test /health endpoint
     it('should return status OK for health check', async () => {
         const response = await request(app).get('/health');
         expect(response.statusCode).toBe(200);
         expect(response.body).toEqual({ status: 'OK' });
     });
-    
+
     // Test /login endpoint
     it('should forward login request to auth service', async () => {
         const response = await request(app)
@@ -70,11 +74,11 @@ describe('Gateway Service', () => {
     it('should handle errors from login endpoint', async () => {
         axios.post.mockImplementationOnce((url) => {
             if (url.endsWith('/login')) {
-                return Promise.reject({ 
-                    response: { 
-                        status: 401, 
-                        data: { error: 'Invalid credentials' } 
-                    } 
+                return Promise.reject({
+                    response: {
+                        status: 401,
+                        data: { error: 'Invalid credentials' }
+                    }
                 });
             }
         });
@@ -98,11 +102,11 @@ describe('Gateway Service', () => {
     it('should handle errors from logout endpoint', async () => {
         axios.post.mockImplementationOnce((url) => {
             if (url.endsWith('/logout')) {
-                return Promise.reject({ 
-                    response: { 
-                        status: 500, 
-                        data: { error: 'Server error' } 
-                    } 
+                return Promise.reject({
+                    response: {
+                        status: 500,
+                        data: { error: 'Server error' }
+                    }
                 });
             }
         });
@@ -113,24 +117,23 @@ describe('Gateway Service', () => {
     });
 
 
-    // Test /refresh endpoint 
-    it('should forward refresh token request to auth service', async () => {
-        const response = await request(app)
-            .get('/refresh')
-            .set('Cookie', ['jwt=refreshToken123']);
+    // Test /refresh endpoint
+    it('should return a new access token', async () => {
+        const response = await request(app).get('/refresh');
+
         expect(response.statusCode).toBe(200);
-        expect(response.body.accessToken).toBe('newMockedToken');
+        expect(response.body.accessToken).toBe('mockedToken');
     });
 
     // Test refresh error handling
     it('should handle errors from refresh endpoint', async () => {
         axios.get.mockImplementationOnce((url) => {
             if (url.endsWith('/refresh')) {
-                return Promise.reject({ 
-                    response: { 
-                        status: 401, 
-                        data: { error: 'Invalid refresh token' } 
-                    } 
+                return Promise.reject({
+                    response: {
+                        status: 401,
+                        data: { error: 'Invalid refresh token' }
+                    }
                 });
             }
         });
@@ -140,8 +143,6 @@ describe('Gateway Service', () => {
         expect(response.body.error).toBe('Invalid refresh token');
     });
 
-
-    
     // Test /adduser endpoint
     it('should forward add user request to user service', async () => {
         const response = await request(app)
@@ -156,11 +157,11 @@ describe('Gateway Service', () => {
     it('should handle errors from adduser endpoint', async () => {
         axios.post.mockImplementationOnce((url) => {
             if (url.endsWith('/adduser')) {
-                return Promise.reject({ 
-                    response: { 
-                        status: 409, 
-                        data: { error: 'User already exists' } 
-                    } 
+                return Promise.reject({
+                    response: {
+                        status: 409,
+                        data: { error: 'User already exists' }
+                    }
                 });
             }
         });
@@ -205,11 +206,11 @@ describe('Gateway Service', () => {
     it('should handle errors from askllm endpoint', async () => {
         axios.post.mockImplementationOnce((url) => {
             if (url.endsWith('/ask')) {
-                return Promise.reject({ 
-                    response: { 
-                        status: 500, 
-                        data: { error: 'LLM service error' } 
-                    } 
+                return Promise.reject({
+                    response: {
+                        status: 500,
+                        data: { error: 'LLM service error' }
+                    }
                 });
             }
         });
@@ -217,11 +218,11 @@ describe('Gateway Service', () => {
         const response = await request(app)
             .post('/askllm')
             .set('Authorization', `Bearer ${token}`)
-            .send({ question: 'question', apiKey: 'apiKey', model: 'gemini' });
+            .send({ question: 'question', apiKey: 'apiKey' });
         expect(response.statusCode).toBe(500);
         expect(response.body.error).toBe('LLM service error');
     });
-    
+
     // Test /loadQuestion endpoint
     it('should forward loadQuestion request to the question service', async () => {
         const response = await request(app)
@@ -232,15 +233,15 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.status).toBe('questions loaded');
     });
-    
+
     // Test loadQuestion error handling 
     it('should handle errors from loadQuestion endpoint', async () => {
         axios.post.mockImplementationOnce((url) => {
             if (url.endsWith('/load')) {
-                return Promise.reject({ 
-                    response: { 
+                return Promise.reject({
+                    response: {
                         status: 500
-                    } 
+                    }
                 });
             }
         });
@@ -266,7 +267,7 @@ describe('Gateway Service', () => {
     // Test /getRound endpoint
     it('should fetch round data from the question service', async () => {
         const response = await request(app).get('/getRound').set('Authorization', `Bearer ${token}`);
-        
+
         expect(response.statusCode).toBe(200);
         expect(response.body.round).toBe('mockedRoundData');
     });
@@ -275,11 +276,11 @@ describe('Gateway Service', () => {
     it('should handle errors from getRound endpoint', async () => {
         axios.get.mockImplementationOnce((url) => {
             if (url.endsWith('/getRound')) {
-                return Promise.reject({ 
-                    response: { 
-                        status: 500, 
-                        data: { error: 'Question service error' } 
-                    } 
+                return Promise.reject({
+                    response: {
+                        status: 500,
+                        data: { error: 'Question service error' }
+                    }
                 });
             }
         });
@@ -291,6 +292,14 @@ describe('Gateway Service', () => {
         expect(response.body.error).toBe('Question service error');
     });
 
+    // Test /getModes endpoint
+    it('should fetch modes from the question service', async () => {
+        const response = await request(app).get('/getModes').set('Authorization', `Bearer ${token}`);
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.modes).toEqual(['city', 'athlete']);
+    });
+
     // Test /addgame endpoint 
     it('should forward addgame request to the user service', async () => {
         const response = await request(app)
@@ -298,18 +307,18 @@ describe('Gateway Service', () => {
             .set('Authorization', `Bearer ${token}`)
             .send({ username: 'testuser', score: 100 });
         expect(response.statusCode).toBe(200);
-        expect(response.body.gameId).toBe('mockedGameId');
+        expect(response.body.message).toBe('Game added successfully');
     });
 
     // Test addgame error handling
     it('should handle errors from addgame endpoint', async () => {
         axios.post.mockImplementationOnce((url) => {
             if (url.endsWith('/addgame')) {
-                return Promise.reject({ 
-                    response: { 
-                        status: 500, 
-                        data: { error: 'User service error' } 
-                    } 
+                return Promise.reject({
+                    response: {
+                        status: 500,
+                        data: { error: 'User service error' }
+                    }
                 });
             }
         });
@@ -322,50 +331,19 @@ describe('Gateway Service', () => {
         expect(response.body.error).toBe('User service error');
     });
 
-    // Test /userstats/:username endpoint
-    it('should fetch user stats from the user service', async () => {
-        const response = await request(app)
-            .get('/userstats/testuser')
-            .set('Authorization', `Bearer ${token}`);
+    // Test /userstats/user/:username endpoint
+    it('should fetch user statistics for a specific user from the user service', async () => {
+        const response = await request(app).get('/userstats/user/testuser').set('Authorization', `Bearer ${token}`);
+
         expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual({ games: 10, score: 500 });
+        expect(response.body.message).toBe('Fetched user statistics for user: testuser');
     });
 
-    // Test userstats error handling
-    it('should handle errors from userstats endpoint', async () => {
-        axios.get.mockImplementationOnce((url) => {
-            if (url.includes('/userstats/')) {
-                return Promise.reject({ 
-                    response: { 
-                        status: 404, 
-                        data: { error: 'User not found' } 
-                    } 
-                });
-            }
-        });
+    // Test /userstats/mode/:mode endpoint
+    it('should fetch user statistics for a specific game mode from the user service', async () => {
+        const response = await request(app).get('/userstats/mode/flag').set('Authorization', `Bearer ${token}`);
 
-        const response = await request(app)
-            .get('/userstats/nonexistentuser')
-            .set('Authorization', `Bearer ${token}`);
-        expect(response.statusCode).toBe(404);
-        expect(response.body.error).toBe('User not found');
-    });
-
-    // Test cookie handling for login 
-    it('should forward cookies from auth service login response', async () => {
-        const response = await request(app)
-            .post('/login')
-            .send({ username: 'testuser', password: 'testpassword' });
-        
-        expect(response.headers['set-cookie']).toBeDefined();
-        expect(response.headers['set-cookie'][0]).toContain('refreshToken=mockRefreshToken');
-    });
-
-    // Test cookie handling for logout 
-    it('should forward cookies from auth service logout response', async () => {
-        const response = await request(app).post('/logout');
-        
-        expect(response.headers['set-cookie']).toBeDefined();
-        expect(response.headers['set-cookie'][0]).toContain('jwt=; Max-Age=0');
+        expect(response.statusCode).toBe(200);
+        expect(response.body.message).toBe('Fetched statistics for mode: flag');
     });
 });

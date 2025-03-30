@@ -6,7 +6,6 @@ const User = require('./user-model');
 const Game = require('./game-model');
 const UserStatistics = require('./user-statistic-model');
 
-
 let mongoServer;
 let app;
 
@@ -14,12 +13,12 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
   process.env.MONGODB_URI = mongoUri;
-  app = require('./user-service'); 
+  app = require('./user-service');
 });
 
 afterAll(async () => {
-    app.close();
-    await mongoServer.stop();
+  app.close();
+  await mongoServer.stop();
 });
 
 describe('User Service', () => {
@@ -45,15 +44,15 @@ describe('User Service', () => {
     expect(isPasswordValid).toBe(true);
   });
 
-  it ('should not add a new user on POST /adduser and should send an exception', async () => { 
+  it('should not add a new user on POST /adduser and should send an exception', async () => {
 
     const response = await request(app).post('/adduser').send({});
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error');
     expect(response.body.error).toMatch(/Missing required field/i);
 
-  }); 
-  
+  });
+
   it('should return error on POST /adduser when the request body is empty (missing required fields)', async () => {
     const response = await request(app).post('/adduser').send({});
     expect(response.status).toBe(400);
@@ -68,9 +67,9 @@ describe('User Service', () => {
     expect(response.body).toHaveProperty('error');
     expect(response.body.error).toMatch(/Missing required field: password/i);
   });
-  
+
   describe('Game endpoints', () => {
-    
+
     beforeEach(async () => {
       await Game.deleteMany({});
       await UserStatistics.deleteMany({});
@@ -95,22 +94,13 @@ describe('User Service', () => {
       expect(response.body).toHaveProperty('gameMode');
       expect(response.body.gameMode).toEqual(['arcade']);
 
-      
+
       const savedGame = await Game.findOne({ username: 'gameuser' });
       expect(savedGame).not.toBeNull();
-
-      
-      const stats = await UserStatistics.findOne({ username: 'gameuser' });
-      expect(stats).not.toBeNull();
-      expect(stats.totalGamesPlayed).toBe(1);
-      expect(stats.avgScore).toBe(50);
-      
-      //expect(stats.highScore).toBe(50);
-      expect(stats.correctRate).toBe(0.8);
     });
 
     it('should return error on POST /addgame when required fields are missing', async () => {
-      
+
       const incompleteGameData = {
         username: 'gameuser',
         correctRate: 0.9,
@@ -124,7 +114,7 @@ describe('User Service', () => {
     });
 
     it('should delete the oldest game when MAX_GAMES is reached', async () => {
-      
+
       const MAX_GAMES = 100;
       for (let i = 0; i < MAX_GAMES; i++) {
         await new Game({
@@ -132,11 +122,11 @@ describe('User Service', () => {
           score: i,
           correctRate: 0.5,
           gameMode: 'classic',
-          createdAt: new Date(Date.now() - 1000 * (MAX_GAMES - i)) 
+          createdAt: new Date(Date.now() - 1000 * (MAX_GAMES - i))
         }).save();
       }
 
-      
+
       let count = await Game.countDocuments({ username: 'gameuser' });
       expect(count).toBe(MAX_GAMES);
 
@@ -158,32 +148,46 @@ describe('User Service', () => {
     });
   });
 
-  
   describe('User Statistics endpoint', () => {
-    it('should return user statistics on GET /userstats/:username', async () => {
-      
+    async function addGameData(username, score, correctRate, gameMode) {
+      await request(app).post('/addgame').send({ username, score, correctRate, gameMode });
+    }
+
+    it('should return user statistics on GET /userstats/user/:username', async () => {
       const newUser = { username: 'statsuser', password: 'secret' };
       await request(app).post('/adduser').send(newUser);
-      
-      const newGameData = {
-        username: 'statsuser',
-        score: 70,
-        correctRate: 0.9,
-        gameMode: 'survival',
-      };
-      await request(app).post('/addgame').send(newGameData);
 
-      const response = await request(app).get('/userstats/statsuser');
+      await addGameData('statsuser', 70, 0.9, 'survival');
+      await addGameData('statsuser', 80, 0.85, 'survival');
+
+      const response = await request(app).get('/userstats/user/statsuser');
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('username', 'statsuser');
-      expect(response.body.totalGamesPlayed).toBeGreaterThanOrEqual(1);
+      expect(response.body.stats[0].username).toBe('statsuser');
+      expect(response.body.stats[0].totalScore).toBe(150);
+      expect(response.body.stats[0].correctRate).toBe(0.875);
+      expect(response.body.stats[0].totalGamesPlayed).toBe(2);
     });
 
-    it('should return 404 if user statistics not found on GET /userstats/:username', async () => {
-      const response = await request(app).get('/userstats/nonexistentuser');
-      expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty('error', 'User statistics not found');
+    it('should return empty array if user statistics not found on GET /userstats/user/:username', async () => {
+      const response = await request(app).get('/userstats/user/nonexistentuser');
+      expect(response.status).toBe(200);
+      expect(response.body.stats).toEqual([]);
+    });
+
+    it('should return all statistics for a specific game mode on GET /userstats/mode/:gameMode', async () => {
+      await addGameData('user1', 70, 0.9, 'flag');
+      await addGameData('user2', 80, 0.85, 'flag');
+
+      const response = await request(app).get('/userstats/mode/flag');
+      expect(response.status).toBe(200);
+      expect(response.body.stats[0].username).toBe('user1');
+      expect(response.body.stats[1].username).toBe('user2');
+      expect(response.body.stats[0].totalScore).toBe(70);
+      expect(response.body.stats[1].totalScore).toBe(80);
+      expect(response.body.stats[0].correctRate).toBe(0.9);
+      expect(response.body.stats[1].correctRate).toBe(0.85);
+      expect(response.body.stats[0].totalGamesPlayed).toBe(1);
+      expect(response.body.stats[1].totalGamesPlayed).toBe(1);
     });
   });
-  
 });

@@ -30,10 +30,10 @@ const verifyJWT = (req, res, next) => {
   if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
   const token = authHeader.split(' ')[1];
   jwt.verify(token, "accessTokenSecret", (err, decoded) => {
-      if (err) return res.status(403).json({ error: 'Invalid token' });
-      req.user = decoded.username;
-      next();
-    }
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+    req.user = decoded.username;
+    next();
+  }
   );
 }
 
@@ -65,7 +65,7 @@ app.post('/logout', async (req, res) => {
     // Forward the cookie to the client from the authentication service
     if (authResponse.headers && authResponse.headers["set-cookie"])
       res.setHeader("Set-Cookie", authResponse.headers["set-cookie"]);
-    
+
     res.json(authResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
@@ -118,7 +118,6 @@ app.post('/loadQuestion', async (req, res) => {
 
     res.json(questionResponse.data);
   } catch (error) {
-    console.error('Error fetching data from question service:', error);
     res.status(error.response?.status || 500).json({ error: 'Error fetching question data' });
   }
 });
@@ -132,19 +131,37 @@ app.get('/getRound', async (req, res) => {
   }
 });
 
-app.post('/addgame', async (req, res) => {
-  try{
-    const gameResponse = await axios.post(userServiceUrl + '/addgame', req.body);
-    res.json(gameResponse.data);
-  }catch (error) {
+app.get('/getModes', async (req, res) => {
+  try {
+    const modesResponse = await axios.get(questionServiceUrl + '/getModes');
+    res.json(modesResponse.data);
+  } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
 
-app.get('/userstats/:username', async (req, res) => {
+app.post('/addgame', async (req, res) => {
   try {
-    const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username);
+    const gameResponse = await axios.post(userServiceUrl + '/addgame', req.body);
+    res.json(gameResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.get('/userstats/user/:username', async (req, res) => {
+  try {
+    const statsResponse = await axios.get(userServiceUrl + '/userstats/user/' + req.params.username);
     res.json(statsResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.get('/userstats/mode/:mode', async (req, res) => {
+  try {
+    const usersResponse = await axios.get(userServiceUrl + '/userstats/mode/' + req.params.mode);
+    res.json(usersResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }
