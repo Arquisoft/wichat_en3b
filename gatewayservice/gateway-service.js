@@ -118,7 +118,6 @@ app.post('/loadQuestion', async (req, res) => {
 
     res.json(questionResponse.data);
   } catch (error) {
-    console.error('Error fetching data from question service:', error);
     res.status(error.response?.status || 500).json({ error: 'Error fetching question data' });
   }
 });
