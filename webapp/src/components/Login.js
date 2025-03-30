@@ -9,7 +9,7 @@ import axios from "../api/axios";
 const Login = () => {
   const { setAuth, persist, setPersist } = useAuth();
   const navigate = useNavigate();
-  const from = useLocation().state?.from.pathname || "/";
+  const from = useLocation().state?.from.pathname || "/home";
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

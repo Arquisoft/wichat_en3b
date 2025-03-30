@@ -12,7 +12,7 @@ import Login from './components/Login';
 import SignUp from './components/AddUser';
 import GameModeSelection from './components/GameModeSelection';
 import Game from './components/Game';
-import Welcome from './components/Welcome';
+import Home from './components/Home';
 import Layout from './components/Layout';
 import GameTopicSelection from './components/GameTopicSelection';
 import PersistentLogin from './components/PersistentLogin';
@@ -32,7 +32,7 @@ root.render(
           {/* Routes with authentication */}
           <Route element={<PersistentLogin />}>
             <Route element={<PrivateRoute />}>
-              <Route path="/welcome" element={<Welcome />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/gamemode" element={<GameModeSelection />} />
               <Route path="/gametopic" element={<GameTopicSelection />} />
               <Route path="/game" element={<Game />} />

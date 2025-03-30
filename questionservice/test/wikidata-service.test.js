@@ -1,29 +1,24 @@
 const request = require("supertest");
 const mongoose = require("mongoose");
+const { MongoMemoryServer } = require('mongodb-memory-server');
 const server = require("../wikidata-service");
 const WikidataObject = require("../wikidata-model");
+
+let mongoServer;
+let app;
 
 // Mock the database methods to prevent actual DB operations
 describe("Express Service API Tests", () => {
     beforeAll(async () => {
-        if (mongoose.connection.readyState === 0) {
-            await mongoose.connect("mongodb://localhost:27017/test-db", {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            });
-
-            // Assure that the connection is completely open
-            await new Promise((resolve) => mongoose.connection.once("open", resolve));
-        }
-    });    
-
-    afterAll(async () => {
-        await mongoose.disconnect();
-        server.close();
+        mongoServer = await MongoMemoryServer.create();
+        const mongoUri = mongoServer.getUri();
+        process.env.MONGODB_URI = mongoUri;
+        app = require('../wikidata-service');
     });
 
-    beforeEach(() => {
-        jest.clearAllMocks(); // Clear mocks before each test
+    afterAll(async () => {
+        app.close();
+        await mongoServer.stop();
     });
 
     // Test the /load endpoint with valid data
@@ -66,7 +61,7 @@ describe("Express Service API Tests", () => {
 
     // Test error handling in /getRound
     it("should return 500 if an error occurs", async () => {
-        const consoleErrorMock = jest.spyOn(console, "error").mockImplementation(() => {}); // Suppress console.error
+        const consoleErrorMock = jest.spyOn(console, "error").mockImplementation(() => { }); // Suppress console.error
         jest.spyOn(WikidataObject, "aggregate").mockRejectedValue(new Error("Database error"));
         const response = await request(server).get("/getRound");
         expect(response.status).toBe(500);
