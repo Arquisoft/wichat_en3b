@@ -13,26 +13,40 @@ jest.mock('axios');
 
 describe('Gateway Service', () => {
     const token = jwt.sign("mockToken", "accessTokenSecret");
+    const invalidToken = 'invalidtoken'; 
 
-    // Mock responses from external services
-    axios.post.mockImplementation((url, data) => {
-        if (url.endsWith('/login')) {
-            return Promise.resolve({ data: { accessToken: 'mockedToken' } });
-        } else if (url.endsWith('/logout')) {
-            return Promise.resolve({ data: { message: 'Logged out successfully' } });
-        } else if (url.endsWith('/adduser')) {
-            return Promise.resolve({ data: { userId: 'mockedUserId' } });
-        } else if (url.endsWith('/ask')) {
-            return Promise.resolve({ data: { answer: 'llmanswer' } });
-        } else if (url.endsWith('/load')) {
-            return Promise.resolve({ data: { status: 'questions loaded' } });
-        }
-    });
-    
-    axios.get.mockImplementation((url) => {
-        if (url.endsWith('/getRound')) {
-            return Promise.resolve({ data: { round: 'mockedRoundData' } });
-        }
+    beforeEach(() => {
+        axios.post.mockImplementation((url, data) => {
+            if (url.endsWith('/login')) {
+                return Promise.resolve({ 
+                    data: { accessToken: 'mockedToken' },
+                    headers: { "set-cookie": ["refreshToken=mockRefreshToken"] }
+                });
+            } else if (url.endsWith('/logout')) {
+                return Promise.resolve({ 
+                    data: { message: 'Logged out successfully' },
+                    headers: { "set-cookie": ["jwt=; Max-Age=0"] }
+                });
+            } else if (url.endsWith('/adduser')) {
+                return Promise.resolve({ data: { userId: 'mockedUserId' } });
+            } else if (url.endsWith('/ask')) {
+                return Promise.resolve({ data: { answer: 'llmanswer' } });
+            } else if (url.endsWith('/load')) {
+                return Promise.resolve({ data: { status: 'questions loaded' } });
+            } else if (url.endsWith('/addgame')) {
+                return Promise.resolve({ data: { gameId: 'mockedGameId' } });
+            }
+        });
+       
+        axios.get.mockImplementation((url) => {
+            if (url.endsWith('/getRound')) {
+                return Promise.resolve({ data: { round: 'mockedRoundData' } });
+            } else if (url.endsWith('/refresh')) {
+                return Promise.resolve({ data: { accessToken: 'newMockedToken' } });
+            } else if (url.includes('/userstats/')) {
+                return Promise.resolve({ data: { games: 10, score: 500 } });
+            }
+        });
     });
     
     // Test /health endpoint
@@ -52,6 +66,26 @@ describe('Gateway Service', () => {
         expect(response.body.accessToken).toBe('mockedToken');
     });
 
+    // Test login error handling
+    it('should handle errors from login endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/login')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 401, 
+                        data: { error: 'Invalid credentials' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/login')
+            .send({ username: 'baduser', password: 'badpassword' });
+        expect(response.statusCode).toBe(401);
+        expect(response.body.error).toBe('Invalid credentials');
+    });
+
     // Test /logout endpoint
     it('should forward logout request to auth service', async () => {
         const response = await request(app).post('/logout')
@@ -59,6 +93,54 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.message).toBe('Logged out successfully');
     });
+
+    // Test logout error handling
+    it('should handle errors from logout endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/logout')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 500, 
+                        data: { error: 'Server error' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app).post('/logout');
+        expect(response.statusCode).toBe(500);
+        expect(response.body.error).toBe('Server error');
+    });
+
+
+    // Test /refresh endpoint 
+    it('should forward refresh token request to auth service', async () => {
+        const response = await request(app)
+            .get('/refresh')
+            .set('Cookie', ['jwt=refreshToken123']);
+        expect(response.statusCode).toBe(200);
+        expect(response.body.accessToken).toBe('newMockedToken');
+    });
+
+    // Test refresh error handling
+    it('should handle errors from refresh endpoint', async () => {
+        axios.get.mockImplementationOnce((url) => {
+            if (url.endsWith('/refresh')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 401, 
+                        data: { error: 'Invalid refresh token' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app).get('/refresh');
+        expect(response.statusCode).toBe(401);
+        expect(response.body.error).toBe('Invalid refresh token');
+    });
+
+
     
     // Test /adduser endpoint
     it('should forward add user request to user service', async () => {
@@ -69,7 +151,45 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.userId).toBe('mockedUserId');
     });
-    
+
+    // Test adduser error handling
+    it('should handle errors from adduser endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/adduser')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 409, 
+                        data: { error: 'User already exists' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/adduser')
+            .send({ username: 'existinguser', password: 'password' });
+        expect(response.statusCode).toBe(409);
+        expect(response.body.error).toBe('User already exists');
+    });
+
+    // Test JWT verification failure
+    it('should return 401 when no authorization header is provided', async () => {
+        const response = await request(app).get('/getRound');
+        expect(response.statusCode).toBe(401);
+        expect(response.body.error).toBe('Unauthorized');
+    });
+
+    // Test JWT invalid token
+    it('should return 403 when an invalid token is provided', async () => {
+        const response = await request(app)
+            .get('/getRound')
+            .set('Authorization', `Bearer ${invalidToken}`);
+        expect(response.statusCode).toBe(403);
+        expect(response.body.error).toBe('Invalid token');
+    });
+
+
+
     // Test /askllm endpoint
     it('should forward askllm request to the llm service', async () => {
         const response = await request(app)
@@ -79,6 +199,27 @@ describe('Gateway Service', () => {
 
         expect(response.statusCode).toBe(200);
         expect(response.body.answer).toBe('llmanswer');
+    });
+
+    // Test askllm error handling
+    it('should handle errors from askllm endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/ask')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 500, 
+                        data: { error: 'LLM service error' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/askllm')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ question: 'question', apiKey: 'apiKey', model: 'gemini' });
+        expect(response.statusCode).toBe(500);
+        expect(response.body.error).toBe('LLM service error');
     });
     
     // Test /loadQuestion endpoint
@@ -92,11 +233,139 @@ describe('Gateway Service', () => {
         expect(response.body.status).toBe('questions loaded');
     });
     
+    // Test loadQuestion error handling 
+    it('should handle errors from loadQuestion endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/load')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 500
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/loadQuestion')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ modes: ['city', 'athlete'] });
+        expect(response.statusCode).toBe(500);
+        expect(response.body.error).toBe('Error fetching question data');
+    });
+
+    // Test loadQuestion with invalid modes 
+    it('should return 400 when modes parameter is invalid', async () => {
+        const response = await request(app)
+            .post('/loadQuestion')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ modes: 'not-an-array' });
+        expect(response.statusCode).toBe(400);
+        expect(response.body.error).toBe('Invalid modes parameter');
+    });
+
     // Test /getRound endpoint
     it('should fetch round data from the question service', async () => {
         const response = await request(app).get('/getRound').set('Authorization', `Bearer ${token}`);
         
         expect(response.statusCode).toBe(200);
         expect(response.body.round).toBe('mockedRoundData');
+    });
+
+    // Test getRound error handling 
+    it('should handle errors from getRound endpoint', async () => {
+        axios.get.mockImplementationOnce((url) => {
+            if (url.endsWith('/getRound')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 500, 
+                        data: { error: 'Question service error' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .get('/getRound')
+            .set('Authorization', `Bearer ${token}`);
+        expect(response.statusCode).toBe(500);
+        expect(response.body.error).toBe('Question service error');
+    });
+
+    // Test /addgame endpoint 
+    it('should forward addgame request to the user service', async () => {
+        const response = await request(app)
+            .post('/addgame')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'testuser', score: 100 });
+        expect(response.statusCode).toBe(200);
+        expect(response.body.gameId).toBe('mockedGameId');
+    });
+
+    // Test addgame error handling
+    it('should handle errors from addgame endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/addgame')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 500, 
+                        data: { error: 'User service error' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/addgame')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'testuser', score: 100 });
+        expect(response.statusCode).toBe(500);
+        expect(response.body.error).toBe('User service error');
+    });
+
+    // Test /userstats/:username endpoint
+    it('should fetch user stats from the user service', async () => {
+        const response = await request(app)
+            .get('/userstats/testuser')
+            .set('Authorization', `Bearer ${token}`);
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ games: 10, score: 500 });
+    });
+
+    // Test userstats error handling
+    it('should handle errors from userstats endpoint', async () => {
+        axios.get.mockImplementationOnce((url) => {
+            if (url.includes('/userstats/')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 404, 
+                        data: { error: 'User not found' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .get('/userstats/nonexistentuser')
+            .set('Authorization', `Bearer ${token}`);
+        expect(response.statusCode).toBe(404);
+        expect(response.body.error).toBe('User not found');
+    });
+
+    // Test cookie handling for login 
+    it('should forward cookies from auth service login response', async () => {
+        const response = await request(app)
+            .post('/login')
+            .send({ username: 'testuser', password: 'testpassword' });
+        
+        expect(response.headers['set-cookie']).toBeDefined();
+        expect(response.headers['set-cookie'][0]).toContain('refreshToken=mockRefreshToken');
+    });
+
+    // Test cookie handling for logout 
+    it('should forward cookies from auth service logout response', async () => {
+        const response = await request(app).post('/logout');
+        
+        expect(response.headers['set-cookie']).toBeDefined();
+        expect(response.headers['set-cookie'][0]).toContain('jwt=; Max-Age=0');
     });
 });
