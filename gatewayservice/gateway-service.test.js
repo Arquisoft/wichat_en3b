@@ -321,4 +321,33 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(500);
         expect(response.body.error).toBe('User service error');
     });
+
+    // Test /userstats/:username endpoint
+    it('should fetch user stats from the user service', async () => {
+        const response = await request(app)
+            .get('/userstats/testuser')
+            .set('Authorization', `Bearer ${token}`);
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ games: 10, score: 500 });
+    });
+
+    // Test userstats error handling
+    it('should handle errors from userstats endpoint', async () => {
+        axios.get.mockImplementationOnce((url) => {
+            if (url.includes('/userstats/')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 404, 
+                        data: { error: 'User not found' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .get('/userstats/nonexistentuser')
+            .set('Authorization', `Bearer ${token}`);
+        expect(response.statusCode).toBe(404);
+        expect(response.body.error).toBe('User not found');
+    });
 });
