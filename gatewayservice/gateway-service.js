@@ -30,10 +30,10 @@ const verifyJWT = (req, res, next) => {
   if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
   const token = authHeader.split(' ')[1];
   jwt.verify(token, "accessTokenSecret", (err, decoded) => {
-      if (err) return res.status(403).json({ error: 'Invalid token' });
-      req.user = decoded.username;
-      next();
-    }
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+    req.user = decoded.username;
+    next();
+  }
   );
 }
 
@@ -65,7 +65,7 @@ app.post('/logout', async (req, res) => {
     // Forward the cookie to the client from the authentication service
     if (authResponse.headers && authResponse.headers["set-cookie"])
       res.setHeader("Set-Cookie", authResponse.headers["set-cookie"]);
-    
+
     res.json(authResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
@@ -132,11 +132,20 @@ app.get('/getRound', async (req, res) => {
   }
 });
 
+app.get('/getModes', async (req, res) => {
+  try {
+    const modesResponse = await axios.get(questionServiceUrl + '/getModes');
+    res.json(modesResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
 app.post('/addgame', async (req, res) => {
-  try{
+  try {
     const gameResponse = await axios.post(userServiceUrl + '/addgame', req.body);
     res.json(gameResponse.data);
-  }catch (error) {
+  } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });

@@ -32,6 +32,8 @@ describe('Gateway Service', () => {
     axios.get.mockImplementation((url) => {
         if (url.endsWith('/getRound')) {
             return Promise.resolve({ data: { round: 'mockedRoundData' } });
+        } else if (url.endsWith('/getModes')) {
+            return Promise.resolve({ data: { modes: ['city', 'athlete'] } });
         }
     });
     
@@ -98,5 +100,12 @@ describe('Gateway Service', () => {
         
         expect(response.statusCode).toBe(200);
         expect(response.body.round).toBe('mockedRoundData');
+    });
+
+    it('should fetch modes from the question service', async () => {
+        const response = await request(app).get('/getModes').set('Authorization', `Bearer ${token}`);
+        
+        expect(response.statusCode).toBe(200);
+        expect(response.body.modes).toEqual(['city', 'athlete']);
     });
 });

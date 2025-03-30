@@ -7,16 +7,16 @@ const app = express();
 app.use(express.json());
 
 //define the port
-const port = 8004; 
+const port = 8004;
 
 //Define the connection to DB
-const mongoDB = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongo-db-wichat_en3b'; 
+const mongoDB = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongo-db-wichat_en3b';
 
 // SPARQL endpoint for WikiData
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
 
 // Global variable to store the selected game modes
-let selectedModes = []; 
+let selectedModes = [];
 
 // Define the SPARQL queries to fetch data from Wikidata
 const QUERIES = {
@@ -105,7 +105,7 @@ async function getImageDescription(imageUrl) {
         const pages = response.data.query.pages;
         const pageId = Object.keys(pages)[0]; // Get the first (and only) page ID
 
-        if (pages[pageId].imageinfo) { 
+        if (pages[pageId].imageinfo) {
             const metadata = pages[pageId].imageinfo[0].extmetadata;
             return metadata.ImageDescription?.value || "No alternative text available"; // Return image description or fallback message
         }
@@ -169,7 +169,7 @@ app.post("/load", async (req, res) => {
         selectedModes = modes; // Store the selected modes in the global variable
         //await clearDatabase(); // Clear the database before loading new data
         //await fetchAndStoreData(modes); // Fetch data and store it in MongoDB
-        
+
         res.status(200).json({ message: "Data successfully stored" });
     } catch (error) {
         console.error("Error in /load endpoint:", error);
@@ -213,9 +213,13 @@ app.get("/getRound", async (req, res) => {
     }
 });
 
+app.get("/modes", (req, res) => {
+    res.json({ modes: Object.keys(QUERIES) }); // Return the available game modes
+});
+
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
-  });
+});
 
 // Exporting the function so that it can be used in other files
 module.exports = server;
