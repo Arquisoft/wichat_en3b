@@ -290,4 +290,35 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(500);
         expect(response.body.error).toBe('Question service error');
     });
+
+    // Test /addgame endpoint 
+    it('should forward addgame request to the user service', async () => {
+        const response = await request(app)
+            .post('/addgame')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'testuser', score: 100 });
+        expect(response.statusCode).toBe(200);
+        expect(response.body.gameId).toBe('mockedGameId');
+    });
+
+    // Test addgame error handling
+    it('should handle errors from addgame endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/addgame')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 500, 
+                        data: { error: 'User service error' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/addgame')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'testuser', score: 100 });
+        expect(response.statusCode).toBe(500);
+        expect(response.body.error).toBe('User service error');
+    });
 });
