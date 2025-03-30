@@ -12,6 +12,12 @@ const user = {
   password: 'testpassword',
 };
 
+// Invalid user
+const invalidUser = {
+  username: 'nonexistentuser',
+  password: 'wrongpassword',
+};
+
 async function addUser(user){
   const hashedPassword = await bcrypt.hash(user.password, 10);
   const newUser = new User({
@@ -20,6 +26,7 @@ async function addUser(user){
   });
 
   await newUser.save();
+  return newUser;
 }
 
 beforeAll(async () => {
@@ -42,4 +49,18 @@ describe('Auth Service', () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('username', 'testuser');
   });
+
+  it('Should return 400 if required fields are missing', async () => {
+    const response = await request(app).post('/login').send({ username: 'testuser' });
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error');
+  });
+
+
+  it('Should return 401 for invalid credentials', async () => {
+    const response = await request(app).post('/login').send(invalidUser);
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty('error', 'Invalid credentials');
+  });
+
 });
