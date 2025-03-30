@@ -35,18 +35,16 @@ const Home = () => {
             }).catch((err) => {
                 console.error("Error fetching user stats:", err);
             });
-    }, [gamemode, stat]);
+    }, [gamemode]);
 
     const getStatLabel = (user) => {
         switch (stat) {
-            case "points":
-                return user.totalScore + " pts";
             case "accuracy":
                 return user.correctRate + " %";
             case "gamesPlayed":
                 return user.totalGamesPlayed + " games";
-            default:
-                return;
+            case "points":
+                return user.totalScore + " pts";
         }
     }
 
