@@ -150,6 +150,26 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.userId).toBe('mockedUserId');
     });
+
+    // Test adduser error handling (línea 91)
+    it('should handle errors from adduser endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/adduser')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 409, 
+                        data: { error: 'User already exists' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/adduser')
+            .send({ username: 'existinguser', password: 'password' });
+        expect(response.statusCode).toBe(409);
+        expect(response.body.error).toBe('User already exists');
+    });
     
     // Test /askllm endpoint
     it('should forward askllm request to the llm service', async () => {
