@@ -14,25 +14,38 @@ jest.mock('axios');
 describe('Gateway Service', () => {
     const token = jwt.sign("mockToken", "accessTokenSecret");
 
-    // Mock responses from external services
-    axios.post.mockImplementation((url, data) => {
-        if (url.endsWith('/login')) {
-            return Promise.resolve({ data: { accessToken: 'mockedToken' } });
-        } else if (url.endsWith('/logout')) {
-            return Promise.resolve({ data: { message: 'Logged out successfully' } });
-        } else if (url.endsWith('/adduser')) {
-            return Promise.resolve({ data: { userId: 'mockedUserId' } });
-        } else if (url.endsWith('/ask')) {
-            return Promise.resolve({ data: { answer: 'llmanswer' } });
-        } else if (url.endsWith('/load')) {
-            return Promise.resolve({ data: { status: 'questions loaded' } });
-        }
-    });
-    
-    axios.get.mockImplementation((url) => {
-        if (url.endsWith('/getRound')) {
-            return Promise.resolve({ data: { round: 'mockedRoundData' } });
-        }
+    beforeEach(() => {
+        axios.post.mockImplementation((url, data) => {
+            if (url.endsWith('/login')) {
+                return Promise.resolve({ 
+                    data: { accessToken: 'mockedToken' },
+                    headers: { "set-cookie": ["refreshToken=mockRefreshToken"] }
+                });
+            } else if (url.endsWith('/logout')) {
+                return Promise.resolve({ 
+                    data: { message: 'Logged out successfully' },
+                    headers: { "set-cookie": ["jwt=; Max-Age=0"] }
+                });
+            } else if (url.endsWith('/adduser')) {
+                return Promise.resolve({ data: { userId: 'mockedUserId' } });
+            } else if (url.endsWith('/ask')) {
+                return Promise.resolve({ data: { answer: 'llmanswer' } });
+            } else if (url.endsWith('/load')) {
+                return Promise.resolve({ data: { status: 'questions loaded' } });
+            } else if (url.endsWith('/addgame')) {
+                return Promise.resolve({ data: { gameId: 'mockedGameId' } });
+            }
+        });
+       
+        axios.get.mockImplementation((url) => {
+            if (url.endsWith('/getRound')) {
+                return Promise.resolve({ data: { round: 'mockedRoundData' } });
+            } else if (url.endsWith('/refresh')) {
+                return Promise.resolve({ data: { accessToken: 'newMockedToken' } });
+            } else if (url.includes('/userstats/')) {
+                return Promise.resolve({ data: { games: 10, score: 500 } });
+            }
+        });
     });
     
     // Test /health endpoint
