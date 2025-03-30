@@ -13,6 +13,7 @@ jest.mock('axios');
 
 describe('Gateway Service', () => {
     const token = jwt.sign("mockToken", "accessTokenSecret");
+    const invalidToken = 'invalidtoken'; 
 
     beforeEach(() => {
         axios.post.mockImplementation((url, data) => {
@@ -151,7 +152,7 @@ describe('Gateway Service', () => {
         expect(response.body.userId).toBe('mockedUserId');
     });
 
-    // Test adduser error handling (línea 91)
+    // Test adduser error handling
     it('should handle errors from adduser endpoint', async () => {
         axios.post.mockImplementationOnce((url) => {
             if (url.endsWith('/adduser')) {
@@ -170,7 +171,25 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(409);
         expect(response.body.error).toBe('User already exists');
     });
-    
+
+    // Test JWT verification failure
+    it('should return 401 when no authorization header is provided', async () => {
+        const response = await request(app).get('/getRound');
+        expect(response.statusCode).toBe(401);
+        expect(response.body.error).toBe('Unauthorized');
+    });
+
+    // Test JWT invalid token
+    it('should return 403 when an invalid token is provided', async () => {
+        const response = await request(app)
+            .get('/getRound')
+            .set('Authorization', `Bearer ${invalidToken}`);
+        expect(response.statusCode).toBe(403);
+        expect(response.body.error).toBe('Invalid token');
+    });
+
+
+
     // Test /askllm endpoint
     it('should forward askllm request to the llm service', async () => {
         const response = await request(app)
