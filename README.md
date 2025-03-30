@@ -1,10 +1,35 @@
-# Team Members
-* Víctor Llana Pérez - uo294629@uniovi.es
-* Lara Haya Santiago - uo289684@uniovi.es
-* Alba González Arango - uo289041@uniovi.es
-* Marco Lorenzo Martínez - uo294324@uniovi.es
-* Javier Menéndez Osendi - uo294866@uniovi.es
-* Daniel Rodríguez Fernández - uo293655@uniovi.es 
+<img src="logo.png" alt="Wichat Logo" width="500"/>
+
+# Meet our team 👥
+| Name                     | Email                        |
+|--------------------------|------------------------------|
+| Víctor Llana Pérez       | uo294629@uniovi.es           |
+| Lara Haya Santiago       | uo289684@uniovi.es           |
+| Alba González Arango     | uo289041@uniovi.es           |
+| Marco Lorenzo Martínez   | uo294324@uniovi.es           |
+| Javier Menéndez Osendi   | uo294866@uniovi.es           |
+| Daniel Rodríguez Fernández| uo293655@uniovi.es          |
+
+[Link to our game 👾](https://arquisoft.github.io/wichat_en3b/)
+
+[Read the Documentation 📖](https://arquisoft.github.io/wichat_en3b/)
+
+# About WICHAT 💡
+Wichat_en3b is a fun and interactive web-based quiz game we created for the Software Architecture course (2024/2025). It’s more than just your average chat app — we’ve packed it with several cool features that make it stand out. At its core, Wichat is built using React for the frontend and Node.js (Express) for the backend, while MongoDB handles the database. But what truly makes it special is the integration with an AI-powered LLM from Empathy, which brings smart assistance to your game experience.
+
+In Wichat Quiz, you can test your knowledge in a variety of engaging and dynamic ways. The game offers multiple quiz modes, so you can choose from categories like Singers 🎤, Flags 🌍, Cities 🏙️, or mix and match two categories for an added challenge. If you can’t pick just one, don’t worry — you can activate Wild Mode 🔥 to throw in all categories for a crazy, unpredictable experience!
+
+There are two exciting ways to play: Round Mode 🏁 or Against the Clock ⏳. In Round Mode, you’ll face a set number of questions, while in Against the Clock, the pressure’s on to answer as many questions as you can before the time runs out. The game keeps things fresh and challenging, with a wide range of questions drawn from Wikidata 🌐, ensuring you always have new content to tackle.
+
+Need some help? No problem! Our Hint System 💡 has got you covered:
+- 50/50: We’ll eliminate two incorrect answers to make it easier.
+- Ask the Audience: Get the crowd’s opinion on the right answer.
+- LLM Chat: Feeling stuck? Chat with our AI assistant for a bit of guidance!
+
+But that’s not all. The game rewards you for quick answers, so the faster you go, the higher your score! Keep answering correctly, collect rewards, and see how high you can climb.
+
+Create an account or log in to challenge your friends and see who’s the ultimate trivia champion. Whether you're here to test your own knowledge or compete with others, Wichat Quiz is the perfect way to have fun and learn something new along the way!
+
 
 # wichat_en3b
 
@@ -15,17 +40,19 @@
 <p float="left">
 <img src="https://blog.wildix.com/wp-content/uploads/2020/06/react-logo.jpg" height="100">
 <img src="https://miro.medium.com/max/365/1*Jr3NFSKTfQWRUyjblBSKeg.png" height="100">
+<img src="https://empathy.co/assets/media/logo/logo-animated-padding.gif" height="100">
+<img src="https://2024.allthingsopen.org/wp-content/uploads/2024/05/Gold_MongoDB_FG.jpg" height="100">
 </p>
 
 This is a base project for the Software Architecture course in 2024/2025. It is a basic application composed of several components.
 
-- **User service**. Express service that handles the insertion of new users in the system.
+- **User service**. This is an Express-based service responsible for managing user data. It handles the insertion of new users into the system, ensuring proper registration and initial setup. The user service communicates with a MongoDB database to store user information, and it integrates with other services to facilitate user management within the app. It also handles tasks like updating user profiles and validating user information.
 - **Auth service**. Express service that handles the authentication of users.
-- **LLM service**. Express service that handles the communication with the LLM.
-- **Gateway service**. Express service that is exposed to the public and serves as a proxy to the two previous ones.
-- **Webapp**. React web application that uses the gateway service to allow basic login and new user features.
+- **LLM service**. The LLM (Large Language Model) service is another key piece of the project. This Express-based service is responsible for communicating with the integrated LLM (powered by Empathy) to provide AI-driven responses and assistance to users. The LLM service processes requests from the web application, querying the language model to generate responses based on user input. This service also manages the interaction with the model's API, ensuring smooth communication between the app and the AI.
+- **Gateway service**. The gateway service acts as a reverse proxy and a centralized point for routing requests from the public (users). Built with Express, it exposes the public-facing endpoints and directs incoming requests to the appropriate backend services (user, auth, and LLM services). It plays a crucial role in managing traffic and ensuring that requests are securely routed to the right components. By acting as an intermediary, it decouples the front-end from the backend services, providing a more secure and flexible architecture.Express service that is exposed to the public and serves as a proxy to the two previous ones.
+- **Webapp**. The web application is the front-end component of the system, built with React. It provides the user interface, allowing users to interact with the system. Through the webapp, users can log in, register as new users, and engage with the AI-powered quiz game. The web application communicates with the backend services via the gateway service, utilizing the exposed endpoints to handle user authentication, registration, and interactions with the LLM. The webapp also provides an interactive, dynamic interface for playing the quiz game, switching between categories, and displaying results.
 
-Both the user and auth service share a Mongo database that is accessed with mongoose.
+All of these services are integrated with a shared MongoDB database, where the user and authentication services store and retrieve user-related data. The database is accessed using Mongoose, a powerful ODM (Object-Document Mapper) for MongoDB, which simplifies data operations and ensures the seamless flow of information between services.
 
 ## Quick start guide
 
