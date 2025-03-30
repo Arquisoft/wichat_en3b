@@ -127,6 +127,33 @@ it("should handle non-standard LLM API errors", async () => {
   expect(response.body).toHaveProperty("error", "Network Error");
 });
 
+// Test validateRequiredFields function
+it("should validate all required fields correctly", async () => {
+  const response = await request(server)
+      .post("/ask")
+      .send({});
+
+  expect(response.status).toBe(500);
+  expect(response.body).toHaveProperty("error", "Missing required field: question");
+});
+
+// Test malformed API response
+it("should handle malformed LLM API responses", async () => {
+  axios.post.mockResolvedValue({
+      data: { }
+  });
+
+  const response = await request(server)
+      .post("/ask")
+      .send({ 
+          question: "What is the capital of France?", 
+          prompt: "You are a helpful assistant" 
+      });
+
+  expect(response.status).toBe(500); 
+  expect(response.body).toHaveProperty("error");
+});
+
 });
 
   
