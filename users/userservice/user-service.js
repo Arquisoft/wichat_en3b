@@ -87,7 +87,7 @@ async function calculateUserStatistics(newGame) {
     if (!userStats) {
       const newUserStats = new UserStatistics({
         username: newGame.username,
-        mode: newGame.gameMode,
+        mode: newGame.gameMode[0], // temporary fix for mode (this depends on how we save the stats for each question during game)
         totalScore: newGame.score,
         correctRate: newGame.correctRate,
         totalGamesPlayed: 1,
@@ -100,7 +100,7 @@ async function calculateUserStatistics(newGame) {
     let oldTotalScore = userStats.totalScore;
     let oldCorrectRate = userStats.correctRate;
 
-    await UserStatistics.findOneAndUpdate({ username: newGame.username }, {
+    await UserStatistics.findOneAndUpdate({ username: newGame.username, mode: newGame.gameMode }, {
       $inc: { totalGamesPlayed: 1 },
       $set: {
         totalScore: oldTotalScore + newGame.score,
@@ -120,11 +120,7 @@ app.get('/userstats/user/:username', async (req, res) => {
   try {
     const username = req.params.username;
 
-    const userStats = await UserStatistics.findOne({ username: username });
-
-    if (!userStats) {
-      return res.status(400).json({ error: 'User statistics not found' });
-    }
+    const userStats = await UserStatistics.find({ username: username });
 
     res.json({message: `Fetched statistics for user: ${username}`, stats: userStats});
   } catch (error) {
@@ -153,10 +149,6 @@ app.get('/userstats/mode/:mode', async (req, res) => {
     } else {
       // Find user statistics for a specific mode
       userStats = await UserStatistics.find({ mode: mode });
-    }
-
-    if (!userStats) {
-      return res.status(400).json({ error: 'User statistics not found' });
     }
 
     res.json({message: `Fetched statistics for mode: ${mode}`, stats: userStats});

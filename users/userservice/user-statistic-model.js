@@ -4,8 +4,6 @@ const userStatisticSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true,
-    index: true,
   },
   mode: {
     type: String,
@@ -24,6 +22,8 @@ const userStatisticSchema = new mongoose.Schema({
     default: 0,
   },
 });
+
+userStatisticSchema.index({ username: 1, mode: 1 }, { unique: true });
 
 const UserStatistics = mongoose.model('UserStatistic', userStatisticSchema);
 

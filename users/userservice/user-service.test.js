@@ -153,24 +153,58 @@ describe('User Service', () => {
       const newUser = { username: 'statsuser', password: 'secret' };
       await request(app).post('/adduser').send(newUser);
 
-      const newGameData = {
+      // Add some games for the user
+      await request(app).post('/addgame').send({
         username: 'statsuser',
         score: 70,
         correctRate: 0.9,
         gameMode: 'survival',
-      };
-      await request(app).post('/addgame').send(newGameData);
+      });
+      await request(app).post('/addgame').send({
+        username: 'statsuser',
+        score: 80,
+        correctRate: 0.85,
+        gameMode: 'survival',
+      });
 
       const response = await request(app).get('/userstats/user/statsuser');
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('username', 'statsuser');
-      expect(response.body.totalGamesPlayed).toBeGreaterThanOrEqual(1);
+      expect(response.body.stats[0].username).toBe('statsuser');
+      expect(response.body.stats[0].totalScore).toBe(150);
+      expect(response.body.stats[0].correctRate).toBe(0.875);
+      expect(response.body.stats[0].totalGamesPlayed).toBe(2);
     });
 
-    it('should return 404 if user statistics not found on GET /userstats/user/:username', async () => {
+    it('should return empty array if user statistics not found on GET /userstats/user/:username', async () => {
       const response = await request(app).get('/userstats/user/nonexistentuser');
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('error', 'User statistics not found');
+      expect(response.status).toBe(200);
+      expect(response.body.stats).toEqual([]);
+    });
+
+    it('should return all statistics for a specific game mode on GET /userstats/mode/:gameMode', async () => {
+      await request(app).post('/addgame').send({
+        username: 'statsuser',
+        score: 70,
+        correctRate: 0.9,
+        gameMode: 'flag',
+      });
+      await request(app).post('/addgame').send({
+        username: 'testuser',
+        score: 80,
+        correctRate: 0.85,
+        gameMode: 'flag',
+      });
+
+      const response = await request(app).get('/userstats/mode/flag');
+      expect(response.status).toBe(200);
+      expect(response.body.stats[0].username).toBe('statsuser');
+      expect(response.body.stats[1].username).toBe('testuser');
+      expect(response.body.stats[0].totalScore).toBe(70);
+      expect(response.body.stats[1].totalScore).toBe(80);
+      expect(response.body.stats[0].correctRate).toBe(0.9);
+      expect(response.body.stats[1].correctRate).toBe(0.85);
+      expect(response.body.stats[0].totalGamesPlayed).toBe(1);
+      expect(response.body.stats[1].totalGamesPlayed).toBe(1);
     });
   });
 });
