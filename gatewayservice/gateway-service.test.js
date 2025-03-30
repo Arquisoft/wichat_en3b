@@ -233,6 +233,36 @@ describe('Gateway Service', () => {
         expect(response.body.status).toBe('questions loaded');
     });
     
+    // Test loadQuestion error handling (línea 121-122)
+    it('should handle errors from loadQuestion endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/load')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 500
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/loadQuestion')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ modes: ['city', 'athlete'] });
+        expect(response.statusCode).toBe(500);
+        expect(response.body.error).toBe('Error fetching question data');
+    });
+
+    // Test loadQuestion with invalid modes (línea 114)
+    it('should return 400 when modes parameter is invalid', async () => {
+        const response = await request(app)
+            .post('/loadQuestion')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ modes: 'not-an-array' });
+        expect(response.statusCode).toBe(400);
+        expect(response.body.error).toBe('Invalid modes parameter');
+    });
+
     // Test /getRound endpoint
     it('should fetch round data from the question service', async () => {
         const response = await request(app).get('/getRound').set('Authorization', `Bearer ${token}`);
