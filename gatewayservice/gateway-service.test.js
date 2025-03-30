@@ -200,6 +200,27 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.answer).toBe('llmanswer');
     });
+
+    // Test askllm error handling
+    it('should handle errors from askllm endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/ask')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 500, 
+                        data: { error: 'LLM service error' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/askllm')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ question: 'question', apiKey: 'apiKey', model: 'gemini' });
+        expect(response.statusCode).toBe(500);
+        expect(response.body.error).toBe('LLM service error');
+    });
     
     // Test /loadQuestion endpoint
     it('should forward loadQuestion request to the question service', async () => {
