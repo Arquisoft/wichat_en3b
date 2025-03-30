@@ -14,7 +14,7 @@ const llmConfigs = (prompt) => {
   const model = {
     url: () => 'https://empathyai.prod.empathy.co/v1/chat/completions',
     transformRequest: (question) => ({
-      model: "mistralai/Mistral-7B-Instruct-v0.3",
+      model: "qwen/Qwen2.5-Coder-7B-Instruct",
       messages: [
         { role: "system", content: prompt },
         { role: "user", content: question }
