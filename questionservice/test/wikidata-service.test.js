@@ -70,7 +70,7 @@ describe("Express Service API Tests", () => {
     });
 
     it("should return a list of available modes", async () => {
-        const response = await request(server).get("/modes");
+        const response = await request(server).get("/getModes");
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("modes");
         expect(Array.isArray(response.body.modes)).toBe(true);
