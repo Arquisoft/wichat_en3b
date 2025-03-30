@@ -66,6 +66,16 @@ describe('LLM Service', () => {
         });
     });
 
+    // Test missing required fields in request
+    it("should return 500 when required fields are missing", async () => {
+      const response = await request(server)
+          .post("/ask")
+          .send({ question: "What is the capital of France?" });
+
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty("error", "Missing required field: prompt");
+  });
+
 });
 
   
