@@ -350,4 +350,22 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(404);
         expect(response.body.error).toBe('User not found');
     });
+
+    // Test cookie handling for login 
+    it('should forward cookies from auth service login response', async () => {
+        const response = await request(app)
+            .post('/login')
+            .send({ username: 'testuser', password: 'testpassword' });
+        
+        expect(response.headers['set-cookie']).toBeDefined();
+        expect(response.headers['set-cookie'][0]).toContain('refreshToken=mockRefreshToken');
+    });
+
+    // Test cookie handling for logout 
+    it('should forward cookies from auth service logout response', async () => {
+        const response = await request(app).post('/logout');
+        
+        expect(response.headers['set-cookie']).toBeDefined();
+        expect(response.headers['set-cookie'][0]).toContain('jwt=; Max-Age=0');
+    });
 });
