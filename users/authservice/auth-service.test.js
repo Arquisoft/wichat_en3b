@@ -1,6 +1,7 @@
 const request = require('supertest');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('./auth-model');
 
 let mongoServer;
@@ -89,4 +90,54 @@ describe('Auth Service', () => {
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty('error', 'Unauthorized');
   });
+
+  it('Should return 403 when refreshing with invalid token', async () => {
+    
+    const invalidToken = jwt.sign({ username: 'nonexistentuser' }, 'refreshTokenSecret', { expiresIn: '7d' });
+    
+    const response = await request(app)
+      .get('/refresh')
+      .set('Cookie', [`jwt=${invalidToken}`]);
+    
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty('error', 'Forbidden');
+  });
+
+  
+  it('Should successfully refresh token for authenticated user', async () => {
+    
+    const loginResponse = await request(app).post('/login').send(user);
+    expect(loginResponse.status).toBe(200);
+    
+    const cookies = loginResponse.headers['set-cookie'];
+    expect(cookies).toBeDefined();
+    
+    const refreshResponse = await request(app)
+      .get('/refresh')
+      .set('Cookie', cookies);
+    
+    expect(refreshResponse.status).toBe(200);
+    expect(refreshResponse.body).toHaveProperty('username', user.username);
+    expect(refreshResponse.body).toHaveProperty('accessToken');
+  });
+
+  
+  it('Should return 403 when refreshing with tampered token', async () => {
+    
+    const loginResponse = await request(app).post('/login').send(user);
+    
+    const tamperedToken = jwt.sign(
+      { userId: 'fakeid', username: 'differentuser' }, 
+      'refreshTokenSecret', 
+      { expiresIn: '7d' }
+    );
+    
+    const refreshResponse = await request(app)
+      .get('/refresh')
+      .set('Cookie', [`jwt=${tamperedToken}`]);
+    
+    expect(refreshResponse.status).toBe(403);
+    expect(refreshResponse.body).toHaveProperty('error', 'Forbidden');
+  });
+
 });
