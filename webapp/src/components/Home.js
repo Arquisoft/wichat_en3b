@@ -1,20 +1,41 @@
-import { useState } from "react";
-import { Avatar, Box, Button, CardHeader, Container, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
 import { BarChart, ChevronRight, FilterAlt, People } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
+import useAxios from "../hooks/useAxios";
 
 const Home = () => {
+    const axios = useAxios();
     const { auth } = useAuth();
     const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState(0);
-    const [gamemode, setGamemode] = useState("");
+    const [gamemode, setGamemode] = useState("all");
+    const [gamemodes, setGamemodes] = useState(["all"]);
     const [stat, setStat] = useState("points");
     const [ranking, setRanking] = useState([]);
 
-    const gamemodes = ["cities", "flags", "athletes", "singers"];
     const stats = ["points", "accuracy", "avgTime", "gamesPlayed"];
+
+    useEffect(() => {
+        axios.get("/getModes")
+            .then((res) => {
+                setGamemodes(["all", ...res.data.modes]);
+            }).catch((err) => {
+                console.error("Error fetching gamemodes:", err);
+            });
+    }, []);
+
+    useEffect(() => {
+        axios.get("/userstats")
+            .then((res) => {
+                console.log("User stats:", res.data.stats);
+                setRanking(res.data.stats);
+            }).catch((err) => {
+                console.error("Error fetching user stats:", err);
+            });
+    }, [gamemode, stat]);
 
     return (
         <Container sx={{
@@ -87,8 +108,8 @@ const Home = () => {
                                 startAdornment={<FilterAlt fontSize="small" sx={{ mr: 1, opacity: 0.7 }} />}
                             >
                                 {gamemodes.map((mode) => (
-                                    <MenuItem key={mode.id} value={mode.id}>
-                                        {mode.name}
+                                    <MenuItem key={mode} value={mode}>
+                                        {mode}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -97,7 +118,7 @@ const Home = () => {
                     <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "rgba(255, 255, 255, 0.8)", borderRadius: 2, maxHeight: "40vh", overflowY: "auto" }}>
                         {ranking.map((user, index) => (
                             <>
-                                <Box key={user.username} sx={{
+                                <Box key={user._id} sx={{
                                     p: 2,
                                     borderRadius: 2,
                                     bgcolor: auth.username === user.username ? "rgba(25, 118, 210, 0.1)" : "transparent",
@@ -111,14 +132,17 @@ const Home = () => {
                                         <Typography variant="body1" fontWeight="bold">
                                             {index + 1}
                                         </Typography>
-                                        <Avatar src={user.avatar} alt={user.name} sx={{ width: 40, height: 40 }} />
+                                        <Avatar src={user.avatar} alt={user.username} sx={{ width: 40, height: 40 }} />
                                         <Typography variant="body1" fontWeight="medium">
-                                            {user.name}
+                                            {user.username}
                                         </Typography>
                                     </Box>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Some stat
-                                    </Typography>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                        {auth.username === user.username && <Chip label="You" color="primary" size="small" variant="outlined" />}
+                                        <Typography variant="body2" color="text.secondary">
+                                            Some stat
+                                        </Typography>
+                                    </Box>
                                 </Box>
                                 {index < ranking.length - 1 && <Divider />}
                             </>

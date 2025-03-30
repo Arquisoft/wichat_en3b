@@ -213,7 +213,7 @@ app.get("/getRound", async (req, res) => {
     }
 });
 
-app.get("/modes", (req, res) => {
+app.get("/getModes", (req, res) => {
     res.json({ modes: Object.keys(QUERIES) }); // Return the available game modes
 });
 

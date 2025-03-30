@@ -34,6 +34,8 @@ describe('Gateway Service', () => {
             return Promise.resolve({ data: { round: 'mockedRoundData' } });
         } else if (url.endsWith('/getModes')) {
             return Promise.resolve({ data: { modes: ['city', 'athlete'] } });
+        } else if (url.endsWith('/userstats')) {
+            return Promise.resolve({ data: { message: 'Fetched all user statistics' } });
         }
     });
     
@@ -107,5 +109,12 @@ describe('Gateway Service', () => {
         
         expect(response.statusCode).toBe(200);
         expect(response.body.modes).toEqual(['city', 'athlete']);
+    });
+
+    it('should fetch all user statistics', async () => {
+        const response = await request(app).get('/userstats').set('Authorization', `Bearer ${token}`);
+        
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ message: 'Fetched all user statistics' });
     });
 });
