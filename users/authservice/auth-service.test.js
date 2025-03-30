@@ -63,4 +63,14 @@ describe('Auth Service', () => {
     expect(response.body).toHaveProperty('error', 'Invalid credentials');
   });
 
+  
+  it('Should return 400 for invalid input format', async () => {
+    const response = await request(app).post('/login').send({
+      username: 'ab', 
+      password: 'abc'
+    });
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error');
+  });
+
 });
