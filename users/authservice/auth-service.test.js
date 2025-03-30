@@ -73,4 +73,15 @@ describe('Auth Service', () => {
     expect(response.body).toHaveProperty('error');
   });
 
+  it('Should successfully logout a user', async () => {
+    const response = await request(app).post('/logout');
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('message', 'Logged out successfully');
+    
+    
+    expect(response.headers['set-cookie']).toBeDefined();
+    const cookieHeader = response.headers['set-cookie'][0];
+    expect(cookieHeader).toContain('jwt=;');
+  });
+
 });
