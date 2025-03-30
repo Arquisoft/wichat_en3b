@@ -65,12 +65,50 @@ describe('Gateway Service', () => {
         expect(response.body.accessToken).toBe('mockedToken');
     });
 
+    // Test login error handling (línea 56)
+    it('should handle errors from login endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/login')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 401, 
+                        data: { error: 'Invalid credentials' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/login')
+            .send({ username: 'baduser', password: 'badpassword' });
+        expect(response.statusCode).toBe(401);
+        expect(response.body.error).toBe('Invalid credentials');
+    });
+
     // Test /logout endpoint
     it('should forward logout request to auth service', async () => {
         const response = await request(app).post('/logout')
 
         expect(response.statusCode).toBe(200);
         expect(response.body.message).toBe('Logged out successfully');
+    });
+
+    // Test logout error handling (línea 67)
+    it('should handle errors from logout endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/logout')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 500, 
+                        data: { error: 'Server error' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app).post('/logout');
+        expect(response.statusCode).toBe(500);
+        expect(response.body.error).toBe('Server error');
     });
     
     // Test /adduser endpoint
