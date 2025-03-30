@@ -150,19 +150,19 @@ app.post('/addgame', async (req, res) => {
   }
 });
 
-app.get('/userstats', async (req, res) => {
+app.get('/userstats/user/:username', async (req, res) => {
   try {
-    const usersResponse = await axios.get(userServiceUrl + '/userstats');
-    res.json(usersResponse.data);
+    const statsResponse = await axios.get(userServiceUrl + '/userstats/user/' + req.params.username);
+    res.json(statsResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
 
-app.get('/userstats/:username', async (req, res) => {
+app.get('/userstats/mode/:mode', async (req, res) => {
   try {
-    const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username);
-    res.json(statsResponse.data);
+    const usersResponse = await axios.get(userServiceUrl + '/userstats/mode/' + req.params.mode);
+    res.json(usersResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }

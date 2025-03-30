@@ -16,7 +16,7 @@ const Home = () => {
     const [stat, setStat] = useState("points");
     const [ranking, setRanking] = useState([]);
 
-    const stats = ["points", "accuracy", "avgTime", "gamesPlayed"];
+    const stats = ["points", "accuracy", "gamesPlayed"];
 
     useEffect(() => {
         axios.get("/getModes")
@@ -28,7 +28,7 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-        axios.get("/userstats")
+        axios.get(`/userstats/mode/${gamemode}`)
             .then((res) => {
                 console.log("User stats:", res.data.stats);
                 setRanking(res.data.stats);
@@ -36,6 +36,19 @@ const Home = () => {
                 console.error("Error fetching user stats:", err);
             });
     }, [gamemode, stat]);
+
+    const getStatLabel = (user) => {
+        switch (stat) {
+            case "points":
+                return user.totalScore + " pts";
+            case "accuracy":
+                return user.correctRate + " %";
+            case "gamesPlayed":
+                return user.totalGamesPlayed + " games";
+            default:
+                return;
+        }
+    }
 
     return (
         <Container sx={{
@@ -140,7 +153,7 @@ const Home = () => {
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                                         {auth.username === user.username && <Chip label="You" color="primary" size="small" variant="outlined" />}
                                         <Typography variant="body2" color="text.secondary">
-                                            Some stat
+                                            {getStatLabel(user)}
                                         </Typography>
                                     </Box>
                                 </Box>

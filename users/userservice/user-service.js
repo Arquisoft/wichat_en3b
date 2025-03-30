@@ -40,8 +40,6 @@ app.post('/adduser', async (req, res) => {
     });
 
     await newUser.save();
-    //Add statistics for the new user
-    await (new UserStatistics({ username: newUser.username })).save();
     res.json(newUser);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -83,55 +81,85 @@ app.post('/addgame', async (req, res) => {
 //Function only called when a new game is added
 async function calculateUserStatistics(newGame) {
   try {
+    const userStats = await UserStatistics.findOne({ username: newGame.username, mode: newGame.gameMode });
 
-    const userStats = await UserStatistics.findOne({ username: newGame.username });
+    // Create a new user statistics entry if it doesn't exist
+    if (!userStats) {
+      const newUserStats = new UserStatistics({
+        username: newGame.username,
+        mode: newGame.gameMode,
+        totalScore: newGame.score,
+        correctRate: newGame.correctRate,
+        totalGamesPlayed: 1,
+      });
+      await newUserStats.save();
+      return;
+    }
 
     let oldTotalGamesPlayed = userStats.totalGamesPlayed;
-    let oldAvgScore = userStats.avgScore;
-    let oldHighScore = userStats.highScore;
+    let oldTotalScore = userStats.totalScore;
     let oldCorrectRate = userStats.correctRate;
 
     await UserStatistics.findOneAndUpdate({ username: newGame.username }, {
       $inc: { totalGamesPlayed: 1 },
       $set: {
-        avgScore: calculateNewAvg(newGame.score, oldTotalGamesPlayed, oldAvgScore),
-        highscore: oldHighScore < newGame.score ? newGame.score : oldHighScore,
+        totalScore: oldTotalScore + newGame.score,
         correctRate: calculateNewAvg(newGame.correctRate, oldTotalGamesPlayed, oldCorrectRate)
       }
     });
   } catch (error) {
     console.log(error);
   }
-
 }
 
 function calculateNewAvg(newRate, totalGamesPlayed, oldAvg) {
-
-  let newAvg = (totalGamesPlayed * oldAvg + newRate) / (totalGamesPlayed + 1);
-
-  return newAvg;
+  return (totalGamesPlayed * oldAvg + newRate) / (totalGamesPlayed + 1);
 }
 
-app.get('/userstats', async (req, res) => {
+app.get('/userstats/user/:username', async (req, res) => {
   try {
-    const stats = await UserStatistics.find({});
-    res.json({message: "Fetched all user statistics", stats});
+    const username = req.params.username;
+
+    const userStats = await UserStatistics.findOne({ username: username });
+
+    if (!userStats) {
+      return res.status(400).json({ error: 'User statistics not found' });
+    }
+
+    res.json({message: `Fetched statistics for user: ${username}`, stats: userStats});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.get('/userstats/:username', async (req, res) => {
+app.get('/userstats/mode/:mode', async (req, res) => {
   try {
-    const userId = req.params.username;
+    const mode = req.params.mode;
 
-    const userStats = await UserStatistics.findOne({ username: userId });
-
-    if (!userStats) {
-      return res.status(404).json({ error: 'User statistics not found' });
+    let userStats;
+    if (mode === "all") {
+      // Aggregate user statistics for all modes
+      userStats = await UserStatistics.aggregate([
+        {
+          $group: {
+            _id: "$username",
+            username: { $first: "$username" },
+            totalScore: { $sum: "$totalScore" },
+            correctRate: { $avg: "$correctRate" },
+            totalGamesPlayed: { $sum: "$totalGamesPlayed" },
+          }
+        },
+      ]);
+    } else {
+      // Find user statistics for a specific mode
+      userStats = await UserStatistics.find({ mode: mode });
     }
 
-    res.json(userStats);
+    if (!userStats) {
+      return res.status(400).json({ error: 'User statistics not found' });
+    }
+
+    res.json({message: `Fetched statistics for mode: ${mode}`, stats: userStats});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
