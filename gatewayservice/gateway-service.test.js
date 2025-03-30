@@ -65,7 +65,7 @@ describe('Gateway Service', () => {
         expect(response.body.accessToken).toBe('mockedToken');
     });
 
-    // Test login error handling (línea 56)
+    // Test login error handling
     it('should handle errors from login endpoint', async () => {
         axios.post.mockImplementationOnce((url) => {
             if (url.endsWith('/login')) {
@@ -93,7 +93,7 @@ describe('Gateway Service', () => {
         expect(response.body.message).toBe('Logged out successfully');
     });
 
-    // Test logout error handling (línea 67)
+    // Test logout error handling
     it('should handle errors from logout endpoint', async () => {
         axios.post.mockImplementationOnce((url) => {
             if (url.endsWith('/logout')) {
@@ -110,6 +110,36 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(500);
         expect(response.body.error).toBe('Server error');
     });
+
+
+    // Test /refresh endpoint 
+    it('should forward refresh token request to auth service', async () => {
+        const response = await request(app)
+            .get('/refresh')
+            .set('Cookie', ['jwt=refreshToken123']);
+        expect(response.statusCode).toBe(200);
+        expect(response.body.accessToken).toBe('newMockedToken');
+    });
+
+    // Test refresh error handling
+    it('should handle errors from refresh endpoint', async () => {
+        axios.get.mockImplementationOnce((url) => {
+            if (url.endsWith('/refresh')) {
+                return Promise.reject({ 
+                    response: { 
+                        status: 401, 
+                        data: { error: 'Invalid refresh token' } 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app).get('/refresh');
+        expect(response.statusCode).toBe(401);
+        expect(response.body.error).toBe('Invalid refresh token');
+    });
+
+
     
     // Test /adduser endpoint
     it('should forward add user request to user service', async () => {
