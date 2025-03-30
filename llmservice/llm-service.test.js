@@ -91,7 +91,41 @@ describe('LLM Service', () => {
     expect(response.body).toHaveProperty("error", "API key is missing.");
 });
 
+// Test error handling when LLM API returns an error
+it("should handle LLM API errors properly", async () => {
+  axios.post.mockRejectedValue({
+      response: {
+          status: 403,
+          data: { error: "Unauthorized" }
+      },
+      message: "Request failed with status code 403"
+  });
 
+  const response = await request(server)
+      .post("/ask")
+      .send({ 
+          question: "What is the capital of France?", 
+          prompt: "You are a helpful assistant" 
+      });
+
+  expect(response.status).toBe(403);
+  expect(response.body).toHaveProperty("error", "Request failed with status code 403");
+});
+
+// Test error handling when LLM API returns a non-standard error
+it("should handle non-standard LLM API errors", async () => {
+  axios.post.mockRejectedValue(new Error("Network Error"));
+
+  const response = await request(server)
+      .post("/ask")
+      .send({ 
+          question: "What is the capital of France?", 
+          prompt: "You are a helpful assistant" 
+      });
+
+  expect(response.status).toBe(500);
+  expect(response.body).toHaveProperty("error", "Network Error");
+});
 
 });
 
