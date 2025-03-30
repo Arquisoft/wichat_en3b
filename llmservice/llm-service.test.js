@@ -76,6 +76,23 @@ describe('LLM Service', () => {
       expect(response.body).toHaveProperty("error", "Missing required field: prompt");
   });
 
+  // Test missing API key
+  it("should return 500 when API key is missing", async () => {
+    delete process.env.LLM_API_KEY;
+
+    const response = await request(server)
+        .post("/ask")
+        .send({ 
+            question: "What is the capital of France?", 
+            prompt: "You are a helpful assistant" 
+        });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty("error", "API key is missing.");
+});
+
+
+
 });
 
   
