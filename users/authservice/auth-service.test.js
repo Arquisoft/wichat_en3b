@@ -84,4 +84,9 @@ describe('Auth Service', () => {
     expect(cookieHeader).toContain('jwt=;');
   });
 
+  it('Should return 401 when refreshing without token', async () => {
+    const response = await request(app).get('/refresh');
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty('error', 'Unauthorized');
+  });
 });
