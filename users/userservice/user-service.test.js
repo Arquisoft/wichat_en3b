@@ -149,23 +149,21 @@ describe('User Service', () => {
   });
 
   describe('User Statistics endpoint', () => {
-    it('should return user statistics on GET /userstats/user/:username', async () => {
-      const newUser = { username: 'statsuser', password: 'secret' };
-      await request(app).post('/adduser').send(newUser);
-
-      // Add some games for the user
+    async function addGameData(username, score, correctRate, gameMode) {
       await request(app).post('/addgame').send({
         username: 'statsuser',
         score: 70,
         correctRate: 0.9,
         gameMode: 'survival',
       });
-      await request(app).post('/addgame').send({
-        username: 'statsuser',
-        score: 80,
-        correctRate: 0.85,
-        gameMode: 'survival',
-      });
+    }
+
+    it('should return user statistics on GET /userstats/user/:username', async () => {
+      const newUser = { username: 'statsuser', password: 'secret' };
+      await request(app).post('/adduser').send(newUser);
+
+      addGameData('statsuser', 70, 0.9, 'survival');
+      addGameData('statsuser', 80, 0.85, 'survival');
 
       const response = await request(app).get('/userstats/user/statsuser');
       expect(response.status).toBe(200);
@@ -182,23 +180,13 @@ describe('User Service', () => {
     });
 
     it('should return all statistics for a specific game mode on GET /userstats/mode/:gameMode', async () => {
-      await request(app).post('/addgame').send({
-        username: 'statsuser',
-        score: 70,
-        correctRate: 0.9,
-        gameMode: 'flag',
-      });
-      await request(app).post('/addgame').send({
-        username: 'testuser',
-        score: 80,
-        correctRate: 0.85,
-        gameMode: 'flag',
-      });
+      addGameData('user1', 70, 0.9, 'flag');
+      addGameData('user2', 80, 0.85, 'flag');
 
       const response = await request(app).get('/userstats/mode/flag');
       expect(response.status).toBe(200);
-      expect(response.body.stats[0].username).toBe('statsuser');
-      expect(response.body.stats[1].username).toBe('testuser');
+      expect(response.body.stats[0].username).toBe('user1');
+      expect(response.body.stats[1].username).toBe('user2');
       expect(response.body.stats[0].totalScore).toBe(70);
       expect(response.body.stats[1].totalScore).toBe(80);
       expect(response.body.stats[0].correctRate).toBe(0.9);
