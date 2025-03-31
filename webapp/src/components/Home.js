@@ -4,7 +4,7 @@ import { BarChart, ChevronRight, FilterAlt, People } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
-import { useStats } from "../context/StatsContext";
+import { useStats } from "../context/useStats";
 
 const Home = () => {
     const axios = useAxios();
