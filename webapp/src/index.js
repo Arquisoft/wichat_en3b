@@ -16,31 +16,28 @@ import Home from './components/Home';
 import Layout from './components/Layout';
 import GameTopicSelection from './components/GameTopicSelection';
 import PersistentLogin from './components/PersistentLogin';
-import { StatsProvider } from './context/StatsContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <AuthProvider>
-      <StatsProvider>
-        <Routes>
-          <Route element={<Layout />}>
-            {/* Routes without authentication */}
-            <Route index element={<App />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
-            {/* Routes with authentication */}
-            <Route element={<PersistentLogin />}>
-              <Route element={<PrivateRoute />}>
-                <Route path="/home" element={<Home />} />
-                <Route path="/gamemode" element={<GameModeSelection />} />
-                <Route path="/gametopic" element={<GameTopicSelection />} />
-                <Route path="/game" element={<Game />} />
-              </Route>
+      <Routes>
+        <Route element={<Layout />}>
+          {/* Routes without authentication */}
+          <Route index element={<App />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          {/* Routes with authentication */}
+          <Route element={<PersistentLogin />}>
+            <Route element={<PrivateRoute />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/gamemode" element={<GameModeSelection />} />
+              <Route path="/gametopic" element={<GameTopicSelection />} />
+              <Route path="/game" element={<Game />} />
             </Route>
           </Route>
-        </Routes>
-      </StatsProvider>
+        </Route>
+      </Routes>
     </AuthProvider>
   </BrowserRouter>
 );

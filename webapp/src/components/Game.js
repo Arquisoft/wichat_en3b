@@ -12,7 +12,6 @@ import Chat from "./LLMChat"
 import useAxios from "../hooks/useAxios"
 import useAuth from "../hooks/useAuth"
 import { NavLink } from "react-router";
-import useStats from "../hooks/useStats";
 
 // Custom styled components
 const GameContainer = styled(Container)(({ theme }) => ({
@@ -139,7 +138,7 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
 
 function Game() {
   const axios = useAxios();
-  const { triggerStatsUpdate } = useStats();
+  const { auth } = useAuth();
 
   const totalRounds = 10;
   const [round, setRound] = useState(1);
@@ -222,8 +221,6 @@ function Game() {
     };
   }, [loading]);
 
-  const {auth} = useAuth();
-
   const addGame = async (username, score, correctRate, gameMode) => {
     try {
       await axios.post("/addgame", {
@@ -231,27 +228,17 @@ function Game() {
         score,
         correctRate,
         gameMode,
-      });
+      }).then(res => console.log(res.data));
     } catch (error) {
       console.error("Error saving user stadistics:", error);
     }
   }
 
-  const getStatistics = async () => {
-    try {
-      if(!auth) return;
-      await axios.get(`/userstats/user/${auth.username}`);
-    } catch (error) {
-      console.error("Error fetching user statistics:", error);
-    }
-  };
-
   const endGame = async () => {
     const correctRate = (correctAnswers / totalRounds) * 100;
+    console.log(roundData.mode);
     await addGame(auth.username, score, correctRate, roundData.mode);
-    await getStatistics();
     setShowStatistics(true);
-    triggerStatsUpdate();
   };
 
   const handleNewGame = async () => {

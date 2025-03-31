@@ -4,12 +4,10 @@ import { BarChart, ChevronRight, FilterAlt, People } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
-import useStats from "../hooks/useStats";
 
 const Home = () => {
     const axios = useAxios();
     const { auth } = useAuth();
-    const updateStats = useStats();
     const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState(0);
@@ -22,6 +20,13 @@ const Home = () => {
     const stats = ["points", "accuracy", "gamesPlayed"];
 
     useEffect(() => {
+        axios.get(`/userstats/user/${auth.username}`)
+            .then((res) => {
+                setUserStats(res.data.stats[0]);
+            }).catch((err) => {
+                console.error("Error fetching user stats:", err);
+            });
+
         axios.get("/getModes")
             .then((res) => {
                 setGamemodes(["all", ...res.data.modes]);
@@ -38,15 +43,6 @@ const Home = () => {
                 console.error("Error fetching user stats:", err);
             });
     }, [gamemode]);
-
-    useEffect(() => {
-        axios.get(`/userstats/user/${auth.username}`)
-            .then((res) => {
-                setUserStats(res.data.stats[0]);
-            }).catch((err) => {
-                console.error("Error fetching user stats:", err);
-            });
-    }, [updateStats]);
 
     const getStatLabel = (user) => {
         switch (stat) {
