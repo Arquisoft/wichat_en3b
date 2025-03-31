@@ -8,8 +8,12 @@ import PhoneIcon from "@mui/icons-material/Phone"
 import ChatIcon from "@mui/icons-material/Chat"
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents"
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn"
+import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
 import Chat from "./LLMChat"
 import useAxios from "../hooks/useAxios"
+import GraphComponent from './GraphComponent';
+import CallFriend from "./CallFriend"
+
 
 // Custom styled components
 const GameContainer = styled(Container)(({ theme }) => ({
@@ -65,7 +69,9 @@ const LifelineButton = styled(Button, {
       ? theme.palette.primary.main
       : colorVariant === "green"
         ? theme.palette.success.main
-        : theme.palette.secondary.main,
+        : colorVariant === "red"
+          ? "#d94a2b"
+          : theme.palette.secondary.main,
   color: isUsed ? theme.palette.text.disabled : theme.palette.common.white,
   "&:hover": {
     backgroundColor: isUsed
@@ -74,13 +80,16 @@ const LifelineButton = styled(Button, {
         ? theme.palette.primary.dark
         : colorVariant === "green"
           ? theme.palette.success.dark
-          : theme.palette.secondary.dark,
+          : colorVariant === "red"
+            ? "#b14027"
+            : theme.palette.secondary.dark,
     transform: isUsed ? "none" : "scale(1.03)",
   },
   transition: theme.transitions.create(["background-color", "transform"], {
     duration: theme.transitions.duration.short,
   }),
-}))
+}));
+
 
 const OptionButton = styled(Button, {
   shouldForwardProp: (prop) => prop !== "isHidden",
@@ -145,10 +154,17 @@ function Game() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false);
   const [callFriendUsed, setCallFriendUsed] = useState(false);
+  const [askAudience, setAskAudience] = useState(false);
   const [useChatUsed, setUseChatUsed] = useState(false);
+  const [isCallFriendOpen, setIsCallFriendOpen] = useState(false);
+
   const [hiddenOptions, setHiddenOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chatKey, setChatKey] = useState(0); // resets the chat component every time it is updated
+  const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
+
+
+
 
   // Function to load the data for each round.
   const loadRound = async () => {
@@ -224,6 +240,7 @@ function Game() {
 
     if (isCorrect) {
       setScore(score + 50);
+      setShowGraph(false);
     }
 
     setTimeout(async () => {
@@ -234,6 +251,7 @@ function Game() {
         setScore(0);
         setFiftyFiftyUsed(false);
         setCallFriendUsed(false);
+        setAskAudience(false);
         setUseChatUsed(false);
         setHiddenOptions([]);
         setSelectedAnswer(null);
@@ -279,10 +297,22 @@ function Game() {
   }
 
   const handleCallFriend = () => {
-    if (callFriendUsed || !roundData) return
+    if (callFriendUsed || !roundData) return;
     // Implement logic to simulate calling a friend
-    alert("Your friend thinks the answer might be: " + roundData.itemWithImage.name)
-    setCallFriendUsed(true)
+    // alert("Your friend thinks the answer might be: " + roundData.itemWithImage.name);
+    setCallFriendUsed(true);
+    setIsCallFriendOpen(true);
+  };
+
+  const handleCloseCallFriend = () => {
+    setCallFriendUsed(false);
+    setIsCallFriendOpen(false);
+  };
+
+  const handleAudienceCall = () => {
+    if (askAudience || !roundData) return
+    setAskAudience(true)
+    setShowGraph(true); // Make the graph visible when the audience call is used
   }
 
   const handleUseChat = () => {
@@ -291,6 +321,7 @@ function Game() {
     alert("Chat is now available to help you!")
     setUseChatUsed(true)
   }
+
 
   return (
     <GameContainer maxWidth="100%" height="100%">
@@ -340,7 +371,18 @@ function Game() {
                 isUsed={callFriendUsed}
                 colorVariant="green"
               >
-                Call a Friend - 150 🪙 {callFriendUsed && "(Used)"}
+                Call a Friend {callFriendUsed && "(Used)"}
+              </LifelineButton>
+
+              <LifelineButton
+                variant="contained"
+                startIcon={<InterpreterModeIcon />}
+                onClick={handleAudienceCall}
+                disabled={askAudience}
+                isUsed={askAudience}
+                colorVariant="red"
+              >
+                Audience Call - 150 🪙 {askAudience && "(Used)"}
               </LifelineButton>
               <LifelineButton
                 variant="contained"
@@ -352,8 +394,32 @@ function Game() {
               >
                 Use the Chat - 200 🪙 {useChatUsed && "(Used)"}
               </LifelineButton>
+              {callFriendUsed && (<CallFriend
+                open={isCallFriendOpen}
+                onClose={handleCloseCallFriend}
+                correctAnswer={roundData.itemWithImage.name}
+                possibleAnswers={roundData.items.map(item => item.name)}
+              />)}
+            </CardContent>{showGraph && (
+            <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
+              <CardContent>
+                <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
+                  The audience says...
+                </Typography>
+                {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name}
+                  distractors={roundData.items
+                    .filter(item => item.name !== roundData.itemWithImage.name)
+                    .map(item => item.name)
+                  }
+                />}
+              </CardContent>
+            </Card>
+          )}
+            <CardContent>
+              
             </CardContent>
           </Card>
+          
         </Grid>
 
         {/* Game Area */}
@@ -408,6 +474,7 @@ function Game() {
               )}
             </CardContent>
           </Card>
+          
         </Grid>
 
         {/* Right Side (Chat) */}
