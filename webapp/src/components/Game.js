@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AppBar, Toolbar, Typography, Button, Card, CardContent, Grid, Box, Container, Paper, CircularProgress } from "@mui/material"
+import { AppBar, Toolbar, Typography, Button, Card, CardContent, Grid, Box, Container, Paper, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline"
 import PhoneIcon from "@mui/icons-material/Phone"
@@ -14,6 +14,8 @@ import useAxios from "../hooks/useAxios"
 import GraphComponent from './GraphComponent';
 import CallFriend from "./CallFriend"
 
+import useAuth from "../hooks/useAuth"
+import { NavLink } from "react-router";
 
 // Custom styled components
 const GameContainer = styled(Container)(({ theme }) => ({
@@ -145,6 +147,7 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
 
 function Game() {
   const axios = useAxios();
+  const { auth } = useAuth();
 
   const totalRounds = 10;
   const [round, setRound] = useState(1);
@@ -161,10 +164,10 @@ function Game() {
   const [hiddenOptions, setHiddenOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chatKey, setChatKey] = useState(0); // resets the chat component every time it is updated
+  const [questions, setQuestions] = useState([]);
+  const [showStatistics, setShowStatistics] = useState(false);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
-
-
-
 
   // Function to load the data for each round.
   const loadRound = async () => {
@@ -232,30 +235,63 @@ function Game() {
     };
   }, [loading]);
 
+
+
+  // Add the game statistics to the database and show the statistics dialog
+const endGame = async (questions) => {
+    try {
+      await axios.post("/addgame", { username: auth.username, questions }).then(res => console.log(res.data));
+    } catch (error) {
+      console.error("Error saving user stadistics:", error);
+    }
+
+    setShowStatistics(true);
+  };
+
+  const handleNewGame = async () => {
+    setShowStatistics(false);
+    setRoundData(null);
+    setRound(1);
+    setScore(0);
+    setQuestions([]);
+    setFiftyFiftyUsed(false);
+    setCallFriendUsed(false);
+    setAskAudience(false);
+    setUseChatUsed(false);
+    setHiddenOptions([]);
+    setSelectedAnswer(null);
+    gameSetup();
+  };
+
   const handleOptionSelect = async (index) => {
     if (selectedAnswer !== null) return;
 
     const isCorrect = CorrectOption(index);
     setSelectedAnswer(index);
 
+    const pointsIncrement = 50;
     if (isCorrect) {
-      setScore(score + 50);
+      setScore(score + pointsIncrement);
+      setCorrectAnswers(correctAnswers + 1);
       setShowGraph(false);
     }
 
+    let updatedQuestions = [];
+    setQuestions((prev) => {
+      updatedQuestions = [
+        ...prev,
+        {
+          mode: roundData.mode,
+          isCorrect: isCorrect,
+          pointsIncrement: pointsIncrement,
+        },
+      ];
+      return updatedQuestions;
+    });
+
     setTimeout(async () => {
       if (round === totalRounds) {
-        alert("Game Over");
-        setRoundData(null);
-        setRound(1);
-        setScore(0);
-        setFiftyFiftyUsed(false);
-        setCallFriendUsed(false);
-        setAskAudience(false);
-        setUseChatUsed(false);
-        setHiddenOptions([]);
-        setSelectedAnswer(null);
-        gameSetup();
+        await endGame(updatedQuestions);
         return;
       }
 
@@ -486,6 +522,24 @@ function Game() {
           </Card>
         </Grid>
       </Grid>
+      <Dialog open={showStatistics} onClose={() => setShowStatistics(false)}>
+        <DialogTitle sx={{ fontWeight: "bold", color: "primary.main" }}>Game Over</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1"><b>Final Score:</b> {score}</Typography>
+          <Typography variant="body1"><b>Correct Answers:</b> {correctAnswers} / {totalRounds}</Typography>
+          <Typography variant="body1"><b>Accuracy Rate:</b> {((correctAnswers / totalRounds) * 100).toFixed(2)}%</Typography>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+          <Button variant="contained" color="primary" onClick={handleNewGame}>
+            New Game
+          </Button>
+          <NavLink to="/home">
+            <Button variant="contained" color="secondary">
+              Return Home
+            </Button>
+          </NavLink>
+        </DialogActions>
+      </Dialog>
     </GameContainer>
   )
 }

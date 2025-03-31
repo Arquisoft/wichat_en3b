@@ -51,7 +51,7 @@ const LLMChat = (roundData) => {
             const data = roundData.roundData;
             setPrompt(`You are an assistant that helps a user get the correct answer in a trivia game. 
                 The user is shown a picture of an item and has to guess what it is given four options. 
-                This round of the game is about ${data.mode} and the answer is ${data.itemWithImage.name}. 
+                This round of the game is about ${data.mode} and the answer is ${data.itemWithImage?.name}. 
                 YOU MUST NEVER SAY THE ANSWER UNDER ANY CIRCUMSTANCE, but you can give vague hints to help them guess the answer. 
                 Keep your answers short to a few words.`);
         }

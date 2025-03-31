@@ -15,10 +15,18 @@ const Home = () => {
     const [gamemodes, setGamemodes] = useState(["all"]);
     const [stat, setStat] = useState("points");
     const [ranking, setRanking] = useState([]);
+    const [userStats, setUserStats] = useState(null);
 
     const stats = ["points", "accuracy", "gamesPlayed"];
 
     useEffect(() => {
+        axios.get(`/userstats/${auth.username}/all`)
+            .then((res) => {
+                setUserStats(res.data.stats);
+            }).catch((err) => {
+                console.error("Error fetching user stats:", err);
+            });
+
         axios.get("/getModes")
             .then((res) => {
                 setGamemodes(["all", ...res.data.modes]);
@@ -30,17 +38,16 @@ const Home = () => {
     useEffect(() => {
         axios.get(`/userstats/mode/${gamemode}`)
             .then((res) => {
-                console.log("User stats:", res.data.stats);
                 setRanking(res.data.stats);
             }).catch((err) => {
                 console.error("Error fetching user stats:", err);
             });
     }, [gamemode]);
 
-    const getStatLabel = (user) => {
+    const getStatLabel = (user, stat) => {
         switch (stat) {
             case "accuracy":
-                return user.correctRate + " %";
+                return (user.correctRate * 100).toFixed(2) + " %";
             case "gamesPlayed":
                 return user.totalGamesPlayed + " games";
             case "points":
@@ -89,13 +96,22 @@ const Home = () => {
 
                 {/* Statistics tab */}
                 <Box hidden={activeTab !== 0} my={4}>
-                    <CardHeader title="Your Statistics" subheader="// TODO" sx={{ p: 0, mb: 2 }} />
+                    <CardHeader title="Your Statistics" sx={{ p: 0, mb: 2 }} />
+                    {userStats ? (
+                        <Box>
+                            <Typography variant="body1">Total score: {getStatLabel(userStats, "points")}</Typography>
+                            <Typography variant="body1">Accuracy rate: {getStatLabel(userStats, "accuracy")}</Typography>
+                            <Typography variant="body1">Games played: {getStatLabel(userStats, "gamesPlayed")}</Typography>
+                        </Box>
+                    ) : (
+                        <Typography variant="body1" color="text.secondary">No statistics found.</Typography>
+                    )}
                 </Box>
 
                 {/* Rankings tab */}
                 <Box hidden={activeTab !== 1} mb={4}>
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", width: "100%" }}>
-                        <CardHeader title="Leaderboard" subheader="Top players ranked by some stat" />
+                        <CardHeader title="Leaderboard" subheader={`Top players ranked by ${stat}`} />
                         <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
                                 Rank by:
@@ -151,7 +167,7 @@ const Home = () => {
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                                         {auth.username === user.username && <Chip label="You" color="primary" size="small" variant="outlined" />}
                                         <Typography variant="body2" color="text.secondary">
-                                            {getStatLabel(user)}
+                                            {getStatLabel(user, stat)}
                                         </Typography>
                                     </Box>
                                 </Box>

@@ -74,10 +74,10 @@ describe("Home component", () => {
 
     it("should fetch and display user stats", async () => {
         const mockStats = {
-            stats: [{ username: "otheruser", totalScore: 1000, correctRate: 90, totalGamesPlayed: 20 }]
+            stats: [{ username: "otheruser", totalScore: 1000, correctRate: 0.9, totalQuestions: 200, totalGamesPlayed: 20 }]
         };
 
-        mockAxios.onGet("/getModes").reply(200, { modes: ["city", "flag"] });
+        mockAxios.onGet("/getModes").reply(200, { modes: [] });
         mockAxios.onGet("/userstats/mode/all").reply(200, mockStats);
 
         render(
@@ -97,7 +97,7 @@ describe("Home component", () => {
 
         fireEvent.click(screen.getByText(/accuracy/i));
         await waitFor(() => {
-            expect(screen.getByText(/90 %/i)).toBeInTheDocument();
+            expect(screen.getByText(/90.00 %/i)).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText(/gamesPlayed/i));

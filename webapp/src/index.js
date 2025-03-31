@@ -17,8 +17,6 @@ import Layout from './components/Layout';
 import GameTopicSelection from './components/GameTopicSelection';
 import PersistentLogin from './components/PersistentLogin';
 
-console.log(styles);
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>

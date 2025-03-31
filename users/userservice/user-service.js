@@ -49,7 +49,7 @@ app.post('/adduser', async (req, res) => {
 //Saves a completed game to the database and updates the user stats
 app.post('/addgame', async (req, res) => {
   try {
-    validateRequiredFields(req, ['username', 'score', 'correctRate', 'gameMode']);
+    validateRequiredFields(req, ['username', 'questions']);
 
     const MAX_GAMES = 100;
 
@@ -63,15 +63,19 @@ app.post('/addgame', async (req, res) => {
       }
     }
 
+    const questions = req.body.questions;
+    const score = questions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
+    const correctRate = questions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / questions.length;
+    const gameMode = [...new Set(questions.map(question => question.mode))];
     const newGame = new Game({
       username: req.body.username,
-      score: req.body.score,
-      correctRate: req.body.correctRate,
-      gameMode: req.body.gameMode,
+      score: score,
+      correctRate: correctRate,
+      gameMode: gameMode,
     });
 
     await newGame.save();
-    calculateUserStatistics(newGame);
+    calculateUserStatistics(newGame, questions);
     res.json(newGame);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -79,34 +83,50 @@ app.post('/addgame', async (req, res) => {
 });
 
 //Function only called when a new game is added
-async function calculateUserStatistics(newGame) {
+async function calculateUserStatistics(newGame, questions) {
   try {
-    const userStats = await UserStatistics.findOne({ username: newGame.username, mode: newGame.gameMode });
+    for (const mode of newGame.gameMode) {
+      // Filter questions for the current mode
+      const modeQuestions = questions.filter(question => question.mode === mode);
+      if (modeQuestions.length === 0) continue; // Skip if no questions for this mode
 
-    // Create a new user statistics entry if it doesn't exist
-    if (!userStats) {
-      const newUserStats = new UserStatistics({
-        username: newGame.username,
-        mode: newGame.gameMode[0], // temporary fix for mode (this depends on how we save the stats for each question during game)
-        totalScore: newGame.score,
-        correctRate: newGame.correctRate,
-        totalGamesPlayed: 1,
-      });
-      await newUserStats.save();
-      return;
-    }
+      // Calculate partial statistics for the current mode
+      const score = modeQuestions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
+      const correctRate = modeQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / modeQuestions.length;
+      const questionsAnswered = modeQuestions.length;
 
-    let oldTotalGamesPlayed = userStats.totalGamesPlayed;
-    let oldTotalScore = userStats.totalScore;
-    let oldCorrectRate = userStats.correctRate;
+      // Find existing user statistics for the current mode
+      const userStats = await UserStatistics.findOne({ username: newGame.username, mode: mode });
 
-    await UserStatistics.findOneAndUpdate({ username: newGame.username, mode: newGame.gameMode }, {
-      $inc: { totalGamesPlayed: 1 },
-      $set: {
-        totalScore: oldTotalScore + newGame.score,
-        correctRate: calculateNewAvg(newGame.correctRate, oldTotalGamesPlayed, oldCorrectRate)
+      if (!userStats) {
+        // Create a new user statistics entry if it doesn't exist
+        const newUserStats = new UserStatistics({
+          username: newGame.username,
+          mode: mode,
+          totalScore: score,
+          correctRate: correctRate,
+          totalQuestions: questionsAnswered,
+          totalGamesPlayed: 1,
+        });
+        await newUserStats.save();
+      } else {
+        // Update existing user statistics
+        const oldTotalGamesPlayed = userStats.totalGamesPlayed;
+        const oldTotalScore = userStats.totalScore;
+        const oldCorrectRate = userStats.correctRate;
+
+        await UserStatistics.findOneAndUpdate(
+          { username: newGame.username, mode: mode },
+          {
+            $inc: { totalGamesPlayed: 1, totalQuestions: questionsAnswered },
+            $set: {
+              totalScore: oldTotalScore + score,
+              correctRate: calculateNewAvg(correctRate, oldTotalGamesPlayed, oldCorrectRate),
+            },
+          }
+        );
       }
-    });
+    }
   } catch (error) {
     console.log(error);
   }
@@ -122,7 +142,7 @@ app.get('/userstats/user/:username', async (req, res) => {
 
     const userStats = await UserStatistics.find({ username: username });
 
-    res.json({message: `Fetched statistics for user: ${username}`, stats: userStats});
+    res.json({ message: `Fetched statistics for user: ${username}`, stats: userStats });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -142,6 +162,7 @@ app.get('/userstats/mode/:mode', async (req, res) => {
             username: { $first: "$username" },
             totalScore: { $sum: "$totalScore" },
             correctRate: { $avg: "$correctRate" },
+            totalQuestions: { $sum: "$totalQuestions" },
             totalGamesPlayed: { $sum: "$totalGamesPlayed" },
           }
         },
@@ -151,7 +172,53 @@ app.get('/userstats/mode/:mode', async (req, res) => {
       userStats = await UserStatistics.find({ mode: mode });
     }
 
-    res.json({message: `Fetched statistics for mode: ${mode}`, stats: userStats});
+    res.json({ message: `Fetched statistics for mode: ${mode}`, stats: userStats });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/userstats/:username/:mode', async (req, res) => {
+  try {
+    const username = req.params.username;
+    const mode = req.params.mode;
+
+    let userStats;
+    if (mode === "all") {
+      // Fetch all user statistics for the given username
+      const stats = await UserStatistics.find({ username: username });
+
+      if (stats.length === 0) {
+        return res.json({ message: `No statistics found for user: ${username}`, stats: {} });
+      }
+
+      // Calculate weighted average accuracy
+      let totalCorrectAnswers = 0;
+      let totalQuestionsAnswered = 0;
+
+      stats.forEach(stat => {
+        const correctAnswersForMode = stat.correctRate * stat.totalQuestions;
+        totalCorrectAnswers += correctAnswersForMode;
+        totalQuestionsAnswered += stat.totalQuestions;
+      });
+
+      const weightedAccuracy = totalQuestionsAnswered > 0
+        ? totalCorrectAnswers / totalQuestionsAnswered
+        : 0;
+
+      userStats = {
+        username: username,
+        totalScore: stats.reduce((sum, stat) => sum + stat.totalScore, 0),
+        correctRate: weightedAccuracy, // Use weighted accuracy
+        totalGamesPlayed: stats.reduce((sum, stat) => sum + stat.totalGamesPlayed, 0),
+        totalQuestions: totalQuestionsAnswered, // Total questions answered
+      };
+    } else {
+      // Find user statistics for a specific mode
+      userStats = await UserStatistics.findOne({ username: username, mode: mode });
+    }
+
+    res.json({ message: `Fetched statistics for user ${username} in mode ${mode}`, stats: userStats });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
