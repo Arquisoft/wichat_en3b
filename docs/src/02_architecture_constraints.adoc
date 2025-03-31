@@ -38,6 +38,7 @@ endif::arc42help[]
 |Source of information|Information about the questions must be automatically generated from Wikidata. So should be the disctractors and the images.
 |Access to information|The system will give access to the information about the generated questions and users through an API.
 |Deployment|The application must be accessible through a web interface.
+|Tracking the work| The development of the application must be on a given public repository in GitHub.
 |===
 
 **- ORGANIZATIONAL CONSTRAINTS**
