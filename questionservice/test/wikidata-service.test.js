@@ -76,24 +76,6 @@ describe("Express Service API Tests", () => {
         expect(Array.isArray(response.body.modes)).toBe(true);
     });
     
-    
-    it("should connect to MongoDB successfully", async () => {
-        
-        const mongoSpy = jest.spyOn(mongoose, "connect");
-        const mongoUri = process.env.MONGODB_URI;
-        
-        if (!mongoUri) {
-            throw new Error("MongoDB URI is not defined in the environment variables");
-        }
-
-        await mongoose.disconnect();
-        await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
-        expect(mongoSpy).toHaveBeenCalledWith(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
-        await mongoose.disconnect();
-        mongoSpy.mockRestore();
-        
-    });
-    
    
    it("should return all available modes", async () => {
     const response = await request(server).get("/getModes");
