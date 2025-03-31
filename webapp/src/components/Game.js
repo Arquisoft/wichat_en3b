@@ -152,8 +152,9 @@ function Game() {
   const [hiddenOptions, setHiddenOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chatKey, setChatKey] = useState(0); // resets the chat component every time it is updated
-  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [questions, setQuestions] = useState([]);
   const [showStatistics, setShowStatistics] = useState(false);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
 
   // Function to load the data for each round.
   const loadRound = async () => {
@@ -221,23 +222,16 @@ function Game() {
     };
   }, [loading]);
 
-  const addGame = async (username, score, correctRate, gameMode) => {
+
+
+  // Add the game statistics to the database and show the statistics dialog
+const endGame = async (questions) => {
     try {
-      await axios.post("/addgame", {
-        username,
-        score,
-        correctRate,
-        gameMode,
-      }).then(res => console.log(res.data));
+      await axios.post("/addgame", { username: auth.username, questions }).then(res => console.log(res.data));
     } catch (error) {
       console.error("Error saving user stadistics:", error);
     }
-  }
 
-  const endGame = async () => {
-    const correctRate = (correctAnswers / totalRounds) * 100;
-    console.log(roundData.mode);
-    await addGame(auth.username, score, correctRate, roundData.mode);
     setShowStatistics(true);
   };
 
@@ -246,7 +240,7 @@ function Game() {
     setRoundData(null);
     setRound(1);
     setScore(0);
-    setCorrectAnswers(0);
+    setQuestions([]);
     setFiftyFiftyUsed(false);
     setCallFriendUsed(false);
     setUseChatUsed(false);
@@ -261,14 +255,28 @@ function Game() {
     const isCorrect = CorrectOption(index);
     setSelectedAnswer(index);
 
+    const pointsIncrement = 50;
     if (isCorrect) {
-      setScore(score + 50);
+      setScore(score + pointsIncrement);
       setCorrectAnswers(correctAnswers + 1);
     }
 
+    let updatedQuestions = [];
+    setQuestions((prev) => {
+      updatedQuestions = [
+        ...prev,
+        {
+          mode: roundData.mode,
+          isCorrect: isCorrect,
+          pointsIncrement: pointsIncrement,
+        },
+      ];
+      return updatedQuestions;
+    });
+
     setTimeout(async () => {
       if (round === totalRounds) {
-        await endGame();
+        await endGame(updatedQuestions);
         return;
       }
 

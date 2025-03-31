@@ -22,7 +22,7 @@ const Home = () => {
     useEffect(() => {
         axios.get(`/userstats/${auth.username}/all`)
             .then((res) => {
-                setUserStats(res.data.stats[0]);
+                setUserStats(res.data.stats);
             }).catch((err) => {
                 console.error("Error fetching user stats:", err);
             });
@@ -47,7 +47,7 @@ const Home = () => {
     const getStatLabel = (user, stat) => {
         switch (stat) {
             case "accuracy":
-                return user.correctRate.toFixed(2) + " %";
+                return (user.correctRate * 100).toFixed(2) + " %";
             case "gamesPlayed":
                 return user.totalGamesPlayed + " games";
             case "points":
@@ -104,7 +104,7 @@ const Home = () => {
                             <Typography variant="body1">Games played: {getStatLabel(userStats, "gamesPlayed")}</Typography>
                         </Box>
                     ) : (
-                        <Typography variant="body1" color="text.secondary">Loading your statistics...</Typography>
+                        <Typography variant="body1" color="text.secondary">No statistics found.</Typography>
                     )}
                 </Box>
 
