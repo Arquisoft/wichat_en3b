@@ -4,12 +4,12 @@ import { BarChart, ChevronRight, FilterAlt, People } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
-import { useStats } from "../context/useStats";
+import useStats from "../hooks/useStats";
 
 const Home = () => {
     const axios = useAxios();
     const { auth } = useAuth();
-    const { updateStats } = useStats();
+    const updateStats = useStats();
     const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState(0);

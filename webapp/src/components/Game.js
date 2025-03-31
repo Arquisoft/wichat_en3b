@@ -12,7 +12,7 @@ import Chat from "./LLMChat"
 import useAxios from "../hooks/useAxios"
 import useAuth from "../hooks/useAuth"
 import { NavLink } from "react-router";
-import { useStats } from "../context/StatsContext";
+import useStats from "../hooks/useStats";
 
 // Custom styled components
 const GameContainer = styled(Container)(({ theme }) => ({
@@ -139,7 +139,7 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
 
 function Game() {
   const axios = useAxios();
-  const { triggerStatsUpdate } = useStats();
+  const triggerStatsUpdate = useStats();
 
   const totalRounds = 10;
   const [round, setRound] = useState(1);

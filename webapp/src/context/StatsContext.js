@@ -1,6 +1,6 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState } from "react";
 
-const StatsContext = createContext();
+const StatsContext = createContext({});
 
 export const StatsProvider = ({ children }) => {
     const [updateStats, setUpdateStats] = useState(false);
@@ -10,10 +10,10 @@ export const StatsProvider = ({ children }) => {
     };
 
     return (
-        <StatsContext.Provider value={{ updateStats, triggerStatsUpdate }}>
+        <StatsContext.Provider value={{ updateStats, setUpdateStats, triggerStatsUpdate }}>
             {children}
         </StatsContext.Provider>
     );
 };
 
-export const useStats = () => useContext(StatsContext);
+export default StatsContext;
