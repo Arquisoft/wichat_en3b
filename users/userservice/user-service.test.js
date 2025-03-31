@@ -92,7 +92,7 @@ describe('User Service', () => {
       expect(response.body).toHaveProperty('score', 50);
       expect(response.body).toHaveProperty('correctRate', 0.8);
       expect(response.body).toHaveProperty('gameMode');
-      expect(response.body.gameMode).toEqual(['arcade']);
+      expect(response.body.gameMode).toEqual('arcade');
 
 
       const savedGame = await Game.findOne({ username: 'gameuser' });
@@ -188,6 +188,19 @@ describe('User Service', () => {
       expect(response.body.stats[1].correctRate).toBe(0.85);
       expect(response.body.stats[0].totalGamesPlayed).toBe(1);
       expect(response.body.stats[1].totalGamesPlayed).toBe(1);
+    });
+
+    it('should return all statistics for a specific user and mode on GET /userstats/:username/:mode', async () => {
+      await addGameData('user1', 70, 0.9, 'arcade');
+      await addGameData('user1', 80, 0.85, 'arcade');
+      await addGameData('user2', 90, 0.95, 'arcade');
+
+      const response = await request(app).get('/userstats/user1/arcade');
+      expect(response.status).toBe(200);
+      expect(response.body.stats[0].username).toBe('user1');
+      expect(response.body.stats[0].totalScore).toBe(150);
+      expect(response.body.stats[0].correctRate).toBe(0.875);
+      expect(response.body.stats[0].totalGamesPlayed).toBe(2);
     });
   });
 });

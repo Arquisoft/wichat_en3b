@@ -20,7 +20,7 @@ const Home = () => {
     const stats = ["points", "accuracy", "gamesPlayed"];
 
     useEffect(() => {
-        axios.get(`/userstats/user/${auth.username}`)
+        axios.get(`/userstats/${auth.username}/all`)
             .then((res) => {
                 setUserStats(res.data.stats[0]);
             }).catch((err) => {
@@ -44,10 +44,10 @@ const Home = () => {
             });
     }, [gamemode]);
 
-    const getStatLabel = (user) => {
+    const getStatLabel = (user, stat) => {
         switch (stat) {
             case "accuracy":
-                return user.correctRate + " %";
+                return user.correctRate.toFixed(2) + " %";
             case "gamesPlayed":
                 return user.totalGamesPlayed + " games";
             case "points":
@@ -99,9 +99,9 @@ const Home = () => {
                     <CardHeader title="Your Statistics" sx={{ p: 0, mb: 2 }} />
                     {userStats ? (
                         <Box>
-                            <Typography variant="body1">Total score: {userStats.totalScore} pts</Typography>
-                            <Typography variant="body1">Accuracy rate: {userStats.correctRate.toFixed(2)} %</Typography>
-                            <Typography variant="body1">Games played: {userStats.totalGamesPlayed}</Typography>
+                            <Typography variant="body1">Total score: {getStatLabel(userStats, "points")}</Typography>
+                            <Typography variant="body1">Accuracy rate: {getStatLabel(userStats, "accuracy")}</Typography>
+                            <Typography variant="body1">Games played: {getStatLabel(userStats, "gamesPlayed")}</Typography>
                         </Box>
                     ) : (
                         <Typography variant="body1" color="text.secondary">Loading your statistics...</Typography>
@@ -111,7 +111,7 @@ const Home = () => {
                 {/* Rankings tab */}
                 <Box hidden={activeTab !== 1} mb={4}>
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", width: "100%" }}>
-                        <CardHeader title="Leaderboard" subheader="Top players ranked by some stat" />
+                        <CardHeader title="Leaderboard" subheader={`Top players ranked by ${stat}`} />
                         <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
                                 Rank by:
@@ -167,7 +167,7 @@ const Home = () => {
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                                         {auth.username === user.username && <Chip label="You" color="primary" size="small" variant="outlined" />}
                                         <Typography variant="body2" color="text.secondary">
-                                            {getStatLabel(user)}
+                                            {getStatLabel(user, stat)}
                                         </Typography>
                                     </Box>
                                 </Box>

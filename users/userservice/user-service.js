@@ -87,7 +87,7 @@ async function calculateUserStatistics(newGame) {
     if (!userStats) {
       const newUserStats = new UserStatistics({
         username: newGame.username,
-        mode: newGame.gameMode[0], // temporary fix for mode (this depends on how we save the stats for each question during game)
+        mode: newGame.gameMode,
         totalScore: newGame.score,
         correctRate: newGame.correctRate,
         totalGamesPlayed: 1,
@@ -122,7 +122,7 @@ app.get('/userstats/user/:username', async (req, res) => {
 
     const userStats = await UserStatistics.find({ username: username });
 
-    res.json({message: `Fetched statistics for user: ${username}`, stats: userStats});
+    res.json({ message: `Fetched statistics for user: ${username}`, stats: userStats });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -151,7 +151,39 @@ app.get('/userstats/mode/:mode', async (req, res) => {
       userStats = await UserStatistics.find({ mode: mode });
     }
 
-    res.json({message: `Fetched statistics for mode: ${mode}`, stats: userStats});
+    res.json({ message: `Fetched statistics for mode: ${mode}`, stats: userStats });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/userstats/:username/:mode', async (req, res) => {
+  try {
+    const username = req.params.username;
+    const mode = req.params.mode;
+
+    let userStats;
+    if (mode === "all") {
+      // Aggregate user statistics for all modes
+      userStats = await UserStatistics.aggregate([
+        {
+          $match: { username: username }
+        },
+        {
+          $group: {
+            _id: "$username",
+            totalScore: { $sum: "$totalScore" },
+            correctRate: { $avg: "$correctRate" },
+            totalGamesPlayed: { $sum: "$totalGamesPlayed" },
+          }
+        },
+      ]);
+    } else {
+      // Find user statistics for a specific mode
+      userStats = await UserStatistics.find({ username: username, mode: mode });
+    }
+
+    res.json({ message: `Fetched statistics for user ${username} in mode ${mode}`, stats: userStats });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

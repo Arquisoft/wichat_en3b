@@ -49,6 +49,8 @@ describe('Gateway Service', () => {
                 return Promise.resolve({ data: { message: 'Fetched user statistics for user: testuser' } });
             } else if (url.endsWith('/userstats/mode/flag')) {
                 return Promise.resolve({ data: { message: 'Fetched statistics for mode: flag' } });
+            } else if (url.endsWith('/userstats/testuser/flag')) {
+                return Promise.resolve({ data: { message: 'Fetched statistics for user testuser in mode flag' } });
             }
         });
     });
@@ -345,5 +347,13 @@ describe('Gateway Service', () => {
 
         expect(response.statusCode).toBe(200);
         expect(response.body.message).toBe('Fetched statistics for mode: flag');
+    });
+
+    // Test /userstats/:username/:mode endpoint
+    it('should fetch user statistics for a specific user and game mode from the user service', async () => {
+        const response = await request(app).get('/userstats/testuser/flag').set('Authorization', `Bearer ${token}`);
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.message).toBe('Fetched statistics for user testuser in mode flag');
     });
 });

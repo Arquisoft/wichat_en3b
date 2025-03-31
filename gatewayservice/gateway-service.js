@@ -167,6 +167,15 @@ app.get('/userstats/mode/:mode', async (req, res) => {
   }
 });
 
+app.get('/userstats/:username/:mode', async (req, res) => {
+  try {
+    const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username + '/' + req.params.mode);
+    res.json(statsResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
 
 // Read the OpenAPI YAML file synchronously
 openapiPath = './openapi.yaml'

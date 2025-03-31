@@ -14,7 +14,7 @@ const gameSchema = new mongoose.Schema({
       required: true,
     },
     gameMode:{
-        type: [String],
+        type: String,
         required: true,
     }
 },{ timestamps: true }); 
