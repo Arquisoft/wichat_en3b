@@ -14,7 +14,7 @@ const llmConfigs = (prompt) => {
   const model = {
     url: () => 'https://empathyai.prod.empathy.co/v1/chat/completions',
     transformRequest: (question) => ({
-      model: "mistralai/Mistral-7B-Instruct-v0.3",
+      model: "qwen/Qwen2.5-Coder-7B-Instruct",
       messages: [
         { role: "system", content: prompt },
         { role: "user", content: question }
@@ -79,7 +79,8 @@ app.post('/ask', async (req, res) => {
     const answer = await sendQuestionToLLM(question, apiKey, prompt);
     res.json({ answer });
   } catch (error) {
-    res.status(error.response.status || 500).json({ error: error.message });
+    const statusCode = error.response?.status || 500;
+    res.status(statusCode).json({ error: error.message });
   }
 });
 
