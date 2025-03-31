@@ -1,4 +1,4 @@
-// src/components/CharacterSelection.js
+
 import React from 'react';
 import { Button, Box, Typography, Card, CardContent, CardActions } from '@mui/material';
 import { green, blue, purple, red } from '@mui/material/colors';

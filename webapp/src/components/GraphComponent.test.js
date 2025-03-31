@@ -1,4 +1,4 @@
-// src/components/__tests__/GraphComponent.test.js
+
 import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
