@@ -81,18 +81,19 @@ describe('User Service', () => {
     it('should add a new game on POST /addgame and update user statistics', async () => {
       const newGameData = {
         username: 'gameuser',
-        score: 50,
-        correctRate: 0.8,
-        gameMode: 'arcade',
+        questions: [
+          { mode: 'arcade', isCorrect: true, pointsIncrement: 50 },
+          { mode: 'arcade', isCorrect: false, pointsIncrement: 50 },
+        ]
       };
 
       const response = await request(app).post('/addgame').send(newGameData);
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('username', 'gameuser');
       expect(response.body).toHaveProperty('score', 50);
-      expect(response.body).toHaveProperty('correctRate', 0.8);
+      expect(response.body).toHaveProperty('correctRate', 0.5);
       expect(response.body).toHaveProperty('gameMode');
-      expect(response.body.gameMode).toEqual('arcade');
+      expect(response.body.gameMode).toEqual(['arcade']);
 
 
       const savedGame = await Game.findOne({ username: 'gameuser' });
@@ -100,11 +101,8 @@ describe('User Service', () => {
     });
 
     it('should return error on POST /addgame when required fields are missing', async () => {
-
       const incompleteGameData = {
         username: 'gameuser',
-        correctRate: 0.9,
-        gameMode: 'arcade'
       };
 
       const response = await request(app).post('/addgame').send(incompleteGameData);
@@ -126,15 +124,16 @@ describe('User Service', () => {
         }).save();
       }
 
-
       let count = await Game.countDocuments({ username: 'gameuser' });
       expect(count).toBe(MAX_GAMES);
 
       const newGameData = {
         username: 'gameuser',
-        score: 200,
-        correctRate: 0.95,
-        gameMode: 'classic',
+        questions: [
+          { mode: 'classic', isCorrect: true, pointsIncrement: 50 },
+          { mode: 'classic', isCorrect: false, pointsIncrement: 50 },
+        ],
+        createdAt: Date.now(), // Set createdAt to the current date
       };
 
       const response = await request(app).post('/addgame').send(newGameData);
@@ -149,22 +148,22 @@ describe('User Service', () => {
   });
 
   describe('User Statistics endpoint', () => {
-    async function addGameData(username, score, correctRate, gameMode) {
-      await request(app).post('/addgame').send({ username, score, correctRate, gameMode });
+    async function addGameData(username, questions) {
+      await request(app).post('/addgame').send({ username, questions });
     }
 
     it('should return user statistics on GET /userstats/user/:username', async () => {
       const newUser = { username: 'statsuser', password: 'secret' };
       await request(app).post('/adduser').send(newUser);
 
-      await addGameData('statsuser', 70, 0.9, 'survival');
-      await addGameData('statsuser', 80, 0.85, 'survival');
+      await addGameData('statsuser', [{ mode: 'arcade', isCorrect: true, pointsIncrement: 70 }]);
+      await addGameData('statsuser', [{ mode: 'arcade', isCorrect: false, pointsIncrement: 80 }]);
 
       const response = await request(app).get('/userstats/user/statsuser');
       expect(response.status).toBe(200);
       expect(response.body.stats[0].username).toBe('statsuser');
-      expect(response.body.stats[0].totalScore).toBe(150);
-      expect(response.body.stats[0].correctRate).toBe(0.875);
+      expect(response.body.stats[0].totalScore).toBe(70);
+      expect(response.body.stats[0].correctRate).toBe(0.5);
       expect(response.body.stats[0].totalGamesPlayed).toBe(2);
     });
 
@@ -175,8 +174,9 @@ describe('User Service', () => {
     });
 
     it('should return all statistics for a specific game mode on GET /userstats/mode/:gameMode', async () => {
-      await addGameData('user1', 70, 0.9, 'flag');
-      await addGameData('user2', 80, 0.85, 'flag');
+      await addGameData('user1', [{ mode: 'flag', isCorrect: true, pointsIncrement: 70 }]);
+      await addGameData('user1', [{ mode: 'flag', isCorrect: false, pointsIncrement: 50 }]);
+      await addGameData('user2', [{ mode: 'flag', isCorrect: true, pointsIncrement: 80 }]);
 
       const response = await request(app).get('/userstats/mode/flag');
       expect(response.status).toBe(200);
@@ -184,23 +184,36 @@ describe('User Service', () => {
       expect(response.body.stats[1].username).toBe('user2');
       expect(response.body.stats[0].totalScore).toBe(70);
       expect(response.body.stats[1].totalScore).toBe(80);
-      expect(response.body.stats[0].correctRate).toBe(0.9);
-      expect(response.body.stats[1].correctRate).toBe(0.85);
-      expect(response.body.stats[0].totalGamesPlayed).toBe(1);
+      expect(response.body.stats[0].correctRate).toBe(0.5);
+      expect(response.body.stats[1].correctRate).toBe(1);
+      expect(response.body.stats[0].totalGamesPlayed).toBe(2);
       expect(response.body.stats[1].totalGamesPlayed).toBe(1);
     });
 
     it('should return all statistics for a specific user and mode on GET /userstats/:username/:mode', async () => {
-      await addGameData('user1', 70, 0.9, 'arcade');
-      await addGameData('user1', 80, 0.85, 'arcade');
-      await addGameData('user2', 90, 0.95, 'arcade');
+      await addGameData('user1', [{ mode: 'arcade', isCorrect: true, pointsIncrement: 100 }]);
+      await addGameData('user1', [{ mode: 'arcade', isCorrect: false, pointsIncrement: 50 }]);
+      await addGameData('user2', [{ mode: 'arcade', isCorrect: true, pointsIncrement: 90 }]);
 
       const response = await request(app).get('/userstats/user1/arcade');
       expect(response.status).toBe(200);
-      expect(response.body.stats[0].username).toBe('user1');
-      expect(response.body.stats[0].totalScore).toBe(150);
-      expect(response.body.stats[0].correctRate).toBe(0.875);
-      expect(response.body.stats[0].totalGamesPlayed).toBe(2);
+      expect(response.body.stats.username).toBe('user1');
+      expect(response.body.stats.totalScore).toBe(100);
+      expect(response.body.stats.correctRate).toBe(0.5);
+      expect(response.body.stats.totalGamesPlayed).toBe(2);
+    });
+
+    it('should return the combined statistics for all game modes on GET /userstats/:username/all', async () => {
+      await addGameData('all', [{ mode: 'arcade', isCorrect: true, pointsIncrement: 100 }]);
+      await addGameData('all', [{ mode: 'flag', isCorrect: false, pointsIncrement: 50 }]);
+      await addGameData('all', [{ mode: 'arcade', isCorrect: true, pointsIncrement: 90 }]);
+
+      const response = await request(app).get('/userstats/all/all');
+      expect(response.status).toBe(200);
+      expect(response.body.stats.username).toBe('all');
+      expect(response.body.stats.totalScore).toBe(190);
+      expect(response.body.stats.correctRate).toBe(2/3);
+      expect(response.body.stats.totalGamesPlayed).toBe(3);
     });
   });
 });
