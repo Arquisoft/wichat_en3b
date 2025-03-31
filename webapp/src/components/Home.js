@@ -4,10 +4,12 @@ import { BarChart, ChevronRight, FilterAlt, People } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
+import { useStats } from "../context/StatsContext";
 
 const Home = () => {
     const axios = useAxios();
     const { auth } = useAuth();
+    const { updateStats } = useStats();
     const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState(0);
@@ -15,6 +17,7 @@ const Home = () => {
     const [gamemodes, setGamemodes] = useState(["all"]);
     const [stat, setStat] = useState("points");
     const [ranking, setRanking] = useState([]);
+    const [userStats, setUserStats] = useState(null);
 
     const stats = ["points", "accuracy", "gamesPlayed"];
 
@@ -30,12 +33,20 @@ const Home = () => {
     useEffect(() => {
         axios.get(`/userstats/mode/${gamemode}`)
             .then((res) => {
-                console.log("User stats:", res.data.stats);
                 setRanking(res.data.stats);
             }).catch((err) => {
                 console.error("Error fetching user stats:", err);
             });
     }, [gamemode]);
+
+    useEffect(() => {
+        axios.get(`/userstats/user/${auth.username}`)
+            .then((res) => {
+                setUserStats(res.data.stats[0]);
+            }).catch((err) => {
+                console.error("Error fetching user stats:", err);
+            });
+    }, [updateStats]);
 
     const getStatLabel = (user) => {
         switch (stat) {
@@ -89,7 +100,16 @@ const Home = () => {
 
                 {/* Statistics tab */}
                 <Box hidden={activeTab !== 0} my={4}>
-                    <CardHeader title="Your Statistics" subheader="// TODO" sx={{ p: 0, mb: 2 }} />
+                    <CardHeader title="Your Statistics" sx={{ p: 0, mb: 2 }} />
+                    {userStats ? (
+                        <Box>
+                            <Typography variant="body1">Total score: {userStats.totalScore} pts</Typography>
+                            <Typography variant="body1">Accuracy rate: {userStats.correctRate.toFixed(2)} %</Typography>
+                            <Typography variant="body1">Games played: {userStats.totalGamesPlayed}</Typography>
+                        </Box>
+                    ) : (
+                        <Typography variant="body1" color="text.secondary">Loading your statistics...</Typography>
+                    )}
                 </Box>
 
                 {/* Rankings tab */}
