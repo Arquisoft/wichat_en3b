@@ -139,7 +139,7 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
 
 function Game() {
   const axios = useAxios();
-  const triggerStatsUpdate = useStats();
+  const { triggerStatsUpdate } = useStats();
 
   const totalRounds = 10;
   const [round, setRound] = useState(1);
