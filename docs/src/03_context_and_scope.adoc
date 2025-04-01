@@ -84,10 +84,10 @@ Backend ..> LLM : Asks for hints
 |===
 | Communication Partners | Input | Output
 | User | The user sees the web application in real time and makes decisions accordingly.|Performs actions on the application such as answering a question, using a wildcard or asking a question to a chatbot.
-| Web Application |Receives user inputs and data from backend services.|Updates the interface to show to the user.
-| Backend Service |Takes actions from users received from the web application and data returned by different APIs.|Manages calls to APIs and updates the view of the web application.
-|Wikidata|Receives a query about a theme or category.|Returns a page corresponding to the given query.
-|LLM|Gets relevant information about the question the user has to answer.|Interacts or answers the user in several ways, depending on the used wildcard.
+| WebApp |Receives user inputs and data from backend services.|Updates the interface to show to the user.
+| UserService |Takes actions from users received from the web application.|Updates the view of the web application.
+|QuestionService|Receives a query about a theme or category.|Returns a page corresponding to the given query.
+|LLMService|Gets relevant information about the question the user has to answer.|Interacts or answers the user in several ways, depending on the used wildcard.
 |===
 
 === Technical Context
@@ -135,9 +135,10 @@ Backend <..> LLM
 [options="header",cols="1,2"]
 |===
 |Communication Partners|Explanation
-|Web Application|The user can play the game using Internet, via HTTP.
-|Backend Service|Manages data and user actions, chatting with LLMs and generates trivia questions through calls to the respective APIs.
-|Database|MongoDB database for storing users information and the information about the possible answers to the questions, along with the corresponding images.
-|Wikidata|Data is obtained throught SPARQL queries made by the service.
-|LLM|Gets relevant information about the question the user has to answer.
+|WebApp |The user can play the game using Internet, via HTTP.
+|UserService|Manages data and user actions and generates trivia questions through calls to the respective APIs.
+|DataBase|MongoDB database for storing users information.
+|QuestionService|Data is obtained throught SPARQL queries made by the service.
+|LLMService|Gets relevant information about the question the user has to answer.
+
 |===
