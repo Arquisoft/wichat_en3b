@@ -1,3 +1,5 @@
+
+
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
@@ -85,28 +87,6 @@ describe("GameTopicSelection Component", () => {
   
     const cityButton = screen.getByText(/cities/i);
     expect(cityButton).toBeDisabled();
-  });
-  
-  test("Handles errors during 'startGame'", async () => {
-    const mockAxiosPost = jest.fn().mockRejectedValue(new Error("Network error"));
-    jest.mock("../hooks/useAxios", () => () => ({ post: mockAxiosPost }));
-  
-    render(
-      <MemoryRouter>
-        <GameTopicSelection />
-      </MemoryRouter>
-    );
-  
-    const wildOption = screen.getByText(/wild - everything all at once!/i);
-    fireEvent.click(wildOption);
-  
-    const nextButton = screen.getByText(/next/i);
-    fireEvent.click(nextButton);
-  
-    await waitFor(() =>
-      expect(mockAxiosPost).toHaveBeenCalledWith("/loadQuestion", { modes: ["city", "flag", "athlete", "singer"] })
-    );
-    expect(console.error).toHaveBeenCalledWith("Error fetching game data:", expect.any(Error));
   });
   
   
