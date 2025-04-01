@@ -37,7 +37,13 @@ The form can be varied:
 .Structure
 A potential (but not mandatory) structure for this section could be:
 
-
+* Domain concepts
+* User Experience concepts (UX)
+* Safety and security concepts
+* Architecture and design patterns
+* "Under-the-hood"
+* development concepts
+* operational concepts
 
 Note: it might be difficult to assign individual concepts to one specific topic
 on this list.
@@ -51,66 +57,18 @@ See https://docs.arc42.org/section-8/[Concepts] in the arc42 documentation.
 ****
 endif::arc42help[]
 
-This section highlights the overarching principles and solutions that are relevant to multiple parts of the quiz game system, which interacts with Wikidata. These concepts contribute to the conceptual integrity of the system and ensure consistency across the architecture and user experience.
+=== _<Concept 1>_
 
-Motivation
-The cross-cutting concepts form the foundation of the system’s conceptual integrity, enabling a coherent and consistent approach to development. They help achieve key qualities like accessibility, user experience, security, and scalability, which are important across various components of the system.
-
-
-## **Domain Concepts**
-
-The quiz game is designed to allow users to choose from predefined categories sourced from Wikidata, creating a dynamic and personalized experience. The system supports multiple categories that users can combine to create customized quizzes. The following domain concepts are integral:
-
-- Categories and Questions: Categories are predefined areas from Wikidata, such as history, science, or geography. Users can select any number of categories to tailor their quiz experience. The system retrieves relevant questions from Wikidata based on these categories.
-  
-- Game Modes: The game supports different modes, such as playing with a time limit or in rounds. Players can also choose to play a single category or a mix of all available categories. This provides flexibility and variety in gameplay.
-
-- User Profiles: Users can log in, track their progress, and view their historical performance and rankings. Each user profile includes a personalized quiz history, best scores, and achievements.
+_<explanation>_
 
 
-## **User Experience (UX) Concepts**
 
-The user experience is a key focus of this system, with an emphasis on accessibility and responsiveness. The game provides the following UX features:
+=== _<Concept 2>_
 
-- Responsibility and Accessibility: The design is focused on ensuring the game is accessible to a wide range of users, including those with color blindness. To ensure inclusivity, the game avoids color schemes that could cause issues for color-blind players and focuses on accessible contrast and fonts.
-  
-## **Game Features:**
-  - Round-based Play: Users can choose to play in rounds, where each round presents a set of questions, and the game tracks performance across multiple rounds.
-  - Time-based Play: Alternatively, players can play against the clock, answering questions as quickly as possible to compete with others or themselves.
-  - Clues and Help Options: Players have the option to use several clues, such as hints or using an LLM chat to help them answer difficult questions. Users can mimmick a call a friend for assistance using game stats to determine the best options for asking for help or even ask the audience.
-  
-- Ranking and History: A ranking system tracks the performance of players, allowing users to see how they compare to others. Historical data is stored to allow users to review past quizzes and track improvement over time.
+_<explanation>_
 
+...
 
-## **Technology and Architecture Concepts**
+=== _<Concept n>_
 
-The system is built using React and JavaScript to provide a dynamic and interactive user interface. The architecture is designed with the following concepts in mind:
-
-- React Components: The game’s interface is built using reusable React components, making the system modular and easy to maintain.
-  
-- Wikidata Integration: The game interacts with Wikidata via predefined categories. When a user selects a category, the system fetches questions dynamically, ensuring a rich and diverse quiz experience.
-
-- State Management: React’s state management system is used to track user selections, game progress, and scores. It ensures a smooth and responsive experience as users navigate through the game.
-
-- Azure Deployment: The game will be hosted on Azure to ensure scalability, reliability, and easy deployment. Azure provides a secure and robust infrastructure for hosting both the frontend and backend components.
-
-## **Security and Safety Concepts**
-
-Although the quiz game focuses on entertainment and learning, security is a critical aspect:
-
-- User Authentication: Users can log in to track their progress and view their rankings. Authentication is handled securely to ensure user data is protected.
-
-- Data Integrity: The game ensures that data retrieved from Wikidata is accurate and filtered to avoid inappropriate content.
-
-- Privacy: The system is designed to protect user privacy, ensuring personal data is not exposed or misused.
-
-
-## **Development and Operational Concepts**
-
-- Agile Development: The project is developed using an Agile methodology, specifically in 3-week sprints. This allows for iterative development, rapid feedback, and continuous improvement.
-
-- Continuous Deployment: The game is deployed through Azure, with automated build and deployment pipelines to ensure smooth updates and patches.
-
-- Scalability: As the number of users grows, the system is designed to scale horizontally. Azure’s cloud infrastructure supports scaling to handle increased traffic and ensure high availability during peak usage times.
-
-
+_<explanation>_
