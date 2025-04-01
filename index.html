@@ -478,9 +478,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_sign_up">6.1. Sign up</a></li>
 <li><a href="#_log_in">6.2. Log in</a></li>
-<li><a href="#_playing_a_game">6.3. Playing a game</a></li>
-<li><a href="#_llmchat_during_a_game">6.4. LLMChat during a game</a></li>
-<li><a href="#_show_statistics">6.5. Show statistics</a></li>
+<li><a href="#_playing_the_game">6.3. Playing the game</a></li>
+<li><a href="#_hints">6.4. Hints</a></li>
+<li><a href="#_rankings">6.5. Rankings</a></li>
 </ul>
 </li>
 <li><a href="#section-deployment-view">7. Deployment View</a>
@@ -1045,7 +1045,7 @@ The title of the table is the name of your system, the three columns contain the
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-4def294a1a2d4446fd150325eb2fd0c0.png" alt="Diagram" width="693" height="638">
+<img src="./images/diag-plantuml-md5-4def294a1a2d4446fd150325eb2fd0c0.png" alt="Diagram" width="689" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1068,22 +1068,22 @@ The title of the table is the name of your system, the three columns contain the
 <td class="tableblock halign-left valign-top"><p class="tableblock">Performs actions on the application such as answering a question, using a wildcard or asking a question to a chatbot.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">WebApp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Application</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Receives user inputs and data from backend services.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updates the interface to show to the user.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UserService</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Takes actions from users received from the web application.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Updates the view of the web application.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Backend Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Takes actions from users received from the web application and data returned by different APIs.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manages calls to APIs and updates the view of the web application.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">QuestionService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wikidata</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Receives a query about a theme or category.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns a page corresponding to the given query.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LLMService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LLM</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Gets relevant information about the question the user has to answer.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Interacts or answers the user in several ways, depending on the used wildcard.</p></td>
 </tr>
@@ -1111,7 +1111,7 @@ together with a mapping table showing the relationships between channels and inp
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-377173e88bf99af086ab3ff51b5c93e3.png" alt="Diagram" width="726" height="638">
+<img src="./images/diag-plantuml-md5-377173e88bf99af086ab3ff51b5c93e3.png" alt="Diagram" width="698" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1127,23 +1127,23 @@ together with a mapping table showing the relationships between channels and inp
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">WebApp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Application</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The user can play the game using Internet, via HTTP.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UserService</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Manages data and user actions and generates trivia questions through calls to the respective APIs.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Backend Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manages data and user actions, chatting with LLMs and generates trivia questions through calls to the respective APIs.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DataBase</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">MongoDB database for storing users information.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">QuestionService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wikidata</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Data is obtained throught SPARQL queries made by the service.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LLMService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LLM</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Gets relevant information about the question the user has to answer.</p></td>
 </tr>
 </tbody>
@@ -1485,7 +1485,7 @@ Leave out normal, simple, boring or standardized parts of your system</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-9e862c05e442b22fb22601975867e52c.png" alt="Diagram" width="768" height="638">
+<img src="./images/diag-plantuml-md5-9e862c05e442b22fb22601975867e52c.png" alt="Diagram" width="686" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1530,7 +1530,7 @@ part of arc42 for additional levels.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-2bdc84fce64bfeb34f84a5af6b266803.png" alt="Diagram" width="725" height="638">
+<img src="./images/diag-plantuml-md5-2bdc84fce64bfeb34f84a5af6b266803.png" alt="Diagram" width="768" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1640,7 +1640,7 @@ Data must be valid and not collide with some account that already exists.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/SignUp.png" alt="SignUp" width="777" height="564">
+<img src="./images/SignUp.png" alt="SignUp" width="525" height="564">
 </div>
 </div>
 </div>
@@ -1651,40 +1651,41 @@ Data must be valid and not collide with some account that already exists.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/LogIn.png" alt="LogIn" width="662" height="610">
+<img src="./images/LogIn.png" alt="LogIn" width="420" height="504">
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_playing_a_game">6.3. Playing a game</h3>
+<h3 id="_playing_the_game">6.3. Playing the game</h3>
 <div class="paragraph">
 <p>Selecting the game mode and playing it.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Playing.png" alt="Playing" width="839" height="696">
+<img src="./images/Playing.png" alt="Playing" width="684" height="621">
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_llmchat_during_a_game">6.4. LLMChat during a game</h3>
+<h3 id="_hints">6.4. Hints</h3>
 <div class="paragraph">
-<p>The application has a chatbot which can give hints during a round in the game, under no circumstances will it say the correct option. This is the procedure that follows when is invoked:</p>
+<p>The application has several types of hints, but we can define a general structure
+that matches with all of them, just by varying few details for each type.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Hints.png" alt="Hints" width="503" height="428">
+<img src="./images/Hints.png" alt="Hints" width="378" height="365">
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_show_statistics">6.5. Show statistics</h3>
+<h3 id="_rankings">6.5. Rankings</h3>
 <div class="paragraph">
-<p>Seeing the statistics of the round, and general at each category.</p>
+<p>Seeing the ranking of best scores. It can be the general one or the one for each category.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Rankings.png" alt="Rankings" width="753" height="668">
+<img src="./images/Rankings.png" alt="Rankings" width="405" height="556">
 </div>
 </div>
 <div style="page-break-after: always;"></div>
@@ -1778,7 +1779,7 @@ when your infrastructure is more complex.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Deployment-View.png" alt="Deployment View" width="680" height="638">
+<img src="./images/Deployment-View.png" alt="Deployment View" width="739" height="638">
 </div>
 </div>
 <div class="dlist">
