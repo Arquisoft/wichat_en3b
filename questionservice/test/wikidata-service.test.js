@@ -1,19 +1,47 @@
 const request = require("supertest");
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const server = require("../wikidata-service");
+const { startUp } = require("../wikidata-service");
 const WikidataObject = require("../wikidata-model");
 
 let mongoServer;
 let app;
 
+describe('Service Startup Logic', () => {
+    jest.mock('axios');
+
+    it('should clear the database and repopulate it on startup', async () => {
+        // Spy on the method we expect to be called
+        const deleteManySpy = jest.spyOn(WikidataObject, 'deleteMany');
+        const bulkWriteSpy = jest.spyOn(WikidataObject, 'bulkWrite');
+
+        process.env.NODE_ENV = "something";
+        await startUp();
+        process.env.NODE_ENV = "test"; // Reset the environment variable
+
+        expect(deleteManySpy).toHaveBeenCalledTimes(1);
+        expect(deleteManySpy).toHaveBeenCalledWith({}); // Ensure it's called with empty filter
+        expect(bulkWriteSpy).toHaveBeenCalledTimes(4);
+        expect(bulkWriteSpy).toHaveBeenCalledWith({});
+
+        bulkWriteSpy.mockRestore(); // Clean up the spy
+        deleteManySpy.mockRestore(); // Clean up the spy
+    });
+
+});
+
 // Mock the database methods to prevent actual DB operations
-describe("Express Service API Tests", () => {
+describe("Express Service API Endpoints", () => {
     beforeAll(async () => {
         mongoServer = await MongoMemoryServer.create();
         const mongoUri = mongoServer.getUri();
         process.env.MONGODB_URI = mongoUri;
-        app = require('../wikidata-service');
+        const { server } = require("../wikidata-service");
+        app = server;
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     afterAll(async () => {
@@ -23,7 +51,7 @@ describe("Express Service API Tests", () => {
 
     // Test the /load endpoint with valid data
     it("should return 200 when valid modes are provided", async () => {
-        const response = await request(server)
+        const response = await request(app)
             .post("/load")
             .send({ modes: ["city", "flag"] });
         expect(response.status).toBe(200);
@@ -32,7 +60,7 @@ describe("Express Service API Tests", () => {
 
     // Test /load with invalid data
     it("should return 400 for invalid modes parameter", async () => {
-        const response = await request(server)
+        const response = await request(app)
             .post("/load")
             .send({ modes: "invalid" });
         expect(response.status).toBe(400);
@@ -52,7 +80,7 @@ describe("Express Service API Tests", () => {
 
     // Test /getRound endpoint
     it("should return a valid game round", async () => {
-        const response = await request(server).get("/getRound");
+        const response = await request(app).get("/getRound");
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("mode");
         expect(response.body.items.length).toBe(4);
@@ -63,14 +91,14 @@ describe("Express Service API Tests", () => {
     it("should return 500 if an error occurs", async () => {
         const consoleErrorMock = jest.spyOn(console, "error").mockImplementation(() => { }); // Suppress console.error
         jest.spyOn(WikidataObject, "aggregate").mockRejectedValue(new Error("Database error"));
-        const response = await request(server).get("/getRound");
+        const response = await request(app).get("/getRound");
         expect(response.status).toBe(500);
         expect(response.body).toHaveProperty("error", "Internal server error");
         consoleErrorMock.mockRestore(); // Restore the original console.error
     });
 
     it("should return a list of available modes", async () => {
-        const response = await request(server).get("/getModes");
+        const response = await request(app).get("/getModes");
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("modes");
         expect(Array.isArray(response.body.modes)).toBe(true);
