@@ -464,7 +464,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_decompositon_of_the_system">4.1. Decompositon of the system</a></li>
 <li><a href="#_achieving_quality_goals">4.2. Achieving quality goals</a></li>
-<li><a href="#_other_organizational_decisions">4.3. Other organizational decisions.</a></li>
+<li><a href="#_other_organizational_decisions">4.3. Other organizational decisions</a></li>
 </ul>
 </li>
 <li><a href="#section-building-block-view">5. Building Block View</a>
@@ -478,9 +478,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_sign_up">6.1. Sign up</a></li>
 <li><a href="#_log_in">6.2. Log in</a></li>
-<li><a href="#_playing_the_game">6.3. Playing the game</a></li>
-<li><a href="#_hints">6.4. Hints</a></li>
-<li><a href="#_rankings">6.5. Rankings</a></li>
+<li><a href="#_playing_a_game">6.3. Playing a game</a></li>
+<li><a href="#_llmchat_during_a_game">6.4. LLMChat during a game</a></li>
+<li><a href="#_show_statistics">6.5. Show statistics</a></li>
 </ul>
 </li>
 <li><a href="#section-deployment-view">7. Deployment View</a>
@@ -488,22 +488,31 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_infrastructure">7.1. Infrastructure</a></li>
 </ul>
 </li>
-<li><a href="#section-concepts">8. Cross-cutting Concepts</a>
+<li><a href="#section-concepts">8. Cross-cutting Concepts</a></li>
+<li><a href="#_cross_cutting_concepts">Cross-cutting Concepts</a>
+<ul class="sectlevel1">
+<li><a href="#_motivation">1. Motivation</a></li>
+<li><a href="#_domain_concepts">2. <strong>Domain Concepts</strong></a></li>
+<li><a href="#_user_experience_ux_concepts">3. <strong>User Experience (UX) Concepts</strong></a></li>
+<li><a href="#_technology_and_architecture_concepts">4. <strong>Technology and Architecture Concepts</strong></a></li>
+<li><a href="#_security_and_safety_concepts">5. <strong>Security and Safety Concepts</strong></a></li>
+<li><a href="#_development_and_operational_concepts">6. <strong>Development and Operational Concepts</strong></a></li>
+<li><a href="#section-design-decisions">7. Architecture Decisions</a></li>
+<li><a href="#section-quality-scenarios">8. Quality Requirements</a>
 <ul class="sectlevel2">
-<li><a href="#_concept_1">8.1. <em>&lt;Concept 1&gt;</em></a></li>
-<li><a href="#_concept_2">8.2. <em>&lt;Concept 2&gt;</em></a></li>
-<li><a href="#_concept_n">8.3. <em>&lt;Concept n&gt;</em></a></li>
+<li><a href="#_quality_tree">8.1. Quality Tree</a></li>
+<li><a href="#_quality_scenarios">8.2. Quality Scenarios</a></li>
 </ul>
 </li>
-<li><a href="#section-design-decisions">9. Architecture Decisions</a></li>
-<li><a href="#section-quality-scenarios">10. Quality Requirements</a>
+<li><a href="#section-technical-risks">9. Risks and Technical Debts</a>
 <ul class="sectlevel2">
-<li><a href="#_quality_tree">10.1. Quality Tree</a></li>
-<li><a href="#_quality_scenarios">10.2. Quality Scenarios</a></li>
+<li><a href="#_risks">9.1. Risks</a></li>
+<li><a href="#_technical_debt">9.2. Technical Debt</a></li>
 </ul>
 </li>
-<li><a href="#section-technical-risks">11. Risks and Technical Debts</a></li>
-<li><a href="#section-glossary">12. Glossary</a></li>
+<li><a href="#section-glossary">10. Glossary</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -831,37 +840,58 @@ These stakeholders determine the extent and the level of detail of your work and
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">RTVE</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:rtve.dircom@rtve.es">rtve.dircom@rtve.es</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">- High-quality, functional quiz platform - On-time delivery - Easy-to-use interface - Detailed user stats and APIs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- High-quality, functional quiz platform<br>
+- On-time delivery<br>
+- Easy-to-use interface<br>
+- Detailed user stats and APIs</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ChattySw</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:chattySw@projects.es">chattySw@projects.es</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Clear requirements and deadlines - Collaboration and timely feedback - Efficient code reviews and testing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- Clear requirements and deadlines<br>
+- Collaboration and timely feedback<br>
+- Efficient code reviews and testing</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Professors</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Pablo González: <a href="mailto:gonzalezgpablo@uniovi.es">gonzalezgpablo@uniovi.es</a> &amp; Jose Labra: <a href="mailto:labra@uniovi.es">labra@uniovi.es</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">- Regular progress reports - Adherence to academic guidelines and criteria - Proper documentation of work and development process - Develop interpersonal skills and team dynamics</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pablo González: <a href="mailto:gonzalezgpablo@uniovi.es">gonzalezgpablo@uniovi.es</a><br>
+Jose Labra: <a href="mailto:labra@uniovi.es">labra@uniovi.es</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- Regular progress reports<br>
+- Adherence to academic guidelines and criteria<br>
+- Proper documentation of work and development process<br>
+- Develop interpersonal skills and team dynamics</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Development team</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">· Víctor Llana Pérez - <a href="mailto:uo294629@uniovi.es">uo294629@uniovi.es</a> · Lara Haya Santiago - <a href="mailto:uo289684@uniovi.es">uo289684@uniovi.es</a> · Alba González Arango - <a href="mailto:uo289041@uniovi.es">uo289041@uniovi.es</a> · Marco Lorenzo Martínez - <a href="mailto:uo294324@uniovi.es">uo294324@uniovi.es</a> · Javier Menéndez Osendi - <a href="mailto:uo294866@uniovi.es">uo294866@uniovi.es</a> · Daniel Rodríguez Fernández - <a href="mailto:uo293655@uniovi.es">uo293655@uniovi.es</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">- Clear requirements and deadlines - Collaboration and timely feedback - Efficient code reviews and testing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="small">Víctor Llana Pérez - <a href="mailto:uo294629@uniovi.es">uo294629@uniovi.es</a><br>
+Lara Haya Santiago - <a href="mailto:uo289684@uniovi.es">uo289684@uniovi.es</a><br>
+Alba González Arango - <a href="mailto:uo289041@uniovi.es">uo289041@uniovi.es</a><br>
+Marco Lorenzo Martínez - <a href="mailto:uo294324@uniovi.es">uo294324@uniovi.es</a><br>
+Javier Menéndez Osendi - <a href="mailto:uo294866@uniovi.es">uo294866@uniovi.es</a><br>
+Daniel Rodríguez Fernández - <a href="mailto:uo293655@uniovi.es">uo293655@uniovi.es</a></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- Clear requirements and deadlines<br>
+- Collaboration and timely feedback<br>
+- Efficient code reviews and testing</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Wikidata (Data Provider)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:wikidata@lists.wikimedia.org">wikidata@lists.wikimedia.org</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">- Accurate and reliable data used for question generation - Compliance with licensing and data-use policies</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- Accurate and reliable data used for question generation<br>
+- Compliance with licensing and data-use policies</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Empathy</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://empathy.co/contact-us/" class="bare">https://empathy.co/contact-us/</a> &amp; <a href="mailto:us@empathy.ai">us@empathy.ai</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">- Increased user engagement through their LLM - Integration of Empaty’s LLM for dynamic, diverse question generation - Opportunity for users to participate in Empaty’s contest</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- Increased user engagement through their LLM<br>
+- Integration of Empathy’s LLM for dynamic, diverse question generation<br>
+- Opportunity for users to participate in Empathy’s contest</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Users</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">- Easy registration and login - Engaging quiz experience - Accurate tracking of progress (games, questions, stats)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- Easy registration and login<br>
+- Engaging quiz experience<br>
+- Accurate tracking of progress (games, questions, stats)</p></td>
 </tr>
 </tbody>
 </table>
@@ -897,7 +927,7 @@ conventions (e.g. programming or versioning guidelines, documentation or naming 
 </div>
 </div>
 <div class="paragraph">
-<p><strong>- TECHNICAL CONSTRAINTS</strong></p>
+<p><strong>TECHNICAL CONSTRAINTS</strong></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -921,11 +951,11 @@ conventions (e.g. programming or versioning guidelines, documentation or naming 
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Obtaining the hints</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The hints for the game must be obtained from an external Large Language Model (LLM) through an API.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some hints for the game must be obtained from an external Large Language Model (LLM) through an API.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Source of information</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Information about the questions must be automatically generated from Wikidata. So should be the disctractors and the images.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Information about the questions and answers must be directly obtained from Wikidata. So should be the disctractors and the images.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Access to information</p></td>
@@ -942,7 +972,7 @@ conventions (e.g. programming or versioning guidelines, documentation or naming 
 </tbody>
 </table>
 <div class="paragraph">
-<p><strong>- ORGANIZATIONAL CONSTRAINTS</strong></p>
+<p><strong>ORGANIZATIONAL CONSTRAINTS</strong></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1045,7 +1075,7 @@ The title of the table is the name of your system, the three columns contain the
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-4def294a1a2d4446fd150325eb2fd0c0.png" alt="Diagram" width="689" height="638">
+<img src="./images/diag-plantuml-md5-4def294a1a2d4446fd150325eb2fd0c0.png" alt="Diagram" width="712" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1068,22 +1098,22 @@ The title of the table is the name of your system, the three columns contain the
 <td class="tableblock halign-left valign-top"><p class="tableblock">Performs actions on the application such as answering a question, using a wildcard or asking a question to a chatbot.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Web Application</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WebApp</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Receives user inputs and data from backend services.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updates the interface to show to the user.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Backend Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Takes actions from users received from the web application and data returned by different APIs.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Manages calls to APIs and updates the view of the web application.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UserService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Takes actions from users received from the web application.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updates the view of the web application.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wikidata</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">QuestionService</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Receives a query about a theme or category.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns a page corresponding to the given query.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LLM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LLMService</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Gets relevant information about the question the user has to answer.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Interacts or answers the user in several ways, depending on the used wildcard.</p></td>
 </tr>
@@ -1111,7 +1141,7 @@ together with a mapping table showing the relationships between channels and inp
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-377173e88bf99af086ab3ff51b5c93e3.png" alt="Diagram" width="698" height="638">
+<img src="./images/diag-plantuml-md5-377173e88bf99af086ab3ff51b5c93e3.png" alt="Diagram" width="686" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1127,23 +1157,23 @@ together with a mapping table showing the relationships between channels and inp
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Web Application</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WebApp</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The user can play the game using Internet, via HTTP.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Backend Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Manages data and user actions, chatting with LLMs and generates trivia questions through calls to the respective APIs.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UserService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manages data and user actions and generates trivia questions through calls to the respective APIs.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Database</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DataBase</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">MongoDB database for storing users information.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wikidata</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">QuestionService</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Data is obtained throught SPARQL queries made by the service.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LLM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LLMService</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Gets relevant information about the question the user has to answer.</p></td>
 </tr>
 </tbody>
@@ -1225,7 +1255,7 @@ Refer to details in the following sections.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Node.js</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Open-source cross-platform JavaScript Runtime environment which will be used to build the backend of the application. It is widely used and has an enormous amount of available libraries, wich makes it one of the best approach for most web applications.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Open-source cross-platform JavaScript Runtime environment which will be used to build the backend of the application. It is widely used and has an enormous amount of available libraries, wich makes it one of the best approaches for most web applications.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1254,7 +1284,7 @@ As for design patterns, we will use template method to manage the behavior of th
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Testability</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">We will aim for a high test coverage of the code for the application, using tools like Selenium to achieve this.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">We will aim for a high test coverage of the code for the application, using the adequate tools to achieve this.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Usability</strong></p></td>
@@ -1272,12 +1302,18 @@ As for design patterns, we will use template method to manage the behavior of th
 </table>
 </div>
 <div class="sect2">
-<h3 id="_other_organizational_decisions">4.3. Other organizational decisions.</h3>
+<h3 id="_other_organizational_decisions">4.3. Other organizational decisions</h3>
 <div class="paragraph">
 <p>Since we will be building a microserviced application, we will be using a microservice-oriented gitflow for version control. It will be a single repository (monorepo) where there is a folder for each service. We will also follow GitHub Flow for a straightforward development strategy.</p>
 </div>
 <div class="paragraph">
 <p>We will also follow SCRUM with 1-week sprints for the development cycle. Since we are heavily constricted by time, this will be our best alternative.</p>
+</div>
+<div class="paragraph">
+<p>With respect to testing, we will use Jest for unitary testing, which helps us improving our productivity by executing tests automatically and in a fast way.
+It also includes very clear reports of the tests and, in case they fail, the reason why this happens.
+The tools it provides for mocking modules or functions are really great, which allow us to test just the parts of the application we want for each test in an efficient way.
+Furthermore, it is compatible with several frameworks, such as React and Node.js (the ones we are using), which makes it perfect for testing our application.</p>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
@@ -1373,7 +1409,7 @@ In the best case you will get away with examples or simple signatures.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-929d8852f221bde5ab62c4d7e2b6e2d9.png" alt="Diagram" width="400px" height="300px">
+<img src="./images/diag-plantuml-md5-1fcdd852c4cc875b7f6b9330a6f0996a.png" alt="Diagram" width="400px" height="300px">
 </div>
 </div>
 <div class="dlist">
@@ -1485,7 +1521,7 @@ Leave out normal, simple, boring or standardized parts of your system</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-9e862c05e442b22fb22601975867e52c.png" alt="Diagram" width="686" height="638">
+<img src="./images/diag-plantuml-md5-777b31d4d304c57df3fd498ef2c1626c.png" alt="Diagram" width="693" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1501,11 +1537,11 @@ Leave out normal, simple, boring or standardized parts of your system</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Frontend Service</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Frontend</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Manages user interaction and presentation.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Backend Service</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Backend</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Handles logic, coordination, and communication between the frontend, database, and external services.</p></td>
 </tr>
 <tr>
@@ -1530,7 +1566,7 @@ part of arc42 for additional levels.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-2bdc84fce64bfeb34f84a5af6b266803.png" alt="Diagram" width="768" height="638">
+<img src="./images/diag-plantuml-md5-b6fabd668253df644be645491413a81e.png" alt="Diagram" width="705" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1551,18 +1587,27 @@ part of arc42 for additional levels.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Game Service</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Manages game state and logic. Uses more concrete services like Chat and Questions to divide responsibilities.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manages game state and logic. Uses more concrete services like LLM and Question to divide responsibilities.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Chat Service</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>LLM Service</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Provides chat functionality, sending requests to an LLM, receiving and processing responses to show hints to the user.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Questions Service</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Creates and provides questions using data from Wikidata.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Question Service</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Creates and provides questions using data obtained from Wikidata.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Gateway Service</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manages the interaction between the frontend and the backend. Handles the requests, assigning them to the corresponding backend endpoint.</p></td>
 </tr>
 </tbody>
 </table>
+<div class="paragraph">
+<p>We have decided that the communication between the backend (Question service) and Wikidata takes place when the application starts, storing all the necessary information in the database for using it later.
+We do this communication so early in the application because this approach helps up optimizing the performance.
+This way, when a user arrives to the actual game, all the information is already stored and ready to be used, because it has been obtained and stored in the back while the user was navigating through the screens that appear previous to the game (login, topic selection, mode selection&#8230;&#8203;).</p>
+</div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
@@ -1640,7 +1685,7 @@ Data must be valid and not collide with some account that already exists.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/SignUp.png" alt="SignUp" width="525" height="564">
+<img src="./images/SignUp.png" alt="SignUp" width="777" height="564">
 </div>
 </div>
 </div>
@@ -1651,41 +1696,40 @@ Data must be valid and not collide with some account that already exists.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/LogIn.png" alt="LogIn" width="420" height="504">
+<img src="./images/LogIn.png" alt="LogIn" width="662" height="610">
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_playing_the_game">6.3. Playing the game</h3>
+<h3 id="_playing_a_game">6.3. Playing a game</h3>
 <div class="paragraph">
 <p>Selecting the game mode and playing it.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Playing.png" alt="Playing" width="684" height="621">
+<img src="./images/Playing.png" alt="Playing" width="839" height="696">
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_hints">6.4. Hints</h3>
+<h3 id="_llmchat_during_a_game">6.4. LLMChat during a game</h3>
 <div class="paragraph">
-<p>The application has several types of hints, but we can define a general structure
-that matches with all of them, just by varying few details for each type.</p>
+<p>The application has a chatbot which can give hints during a round in the game, under no circumstances will it say the correct option. This is the procedure that follows when is invoked:</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Hints.png" alt="Hints" width="378" height="365">
+<img src="./images/Hints.png" alt="Hints" width="503" height="428">
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_rankings">6.5. Rankings</h3>
+<h3 id="_show_statistics">6.5. Show statistics</h3>
 <div class="paragraph">
-<p>Seeing the ranking of best scores. It can be the general one or the one for each category.</p>
+<p>Seeing the statistics of the round, and general at each category.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Rankings.png" alt="Rankings" width="405" height="556">
+<img src="./images/Rankings.png" alt="Rankings" width="745" height="668">
 </div>
 </div>
 <div style="page-break-after: always;"></div>
@@ -1779,7 +1823,7 @@ when your infrastructure is more complex.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Deployment-View.png" alt="Deployment View" width="739" height="638">
+<img src="./images/Deployment-View.png" alt="Deployment View" width="729" height="638">
 </div>
 </div>
 <div class="dlist">
@@ -1922,31 +1966,6 @@ Thus, they are an important contribution to achieve inner qualities of your syst
 <div class="title">Structure</div>
 <p>A potential (but not mandatory) structure for this section could be:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Domain concepts</p>
-</li>
-<li>
-<p>User Experience concepts (UX)</p>
-</li>
-<li>
-<p>Safety and security concepts</p>
-</li>
-<li>
-<p>Architecture and design patterns</p>
-</li>
-<li>
-<p>"Under-the-hood"</p>
-</li>
-<li>
-<p>development concepts</p>
-</li>
-<li>
-<p>operational concepts</p>
-</li>
-</ul>
-</div>
 <div class="paragraph">
 <p>Note: it might be difficult to assign individual concepts to one specific topic
 on this list.</p>
@@ -1962,32 +1981,137 @@ on this list.</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_concept_1">8.1. <em>&lt;Concept 1&gt;</em></h3>
+</div>
+</div>
+<h1 id="_cross_cutting_concepts" class="sect0">Cross-cutting Concepts</h1>
 <div class="paragraph">
-<p><em>&lt;explanation&gt;</em></p>
+<p>This section highlights the overarching principles and solutions that are relevant to multiple parts of the quiz game system, which interacts with Wikidata. These concepts contribute to the conceptual integrity of the system and ensure consistency across the architecture and user experience.</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_concept_2">8.2. <em>&lt;Concept 2&gt;</em></h3>
+<div class="sect1">
+<h2 id="_motivation">1. Motivation</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p><em>&lt;explanation&gt;</em></p>
-</div>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_concept_n">8.3. <em>&lt;Concept n&gt;</em></h3>
-<div class="paragraph">
-<p><em>&lt;explanation&gt;</em></p>
-</div>
-<div style="page-break-after: always;"></div>
+<p>The cross-cutting concepts form the foundation of the system’s conceptual integrity, enabling a coherent and consistent approach to development. They help achieve key qualities like accessibility, user experience, security, and scalability, which are important across various components of the system.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-design-decisions">9. Architecture Decisions</h2>
+<h2 id="_domain_concepts">2. <strong>Domain Concepts</strong></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The quiz game is designed to allow users to choose from predefined categories sourced from Wikidata, creating a dynamic and personalized experience. The system supports multiple categories that users can combine to create customized quizzes. The following domain concepts are integral:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Categories and Questions</strong>: Categories are predefined areas from Wikidata, such as history, science, or geography. Users can select any number of categories to tailor their quiz experience. The system retrieves relevant questions from Wikidata based on these categories.</p>
+</li>
+<li>
+<p><strong>Game Modes</strong>: The game supports different modes, such as playing with a time limit or in rounds. Players can also choose to play a single category or a mix of all available categories. This provides flexibility and variety in gameplay.</p>
+</li>
+<li>
+<p><strong>User Profiles</strong>: Users can log in, track their progress, and view their historical performance and rankings. Each user profile includes a personalized quiz history, best scores, and achievements.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_user_experience_ux_concepts">3. <strong>User Experience (UX) Concepts</strong></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The user experience is a key focus of this system, with an emphasis on accessibility and responsiveness. The game provides the following UX features:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Responsibility and Accessibility</strong>: The design is focused on ensuring the game is accessible to a wide range of users, including those with color blindness. To ensure inclusivity, the game avoids color schemes that could cause issues for color-blind players and focuses on accessible contrast and fonts.</p>
+</li>
+<li>
+<p><strong>Game Features</strong>:</p>
+</li>
+<li>
+<p><strong>Round-based Play</strong>: Users can choose to play in rounds, where each round presents a set of questions, and the game tracks performance across multiple rounds.</p>
+</li>
+<li>
+<p><strong>Time-based Play</strong>: Alternatively, players can play against the clock, answering questions as quickly as possible to compete with others or themselves.</p>
+</li>
+<li>
+<p><strong>Clues and Help Options</strong>: Players have the option to use several clues, such as hints or using an LLM chat to help them answer difficult questions. Users can mimmick a call a friend for assistance using game stats to determine the best options for asking for help or even ask the audience.</p>
+</li>
+<li>
+<p><strong>Ranking and History</strong>: A ranking system tracks the performance of players, allowing users to see how they compare to others. Historical data is stored to allow users to review past quizzes and track improvement over time.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_technology_and_architecture_concepts">4. <strong>Technology and Architecture Concepts</strong></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The system is built using React and JavaScript to provide a dynamic and interactive user interface. The architecture is designed with the following concepts in mind:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>React Components</strong>: The game’s interface is built using reusable React components, making the system modular and easy to maintain.</p>
+</li>
+<li>
+<p><strong>Wikidata Integration</strong>: The game interacts with Wikidata via predefined categories. When a user selects a category, the system fetches questions dynamically, ensuring a rich and diverse quiz experience.</p>
+</li>
+<li>
+<p><strong>State Management</strong>: React’s state management system is used to track user selections, game progress, and scores. It ensures a smooth and responsive experience as users navigate through the game.</p>
+</li>
+<li>
+<p><strong>Azure Deployment</strong>: The game will be hosted on Azure to ensure scalability, reliability, and easy deployment. Azure provides a secure and robust infrastructure for hosting both the frontend and backend components.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_security_and_safety_concepts">5. <strong>Security and Safety Concepts</strong></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Although the quiz game focuses on entertainment and learning, security is a critical aspect:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>User Authentication</strong>: Users can log in to track their progress and view their rankings. Authentication is handled securely to ensure user data is protected.</p>
+</li>
+<li>
+<p><strong>Data Integrity</strong>: The game ensures that data retrieved from Wikidata is accurate and filtered to avoid inappropriate content.</p>
+</li>
+<li>
+<p><strong>Privacy</strong>: The system is designed to protect user privacy, ensuring personal data is not exposed or misused.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_development_and_operational_concepts">6. <strong>Development and Operational Concepts</strong></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Agile Development</strong>: The project is developed using an Agile methodology, specifically in 3-week sprints. This allows for iterative development, rapid feedback, and continuous improvement.</p>
+</li>
+<li>
+<p><strong>Continuous Deployment</strong>: The game is deployed through Azure, with automated build and deployment pipelines to ensure smooth updates and patches.</p>
+</li>
+<li>
+<p><strong>Scalability</strong>: As the number of users grows, the system is designed to scale horizontally. Azure’s cloud infrastructure supports scaling to handle increased traffic and ensure high availability during peak usage times.</p>
+</li>
+</ul>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-design-decisions">7. Architecture Decisions</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -2037,7 +2161,7 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-quality-scenarios">10. Quality Requirements</h2>
+<h2 id="section-quality-scenarios">8. Quality Requirements</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -2062,7 +2186,7 @@ concrete and measurable.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_quality_tree">10.1. Quality Tree</h3>
+<h3 id="_quality_tree">8.1. Quality Tree</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -2094,7 +2218,7 @@ concrete and measurable.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_quality_scenarios">10.2. Quality Scenarios</h3>
+<h3 id="_quality_scenarios">8.2. Quality Scenarios</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -2138,7 +2262,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-technical-risks">11. Risks and Technical Debts</h2>
+<h2 id="section-technical-risks">9. Risks and Technical Debts</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -2163,11 +2287,74 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_risks">9.1. Risks</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Risk</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Severity</th>
+<th class="tableblock halign-left valign-top">What to do?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Jumping though the URL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This can be so dangerous as some users that maybe enter our application as guest arrive to points that are reserved for logIn users. Also we can face situations in which a user can go directly to /game without selecting the mode of playing or even the categories.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">High</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authentication methods must be used in order to solve this and restricting each area depending the case, maybe some only for users that are authenticated or different cases depending the window.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LLM Giving the correct answer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Can happen that the LLM if it does not receive the corrent propmt can give the answer directly to the user, and this is not its purpose. It must give clues without saying the correct answer or neither discarting the rest of the options.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Medium</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Try to perfect the prompt in order to avoid games that are completly useless as the LLM can say the correct answer.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LLM Time Response</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Can make the user wait for a huge time until he/she recieves and answer. And the problem is not only that because our ChatBot must be conversational and in case of make wait in each message it will be a loss of time considerable.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Medium</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Testing a lot what the response time is for giving hints and try different models.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Repeated Questions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Can happen that as we save in the database all the different possible questions, that two questions from the same image appears in the consecutive questions, which is not a good approach</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Low</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is weird this to happen because in our queries we retrieve like 100 options but maybe implementing something like a cache to avoid the repetition of it unless in the same game, it would be nice.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Credentials With Low Security</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">As we have our application the logIn/signUp not requires a specific length of the password or normal things related to security that are asked.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Low</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maybe this can be solved by putting some rules when creating new users in order to avoid this things to happen.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Low level README and Doc</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It will not happen because we already have a powerfull README and the DOC too but it can be a risk to not add the correct information in the different points because the first thing that is see in the README and then the doc.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Low</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Try to work on it during all the deliverables and improve it.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_technical_debt">9.2. Technical Debt</h3>
+<div class="paragraph">
+<p>At this point we cannot think of one, as it is true that is our first time dealing with these new technologies but besides the initial part of getting into it, we cannot think as some of them that are making as working worse or slower.</p>
+</div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
+</div>
 <div class="sect1">
-<h2 id="section-glossary">12. Glossary</h2>
+<h2 id="section-glossary">10. Glossary</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
