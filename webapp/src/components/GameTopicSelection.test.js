@@ -1,3 +1,4 @@
+import React from 'react'
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import GameTopicSelection from "./GameTopicSelection";
@@ -61,4 +62,54 @@ describe("GameTopicSelection Component", () => {
     fireEvent.click(wildOption);
     expect(screen.getByText(/next/i)).toBeEnabled();
   });
+
+  test("Selecting a specific topic updates state", () => {
+    render(
+      <MemoryRouter>
+        <GameTopicSelection />
+      </MemoryRouter>
+    );
+    const cityButton = screen.getByText(/cities/i);
+    fireEvent.click(cityButton);
+    expect(cityButton).toHaveStyle("background: linear-gradient(to right, #2196f3, #9c27b0)");
+  });
+  
+  test("Topic buttons are disabled when 'Wild' mode is selected", () => {
+    render(
+      <MemoryRouter>
+        <GameTopicSelection />
+      </MemoryRouter>
+    );
+    const wildOption = screen.getByText(/wild - everything all at once!/i);
+    fireEvent.click(wildOption);
+  
+    const cityButton = screen.getByText(/cities/i);
+    expect(cityButton).toBeDisabled();
+  });
+  
+  test("Handles errors during 'startGame'", async () => {
+    const mockAxiosPost = jest.fn().mockRejectedValue(new Error("Network error"));
+    jest.mock("../hooks/useAxios", () => () => ({ post: mockAxiosPost }));
+  
+    render(
+      <MemoryRouter>
+        <GameTopicSelection />
+      </MemoryRouter>
+    );
+  
+    const wildOption = screen.getByText(/wild - everything all at once!/i);
+    fireEvent.click(wildOption);
+  
+    const nextButton = screen.getByText(/next/i);
+    fireEvent.click(nextButton);
+  
+    await waitFor(() =>
+      expect(mockAxiosPost).toHaveBeenCalledWith("/loadQuestion", { modes: ["city", "flag", "athlete", "singer"] })
+    );
+    expect(console.error).toHaveBeenCalledWith("Error fetching game data:", expect.any(Error));
+  });
+  
+  
+
+  
 });
