@@ -28,20 +28,20 @@ See https://docs.arc42.org/section-2/[Architecture Constraints] in the arc42 doc
 ****
 endif::arc42help[]
 
-**- TECHNICAL CONSTRAINTS**
+**TECHNICAL CONSTRAINTS**
 [options="header",cols="1,3"]
 |===
 |Constraint|Explanation
 |Name|The application must be called WIChat.
 |Game description|The game will consist of showing a picture and the users guessing what it is about.
-|Obtaining the hints|The hints for the game must be obtained from an external Large Language Model (LLM) through an API. 
-|Source of information|Information about the questions must be automatically generated from Wikidata. So should be the disctractors and the images.
+|Obtaining the hints|Some hints for the game must be obtained from an external Large Language Model (LLM) through an API. 
+|Source of information|Information about the questions and answers must be directly obtained from Wikidata. So should be the disctractors and the images.
 |Access to information|The system will give access to the information about the generated questions and users through an API.
 |Deployment|The application must be accessible through a web interface.
-|Tracking the work| The development of the application must be on a given public repository in GitHub.
+|Tracking the work|The development of the application must be on a given public repository in GitHub.
 |===
 
-**- ORGANIZATIONAL CONSTRAINTS**
+**ORGANIZATIONAL CONSTRAINTS**
 [options="header",cols="1,3"]
 |===
 |Constraint|Explanation

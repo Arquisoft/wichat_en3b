@@ -78,14 +78,16 @@ storage {
   node WIChat
 }
 
-skinparam node{
+skinparam node {
   BackgroundColor #78a1c4
   FontSize 18
 }
 
-user -right-> WIChat
-Wikidata --> WIChat
-LLM --> WIChat
+user -right-> WIChat : Interacts
+
+Wikidata -down-> WIChat : Asks for\ninfo
+WIChat -up-> Wikidata : Retrieves\ninfo
+LLM <-left-> WIChat : Chat
 
 @enduml
 ----
@@ -151,8 +153,8 @@ endif::arc42help[]
 actor User
 
 rectangle WiChat {
-    rectangle "Frontend Service" as Web
-    rectangle "Backend Service" as Backend
+    rectangle "Frontend" as Web
+    rectangle "Backend" as Backend
     database Database
 }
 
@@ -171,8 +173,8 @@ Backend ..> LLM
 [cols="1,2" options="header"]
 |===
 | **Name** | **Responsibility**
-| **Frontend Service** | Manages user interaction and presentation.
-| **Backend Service** | Handles logic, coordination, and communication between the frontend, database, and external services.
+| **Frontend** | Manages user interaction and presentation.
+| **Backend** | Handles logic, coordination, and communication between the frontend, database, and external services.
 | **Database Layer** | Provides secure and efficient storage and retrieval of data for the application.
 |===
 
@@ -200,14 +202,14 @@ skinparam databaseStyle cylinder
 actor "User" as user
 
 node "Browser" as browser {
-  artifact "Frontend Service" as Web
+  artifact "Frontend" as Web
 }
 
 node "Server" as server {
-  node "Backend Service" as backend {
+  node "Backend" as backend {
     artifact "Authentication Service" as Auth
-    artifact "Game Service" as Game
-    artifact "Chat Service" as ChatSvc
+    artifact "Gateway Service" as Gateway
+    artifact "LLM Service" as LLMSvc
     artifact "Questions Service" as QnA
   }
   database "Database" as DB
@@ -220,12 +222,13 @@ node "External Services" as ext {
 
 user -right-> Web
 Web --> Auth
-Web --> Game
+Web --> Gateway
 Auth --> DB
-Game --> ChatSvc
-Game --> QnA
-ChatSvc --> LLM
+Gateway --> LLMSvc
+Gateway --> QnA
+LLMSvc --> LLM
 QnA --> Wikidata
+QnA --> DB
 
 @enduml
 ----
@@ -234,7 +237,12 @@ QnA --> Wikidata
 |===
 | **Name** | Responsibility
 | **Authentication Service** | Handles user authentication, login and signup.
-| **Game Service** | Manages game state and logic. Uses more concrete services like Chat and Questions to divide responsibilities.
-| **Chat Service** | Provides chat functionality, sending requests to an LLM, receiving and processing responses to show hints to the user.
-| **Questions Service** | Creates and provides questions using data from Wikidata.
+| **Game Service** | Manages game state and logic. Uses more concrete services like LLM and Question to divide responsibilities.
+| **LLM Service** | Provides chat functionality, sending requests to an LLM, receiving and processing responses to show hints to the user.
+| **Question Service** | Creates and provides questions using data obtained from Wikidata.
+| **Gateway Service** | Manages the interaction between the frontend and the backend. Handles the requests, assigning them to the corresponding backend endpoint.
 |===
+
+We have decided that the communication between the backend (Question service) and Wikidata takes place when the application starts, storing all the necessary information in the database for using it later.
+We do this communication so early in the application because this approach helps up optimizing the performance. 
+This way, when a user arrives to the actual game, all the information is already stored and ready to be used, because it has been obtained and stored in the back while the user was navigating through the screens that appear previous to the game (login, topic selection, mode selection...).

@@ -137,7 +137,7 @@ Backend <..> LLM
 |Communication Partners|Explanation
 |Web Application|The user can play the game using Internet, via HTTP.
 |Backend Service|Manages data and user actions, chatting with LLMs and generates trivia questions through calls to the respective APIs.
-|Database|MongoDB database for storing users information.
+|Database|MongoDB database for storing users information and the information about the possible answers to the questions, along with the corresponding images.
 |Wikidata|Data is obtained throught SPARQL queries made by the service.
 |LLM|Gets relevant information about the question the user has to answer.
 |===
