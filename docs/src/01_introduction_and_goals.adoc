@@ -151,11 +151,47 @@ endif::arc42help[]
 [options="header",cols="1,2,2"]
 |===
 |Role/Name|Contact|Expectations
-| RTVE | rtve.dircom@rtve.es | - High-quality, functional quiz platform - On-time delivery - Easy-to-use interface - Detailed user stats and APIs
-| ChattySw | chattySw@projects.es | Clear requirements and deadlines - Collaboration and timely feedback - Efficient code reviews and testing
-| Professors | Pablo González: gonzalezgpablo@uniovi.es & Jose Labra: labra@uniovi.es | - Regular progress reports - Adherence to academic guidelines and criteria - Proper documentation of work and development process - Develop interpersonal skills and team dynamics
-| Development team | · Víctor Llana Pérez - uo294629@uniovi.es · Lara Haya Santiago - uo289684@uniovi.es · Alba González Arango - uo289041@uniovi.es · Marco Lorenzo Martínez - uo294324@uniovi.es · Javier Menéndez Osendi - uo294866@uniovi.es · Daniel Rodríguez Fernández - uo293655@uniovi.es  | - Clear requirements and deadlines - Collaboration and timely feedback - Efficient code reviews and testing 
-| Wikidata (Data Provider) | wikidata@lists.wikimedia.org | - Accurate and reliable data used for question generation - Compliance with licensing and data-use policies
-| Empathy | https://empathy.co/contact-us/ & us@empathy.ai| - Increased user engagement through their LLM - Integration of Empaty’s LLM for dynamic, diverse question generation - Opportunity for users to participate in Empaty’s contest
-| Users | - | - Easy registration and login - Engaging quiz experience - Accurate tracking of progress (games, questions, stats)
+| RTVE | rtve.dircom@rtve.es 
+| 
+- High-quality, functional quiz platform + 
+- On-time delivery + 
+- Easy-to-use interface + 
+- Detailed user stats and APIs
+| ChattySw | chattySw@projects.es 
+| 
+- Clear requirements and deadlines + 
+- Collaboration and timely feedback + 
+- Efficient code reviews and testing
+| Professors | 
+Pablo González: gonzalezgpablo@uniovi.es +
+Jose Labra: labra@uniovi.es 
+| 
+- Regular progress reports + 
+- Adherence to academic guidelines and criteria + 
+- Proper documentation of work and development process + 
+- Develop interpersonal skills and team dynamics
+| Development team |  
+[.small]#Víctor Llana Pérez - uo294629@uniovi.es +  
+Lara Haya Santiago - uo289684@uniovi.es +  
+Alba González Arango - uo289041@uniovi.es +  
+Marco Lorenzo Martínez - uo294324@uniovi.es +  
+Javier Menéndez Osendi - uo294866@uniovi.es +  
+Daniel Rodríguez Fernández - uo293655@uniovi.es#
+| 
+- Clear requirements and deadlines + 
+- Collaboration and timely feedback + 
+- Efficient code reviews and testing 
+| Wikidata (Data Provider) | wikidata@lists.wikimedia.org 
+| 
+- Accurate and reliable data used for question generation + 
+- Compliance with licensing and data-use policies
+| Empathy | https://empathy.co/contact-us/ & us@empathy.ai 
+| 
+- Increased user engagement through their LLM + 
+- Integration of Empathy’s LLM for dynamic, diverse question generation + 
+- Opportunity for users to participate in Empathy’s contest
+| Users | - 
+| - Easy registration and login + 
+- Engaging quiz experience + 
+- Accurate tracking of progress (games, questions, stats)
 |===
