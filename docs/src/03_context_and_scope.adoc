@@ -140,4 +140,5 @@ Backend <..> LLM
 |DataBase|MongoDB database for storing users information.
 |QuestionService|Data is obtained throught SPARQL queries made by the service.
 |LLMService|Gets relevant information about the question the user has to answer.
+
 |===

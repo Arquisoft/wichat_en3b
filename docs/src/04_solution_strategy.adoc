@@ -43,7 +43,7 @@ The application is built on the MERN stack, a full-stack combination of source-a
 
 | **React.js** | Front-end JavaScript library. Despite the loading overhead, it will help us build a modern and fast UIs for the application. 
 
-| **Node.js** | Open-source cross-platform JavaScript Runtime environment which will be used to build the backend of the application. It is widely used and has an enormous amount of available libraries, wich makes it one of the best approach for most web applications.
+| **Node.js** | Open-source cross-platform JavaScript Runtime environment which will be used to build the backend of the application. It is widely used and has an enormous amount of available libraries, wich makes it one of the best approaches for most web applications.
 |===
 
 === Decompositon of the system
@@ -57,7 +57,7 @@ As for design patterns, we will use template method to manage the behavior of th
 |===
 | **Goal** | **Steps to achieve it**
 
-| **Testability** | We will aim for a high test coverage of the code for the application, using tools like Selenium to achieve this.
+| **Testability** | We will aim for a high test coverage of the code for the application, using the adequate tools to achieve this.
 
 | **Usability** | We will perform usability tests, like using dummy users and testers, and we will extend the application to be accesible. 
 
@@ -66,10 +66,15 @@ As for design patterns, we will use template method to manage the behavior of th
 | **Security** | We will follow best security practices, and use checklists to ensure there aren't major security flaws in our application. 
 |===
 
-=== Other organizational decisions. 
+=== Other organizational decisions
 Since we will be building a microserviced application, we will be using a microservice-oriented gitflow for version control. It will be a single repository (monorepo) where there is a folder for each service. We will also follow GitHub Flow for a straightforward development strategy.
 
 We will also follow SCRUM with 1-week sprints for the development cycle. Since we are heavily constricted by time, this will be our best alternative.
+
+With respect to testing, we will use Jest for unitary testing, which helps us improving our productivity by executing tests automatically and in a fast way. 
+It also includes very clear reports of the tests and, in case they fail, the reason why this happens.
+The tools it provides for mocking modules or functions are really great, which allow us to test just the parts of the application we want for each test in an efficient way.
+Furthermore, it is compatible with several frameworks, such as React and Node.js (the ones we are using), which makes it perfect for testing our application.
 
 
 
