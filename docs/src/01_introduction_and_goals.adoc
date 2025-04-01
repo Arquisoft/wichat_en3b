@@ -191,7 +191,8 @@ Daniel Rodríguez Fernández - uo293655@uniovi.es#
 - Integration of Empathy’s LLM for dynamic, diverse question generation + 
 - Opportunity for users to participate in Empathy’s contest
 | Users | - 
-| - Easy registration and login + 
+| 
+- Easy registration and login + 
 - Engaging quiz experience + 
 - Accurate tracking of progress (games, questions, stats)
 |===
