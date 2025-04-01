@@ -1,4 +1,7 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+
+
+import React from 'react'
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import GameTopicSelection from "./GameTopicSelection";
 import useAxios from "../hooks/useAxios";
@@ -60,5 +63,41 @@ describe("GameTopicSelection Component", () => {
     const wildOption = screen.getByText(/wild - everything all at once!/i);
     fireEvent.click(wildOption);
     expect(screen.getByText(/next/i)).toBeEnabled();
+  });
+
+  test("Selecting a specific topic updates state", () => {
+    render(
+      <MemoryRouter>
+        <GameTopicSelection />
+      </MemoryRouter>
+    );
+    const cityButton = screen.getByText(/cities/i);
+    fireEvent.click(cityButton);
+    expect(cityButton).toHaveStyle("background: linear-gradient(to right, #2196f3, #9c27b0)");
+  });
+  
+  test("Topic buttons are disabled when 'Wild' mode is selected", () => {
+    render(
+      <MemoryRouter>
+        <GameTopicSelection />
+      </MemoryRouter>
+    );
+    const wildOption = screen.getByText(/wild - everything all at once!/i);
+    fireEvent.click(wildOption);
+  
+    const cityButton = screen.getByText(/cities/i);
+    expect(cityButton).toBeDisabled();
+  });
+  
+  test("handleCustomSelection resets wild mode and clears selected topics", () => {
+    render(
+      <MemoryRouter>
+        <GameTopicSelection />
+      </MemoryRouter>
+    );
+    const customOption = screen.getByText(/custom/i);
+    fireEvent.click(customOption);
+  
+    expect(screen.getByText(/next/i)).toBeDisabled(); 
   });
 });

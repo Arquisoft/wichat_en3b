@@ -61,4 +61,25 @@ describe("Layout Component", () => {
     expect(axios.post).toHaveBeenCalledWith("/logout", {}, { withCredentials: true });
     expect(setAuthMock).toHaveBeenCalledWith({});
   });
+
+  test("logs an error to the console when the logout API fails", async () => {
+    const setAuthMock = jest.fn();
+    const errorMock = new Error("Logout failed");
+    useAuth.mockReturnValue({ auth: { username: "testuser" }, setAuth: setAuthMock });
+    axios.post.mockRejectedValue(errorMock); 
+  
+    const consoleErrorMock = jest.spyOn(console, "error").mockImplementation(() => {}); 
+  
+    render(
+      <MemoryRouter>
+        <Layout />
+      </MemoryRouter>
+    );
+  
+    const logoutButton = screen.getByText("Log Out");
+    await userEvent.click(logoutButton);
+  
+    expect(consoleErrorMock).toHaveBeenCalledWith(errorMock); 
+    consoleErrorMock.mockRestore();
+  });
 });
