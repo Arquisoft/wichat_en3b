@@ -4,7 +4,7 @@
   "main": "wikidata-service.js",
   "scripts": {
     "start": "node wikidata-service.js",
-    "test": "jest --coverage"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
