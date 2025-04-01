@@ -73,25 +73,23 @@ LIMIT 200
 };
 
 async function startUp() {
-    mongoose.connect(mongoDB)
-        .then(async () => {
-            console.log("✅ Connected to MongoDB");
-            
-            console.log("process.env.NODE_ENV", process.env.NODE_ENV);
-            if (process.env.NODE_ENV === "test") { // If the environment is test, do not load data
-                return;
-            }
+    try {
+        await mongoose.connect(mongoDB);
+        console.log("Connected to MongoDB");
 
-            await clearDatabase(); // Clear the database before loading new data
-            await fetchAndStoreData(); // Fetch data and store it in MongoDB when the service starts
-        })
-        .catch(err => console.error("❌ Error connecting to the DB:", err));
+        await clearDatabase(); // Clear the database before loading new data
+        await fetchAndStoreData(); // Fetch data and store it in MongoDB when the service starts
+    } catch (err) {
+        console.error("❌ Error connecting to the DB:", err);
+    }
 }
 
 // Function to clear the database
 async function clearDatabase() {
     try {
+        console.log("Clearing the database...");
         await WikidataObject.deleteMany({});
+        console.log("✅ Database cleared successfully.");
     } catch (error) {
         console.error("Error clearing the database:", error);
     }
@@ -198,6 +196,11 @@ app.get("/getModes", (req, res) => {
 
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
+    if (process.env.NODE_ENV === "test") {
+        console.log("Test mode detected. Skipping data load.");
+        return;
+    }
+
     startUp(); // Start the service and load data
 });
 

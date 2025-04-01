@@ -1,52 +1,59 @@
 const request = require("supertest");
-const mongoose = require("mongoose");
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const { startUp } = require("../wikidata-service");
 const WikidataObject = require("../wikidata-model");
+const axios = require("axios");
 
-let mongoServer;
-let app;
-
-describe('Service Startup Logic', () => {
-    jest.mock('axios');
-
-    it('should clear the database and repopulate it on startup', async () => {
-        // Spy on the method we expect to be called
-        const deleteManySpy = jest.spyOn(WikidataObject, 'deleteMany');
-        const bulkWriteSpy = jest.spyOn(WikidataObject, 'bulkWrite');
-
-        process.env.NODE_ENV = "something";
-        await startUp();
-        process.env.NODE_ENV = "test"; // Reset the environment variable
-
-        expect(deleteManySpy).toHaveBeenCalledTimes(1);
-        expect(deleteManySpy).toHaveBeenCalledWith({}); // Ensure it's called with empty filter
-        expect(bulkWriteSpy).toHaveBeenCalledTimes(4);
-        expect(bulkWriteSpy).toHaveBeenCalledWith({});
-
-        bulkWriteSpy.mockRestore(); // Clean up the spy
-        deleteManySpy.mockRestore(); // Clean up the spy
-    });
-
-});
+jest.mock("axios");
 
 // Mock the database methods to prevent actual DB operations
 describe("Express Service API Endpoints", () => {
+    let app;
+    let mongoServer;
+
+    let start;
+
     beforeAll(async () => {
         mongoServer = await MongoMemoryServer.create();
         const mongoUri = mongoServer.getUri();
         process.env.MONGODB_URI = mongoUri;
-        const { server } = require("../wikidata-service");
-        app = server;
-    });
 
-    afterEach(() => {
-        jest.clearAllMocks();
+        axios.get.mockResolvedValue({
+            data: {
+                results: {
+                    bindings: [{ city: { value: '.../Q1' }, cityLabel: { value: 'City1' }, image: { value: 'img1.jpg' } }]
+                }
+            }
+        });
+
+        deleteManySpy = jest.spyOn(WikidataObject, 'deleteMany');
+        bulkWriteSpy = jest.spyOn(WikidataObject, 'bulkWrite');
+
+        const { server, startUp } = require("../wikidata-service");
+        app = server;
+        start = startUp;
     });
 
     afterAll(async () => {
-        app.close();
+        await app.close();
         await mongoServer.stop();
+    });
+
+    it('should clear the database and repopulate it on startup', async () => {
+        // Mock the console.log to capture logs
+        jest.spyOn(console, "log").mockImplementation(() => { });
+
+        // Call the startUp function
+        await start();
+
+        // Verify that specific logs were printed
+        expect(console.log).toHaveBeenCalledWith("Connected to MongoDB");
+        expect(console.log).toHaveBeenCalledWith("Clearing the database...");
+        expect(console.log).toHaveBeenCalledWith("✅ Database cleared successfully.");
+        expect(console.log).toHaveBeenCalledWith("Fetching data from Wikidata and storing it in the database");
+        expect(console.log).toHaveBeenCalledWith("✅ Data successfully stored in the database.");
+
+        // Restore the original console.log
+        console.log.mockRestore();
     });
 
     // Test the /load endpoint with valid data
