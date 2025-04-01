@@ -29,9 +29,12 @@ defineFeature(feature, test => {
     let password;
 
     given('An unregistered user', async () => {
-      username = "pablo"
-      password = "pabloasw"
-      await expect(page).toClick("button", { text: "Don't have an account? Register here." });
+      username = "newUser"
+      password = "newUserPassword"
+      //Go from landing page to login page
+      await expect(page).toClick("button", { text: "Login" }); 
+      //Go from login page to register page
+      await expect(page).toClick("a", { text: "Don't have an account? Register here." });
     });
 
     when('I fill the data in the form and press submit', async () => {
@@ -44,6 +47,27 @@ defineFeature(feature, test => {
         await expect(page).toMatchElement("div", { text: "User added successfully" });
     });
   })
+
+  //Uncomment this test when the backend is ready to handle the case of a user already registered in the database attemps to register again
+  /* test('The user is already registered in the site', ({ given, when, then }) => {
+    let username;
+    let password;
+
+    given('A registered user', async () => {
+      username = "newUser"
+      password = "newUserPassword"
+    });
+
+    when('I fill the data in the form and press submit', async () => {
+      await expect(page).toFill('input[name="username"]', username);
+      await expect(page).toFill('input[name="password"]', password);
+      await expect(page).toClick('button', { text: 'Add User' });
+    });
+
+    then('An error message should be shown in the screen', async () => {
+      await expect(page).toMatchElement("div", { text: "User added successfully" });
+    });
+}); */
 
   afterAll(async ()=>{
     browser.close()
