@@ -11,7 +11,7 @@ defineFeature(feature, test => {
   beforeAll(async () => {
     browser = process.env.GITHUB_ACTIONS
       ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
-      : await puppeteer.launch({ headless: false, slowMo: 100 });
+      : await puppeteer.launch({ headless: false, slowMo: 10 });
     page = await browser.newPage();
     //Way of setting up the timeout
     setDefaultOptions({ timeout: 10000 })
@@ -30,7 +30,7 @@ defineFeature(feature, test => {
 
     given('The user is on the dashboard', async () => {
       username = "username"
-      password = "password"
+      password = "harderpassword123"
       //Go from landing page to login page
       await expect(page).toClick("button", { text: "Login" }); 
       //Go to the register page to add the user credentials to the database
