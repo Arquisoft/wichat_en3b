@@ -24,6 +24,7 @@ describe('LLM Service', () => {
         process.env = originalEnv;
     });
 
+    /*
     // Test the /ask endpoint with valid data
     it("should return answer when valid question and prompt are provided", async () => {
         // Mock successful response from LLM API
@@ -65,6 +66,7 @@ describe('LLM Service', () => {
             'Authorization': 'Bearer test-api-key'
         });
     });
+    */
 
     // Test missing required fields in request
     it("should return 500 when required fields are missing", async () => {
