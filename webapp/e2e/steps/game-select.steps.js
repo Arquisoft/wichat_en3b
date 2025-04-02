@@ -30,7 +30,7 @@ defineFeature(feature, test => {
 
     given('The user is on the dashboard', async () => {
       username = "username"
-      password = "QO4IYq5,-x£60U<{lPH_o|%M:-dUS&OEG(W@3'b@<rJ£Ofx;<"
+      password = "1zSlB3rGK401ZFPBhEWR4rV4Fg62VsaTKazUh3Yh"
       //Go from landing page to login page
       await expect(page).toClick("button", { text: "Login" }); 
       //Go to the register page to add the user credentials to the database
