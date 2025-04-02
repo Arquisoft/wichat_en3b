@@ -488,31 +488,27 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_infrastructure">7.1. Infrastructure</a></li>
 </ul>
 </li>
-<li><a href="#section-concepts">8. Cross-cutting Concepts</a></li>
-<li><a href="#_cross_cutting_concepts">Cross-cutting Concepts</a>
-<ul class="sectlevel1">
-<li><a href="#_motivation">1. Motivation</a></li>
-<li><a href="#_domain_concepts">2. <strong>Domain Concepts</strong></a></li>
-<li><a href="#_user_experience_ux_concepts">3. <strong>User Experience (UX) Concepts</strong></a></li>
-<li><a href="#_technology_and_architecture_concepts">4. <strong>Technology and Architecture Concepts</strong></a></li>
-<li><a href="#_security_and_safety_concepts">5. <strong>Security and Safety Concepts</strong></a></li>
-<li><a href="#_development_and_operational_concepts">6. <strong>Development and Operational Concepts</strong></a></li>
-<li><a href="#section-design-decisions">7. Architecture Decisions</a></li>
-<li><a href="#section-quality-scenarios">8. Quality Requirements</a>
+<li><a href="#section-concepts">8. Cross-cutting Concepts</a>
 <ul class="sectlevel2">
-<li><a href="#_quality_tree">8.1. Quality Tree</a></li>
-<li><a href="#_quality_scenarios">8.2. Quality Scenarios</a></li>
+<li><a href="#_concept_1">8.1. <em>&lt;Concept 1&gt;</em></a></li>
+<li><a href="#_concept_2">8.2. <em>&lt;Concept 2&gt;</em></a></li>
+<li><a href="#_concept_n">8.3. <em>&lt;Concept n&gt;</em></a></li>
 </ul>
 </li>
-<li><a href="#section-technical-risks">9. Risks and Technical Debts</a>
+<li><a href="#section-design-decisions">9. Architecture Decisions</a></li>
+<li><a href="#section-quality-scenarios">10. Quality Requirements</a>
 <ul class="sectlevel2">
-<li><a href="#_risks">9.1. Risks</a></li>
-<li><a href="#_technical_debt">9.2. Technical Debt</a></li>
+<li><a href="#_quality_tree">10.1. Quality Tree</a></li>
+<li><a href="#_quality_scenarios">10.2. Quality Scenarios</a></li>
 </ul>
 </li>
-<li><a href="#section-glossary">10. Glossary</a></li>
+<li><a href="#section-technical-risks">11. Risks and Technical Debts</a>
+<ul class="sectlevel2">
+<li><a href="#_risks">11.1. Risks</a></li>
+<li><a href="#_technical_debt">11.2. Technical Debt</a></li>
 </ul>
 </li>
+<li><a href="#section-glossary">12. Glossary</a></li>
 </ul>
 </div>
 </div>
@@ -1075,7 +1071,7 @@ The title of the table is the name of your system, the three columns contain the
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-4def294a1a2d4446fd150325eb2fd0c0.png" alt="Diagram" width="712" height="638">
+<img src="./images/diag-plantuml-md5-b755d04eee747f5828040a7374cec622.png" alt="Diagram" width="729" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1103,17 +1099,17 @@ The title of the table is the name of your system, the three columns contain the
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updates the interface to show to the user.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UserService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gateway Service</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Takes actions from users received from the web application.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Updates the view of the web application.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sends the requests to the corresponding endpoints.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">QuestionService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Question Service</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Receives a query about a theme or category.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns a page corresponding to the given query.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LLMService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LLM Service</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Gets relevant information about the question the user has to answer.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Interacts or answers the user in several ways, depending on the used wildcard.</p></td>
 </tr>
@@ -1141,7 +1137,7 @@ together with a mapping table showing the relationships between channels and inp
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-377173e88bf99af086ab3ff51b5c93e3.png" alt="Diagram" width="686" height="638">
+<img src="./images/diag-plantuml-md5-07608493dd9d33ee25ec89a0d88a0043.png" alt="Diagram" width="680" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1161,20 +1157,20 @@ together with a mapping table showing the relationships between channels and inp
 <td class="tableblock halign-left valign-top"><p class="tableblock">The user can play the game using Internet, via HTTP.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">UserService</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Manages data and user actions and generates trivia questions through calls to the respective APIs.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gateway Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manages the requests and redirects them to the respective APIs.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DataBase</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">MongoDB database for storing users information.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MongoDB database for storing users information and the required information about the answers and distractors of the question, each of them with an image.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">QuestionService</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data is obtained throught SPARQL queries made by the service.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Question Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Data is obtained throught SPARQL queries and stored in the database due to this service. Furthermore, each round of the game, the four options (and the image of the correct one) are requested to this service, which takes them randomly from the database according with the selected topic/s.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">LLMService</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Gets relevant information about the question the user has to answer.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gives relevant hints about the question the user has to answer.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1521,7 +1517,7 @@ Leave out normal, simple, boring or standardized parts of your system</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-777b31d4d304c57df3fd498ef2c1626c.png" alt="Diagram" width="693" height="638">
+<img src="./images/diag-plantuml-md5-777b31d4d304c57df3fd498ef2c1626c.png" alt="Diagram" width="688" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1566,7 +1562,7 @@ part of arc42 for additional levels.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-b6fabd668253df644be645491413a81e.png" alt="Diagram" width="705" height="638">
+<img src="./images/diag-plantuml-md5-b6fabd668253df644be645491413a81e.png" alt="Diagram" width="693" height="638">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1823,7 +1819,7 @@ when your infrastructure is more complex.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Deployment-View.png" alt="Deployment View" width="729" height="638">
+<img src="./images/Deployment-View.png" alt="Deployment View" width="725" height="638">
 </div>
 </div>
 <div class="dlist">
@@ -1966,6 +1962,31 @@ Thus, they are an important contribution to achieve inner qualities of your syst
 <div class="title">Structure</div>
 <p>A potential (but not mandatory) structure for this section could be:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>Domain concepts</p>
+</li>
+<li>
+<p>User Experience concepts (UX)</p>
+</li>
+<li>
+<p>Safety and security concepts</p>
+</li>
+<li>
+<p>Architecture and design patterns</p>
+</li>
+<li>
+<p>"Under-the-hood"</p>
+</li>
+<li>
+<p>development concepts</p>
+</li>
+<li>
+<p>operational concepts</p>
+</li>
+</ul>
+</div>
 <div class="paragraph">
 <p>Note: it might be difficult to assign individual concepts to one specific topic
 on this list.</p>
@@ -1981,137 +2002,32 @@ on this list.</p>
 </div>
 </div>
 </div>
-</div>
-</div>
-<h1 id="_cross_cutting_concepts" class="sect0">Cross-cutting Concepts</h1>
+<div class="sect2">
+<h3 id="_concept_1">8.1. <em>&lt;Concept 1&gt;</em></h3>
 <div class="paragraph">
-<p>This section highlights the overarching principles and solutions that are relevant to multiple parts of the quiz game system, which interacts with Wikidata. These concepts contribute to the conceptual integrity of the system and ensure consistency across the architecture and user experience.</p>
+<p><em>&lt;explanation&gt;</em></p>
 </div>
-<div class="sect1">
-<h2 id="_motivation">1. Motivation</h2>
-<div class="sectionbody">
+</div>
+<div class="sect2">
+<h3 id="_concept_2">8.2. <em>&lt;Concept 2&gt;</em></h3>
 <div class="paragraph">
-<p>The cross-cutting concepts form the foundation of the system’s conceptual integrity, enabling a coherent and consistent approach to development. They help achieve key qualities like accessibility, user experience, security, and scalability, which are important across various components of the system.</p>
+<p><em>&lt;explanation&gt;</em></p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_domain_concepts">2. <strong>Domain Concepts</strong></h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>The quiz game is designed to allow users to choose from predefined categories sourced from Wikidata, creating a dynamic and personalized experience. The system supports multiple categories that users can combine to create customized quizzes. The following domain concepts are integral:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Categories and Questions</strong>: Categories are predefined areas from Wikidata, such as history, science, or geography. Users can select any number of categories to tailor their quiz experience. The system retrieves relevant questions from Wikidata based on these categories.</p>
-</li>
-<li>
-<p><strong>Game Modes</strong>: The game supports different modes, such as playing with a time limit or in rounds. Players can also choose to play a single category or a mix of all available categories. This provides flexibility and variety in gameplay.</p>
-</li>
-<li>
-<p><strong>User Profiles</strong>: Users can log in, track their progress, and view their historical performance and rankings. Each user profile includes a personalized quiz history, best scores, and achievements.</p>
-</li>
-</ul>
+<p>&#8230;&#8203;</p>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_user_experience_ux_concepts">3. <strong>User Experience (UX) Concepts</strong></h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_concept_n">8.3. <em>&lt;Concept n&gt;</em></h3>
 <div class="paragraph">
-<p>The user experience is a key focus of this system, with an emphasis on accessibility and responsiveness. The game provides the following UX features:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Responsibility and Accessibility</strong>: The design is focused on ensuring the game is accessible to a wide range of users, including those with color blindness. To ensure inclusivity, the game avoids color schemes that could cause issues for color-blind players and focuses on accessible contrast and fonts.</p>
-</li>
-<li>
-<p><strong>Game Features</strong>:</p>
-</li>
-<li>
-<p><strong>Round-based Play</strong>: Users can choose to play in rounds, where each round presents a set of questions, and the game tracks performance across multiple rounds.</p>
-</li>
-<li>
-<p><strong>Time-based Play</strong>: Alternatively, players can play against the clock, answering questions as quickly as possible to compete with others or themselves.</p>
-</li>
-<li>
-<p><strong>Clues and Help Options</strong>: Players have the option to use several clues, such as hints or using an LLM chat to help them answer difficult questions. Users can mimmick a call a friend for assistance using game stats to determine the best options for asking for help or even ask the audience.</p>
-</li>
-<li>
-<p><strong>Ranking and History</strong>: A ranking system tracks the performance of players, allowing users to see how they compare to others. Historical data is stored to allow users to review past quizzes and track improvement over time.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_technology_and_architecture_concepts">4. <strong>Technology and Architecture Concepts</strong></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The system is built using React and JavaScript to provide a dynamic and interactive user interface. The architecture is designed with the following concepts in mind:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>React Components</strong>: The game’s interface is built using reusable React components, making the system modular and easy to maintain.</p>
-</li>
-<li>
-<p><strong>Wikidata Integration</strong>: The game interacts with Wikidata via predefined categories. When a user selects a category, the system fetches questions dynamically, ensuring a rich and diverse quiz experience.</p>
-</li>
-<li>
-<p><strong>State Management</strong>: React’s state management system is used to track user selections, game progress, and scores. It ensures a smooth and responsive experience as users navigate through the game.</p>
-</li>
-<li>
-<p><strong>Azure Deployment</strong>: The game will be hosted on Azure to ensure scalability, reliability, and easy deployment. Azure provides a secure and robust infrastructure for hosting both the frontend and backend components.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_security_and_safety_concepts">5. <strong>Security and Safety Concepts</strong></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Although the quiz game focuses on entertainment and learning, security is a critical aspect:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>User Authentication</strong>: Users can log in to track their progress and view their rankings. Authentication is handled securely to ensure user data is protected.</p>
-</li>
-<li>
-<p><strong>Data Integrity</strong>: The game ensures that data retrieved from Wikidata is accurate and filtered to avoid inappropriate content.</p>
-</li>
-<li>
-<p><strong>Privacy</strong>: The system is designed to protect user privacy, ensuring personal data is not exposed or misused.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_development_and_operational_concepts">6. <strong>Development and Operational Concepts</strong></h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Agile Development</strong>: The project is developed using an Agile methodology, specifically in 3-week sprints. This allows for iterative development, rapid feedback, and continuous improvement.</p>
-</li>
-<li>
-<p><strong>Continuous Deployment</strong>: The game is deployed through Azure, with automated build and deployment pipelines to ensure smooth updates and patches.</p>
-</li>
-<li>
-<p><strong>Scalability</strong>: As the number of users grows, the system is designed to scale horizontally. Azure’s cloud infrastructure supports scaling to handle increased traffic and ensure high availability during peak usage times.</p>
-</li>
-</ul>
+<p><em>&lt;explanation&gt;</em></p>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
+</div>
 <div class="sect1">
-<h2 id="section-design-decisions">7. Architecture Decisions</h2>
+<h2 id="section-design-decisions">9. Architecture Decisions</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -2161,7 +2077,7 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-quality-scenarios">8. Quality Requirements</h2>
+<h2 id="section-quality-scenarios">10. Quality Requirements</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -2186,7 +2102,7 @@ concrete and measurable.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_quality_tree">8.1. Quality Tree</h3>
+<h3 id="_quality_tree">10.1. Quality Tree</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -2218,7 +2134,7 @@ concrete and measurable.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_quality_scenarios">8.2. Quality Scenarios</h3>
+<h3 id="_quality_scenarios">10.2. Quality Scenarios</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -2262,7 +2178,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-technical-risks">9. Risks and Technical Debts</h2>
+<h2 id="section-technical-risks">11. Risks and Technical Debts</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -2288,7 +2204,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </div>
 </div>
 <div class="sect2">
-<h3 id="_risks">9.1. Risks</h3>
+<h3 id="_risks">11.1. Risks</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 16.6666%;">
@@ -2345,7 +2261,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </table>
 </div>
 <div class="sect2">
-<h3 id="_technical_debt">9.2. Technical Debt</h3>
+<h3 id="_technical_debt">11.2. Technical Debt</h3>
 <div class="paragraph">
 <p>At this point we cannot think of one, as it is true that is our first time dealing with these new technologies but besides the initial part of getting into it, we cannot think as some of them that are making as working worse or slower.</p>
 </div>
@@ -2354,7 +2270,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-glossary">10. Glossary</h2>
+<h2 id="section-glossary">12. Glossary</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
