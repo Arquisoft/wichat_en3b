@@ -490,9 +490,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#section-concepts">8. Cross-cutting Concepts</a>
 <ul class="sectlevel2">
-<li><a href="#_concept_1">8.1. <em>&lt;Concept 1&gt;</em></a></li>
-<li><a href="#_concept_2">8.2. <em>&lt;Concept 2&gt;</em></a></li>
-<li><a href="#_concept_n">8.3. <em>&lt;Concept n&gt;</em></a></li>
+<li><a href="#_motivation">8.1. Motivation</a></li>
+<li><a href="#_domain_concepts">8.2. Domain Concepts</a></li>
+<li><a href="#_user_experience_ux_concepts">8.3. User Experience (UX) Concepts</a></li>
+<li><a href="#_technology_and_architecture_concepts">8.4. Technology and Architecture Concepts</a></li>
+<li><a href="#_development_and_operational_concepts">8.5. Development and Operational Concepts</a></li>
 </ul>
 </li>
 <li><a href="#section-design-decisions">9. Architecture Decisions</a></li>
@@ -508,7 +510,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_technical_debt">11.2. Technical Debt</a></li>
 </ul>
 </li>
-<li><a href="#section-glossary">12. Glossary</a></li>
+<li><a href="#section-glossary">12. Glossary</a>
+<ul class="sectlevel2">
+<li><a href="#_techniques">12.1. Techniques</a></li>
+<li><a href="#_terminology">12.2. Terminology</a></li>
+<li><a href="#_technologies">12.3. Technologies</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1071,7 +1079,7 @@ The title of the table is the name of your system, the three columns contain the
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-b755d04eee747f5828040a7374cec622.png" alt="Diagram" width="748" height="638">
+<img src="./images/diag-plantuml-md5-b755d04eee747f5828040a7374cec622.png" alt="Diagram" width="494" height="286">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1137,7 +1145,7 @@ together with a mapping table showing the relationships between channels and inp
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-07608493dd9d33ee25ec89a0d88a0043.png" alt="Diagram" width="711" height="638">
+<img src="./images/diag-plantuml-md5-07608493dd9d33ee25ec89a0d88a0043.png" alt="Diagram" width="482" height="225">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1517,7 +1525,7 @@ Leave out normal, simple, boring or standardized parts of your system</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-777b31d4d304c57df3fd498ef2c1626c.png" alt="Diagram" width="712" height="638">
+<img src="./images/diag-plantuml-md5-777b31d4d304c57df3fd498ef2c1626c.png" alt="Diagram" width="391" height="207">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1562,7 +1570,7 @@ part of arc42 for additional levels.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-b6fabd668253df644be645491413a81e.png" alt="Diagram" width="698" height="638">
+<img src="./images/diag-plantuml-md5-b6fabd668253df644be645491413a81e.png" alt="Diagram" width="685" height="515">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1819,7 +1827,7 @@ when your infrastructure is more complex.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Deployment-View.png" alt="Deployment View" width="715" height="638">
+<img src="./images/Deployment-View.png" alt="Deployment View" width="825" height="1011">
 </div>
 </div>
 <div class="dlist">
@@ -2003,24 +2011,88 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_concept_1">8.1. <em>&lt;Concept 1&gt;</em></h3>
+<h3 id="_motivation">8.1. Motivation</h3>
 <div class="paragraph">
-<p><em>&lt;explanation&gt;</em></p>
+<p>The cross-cutting concepts form the foundation of the system’s conceptual integrity, enabling a coherent and consistent approach to development. They help achieve key qualities like accessibility, user experience, security, and scalability, which are important across various components of the system.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_concept_2">8.2. <em>&lt;Concept 2&gt;</em></h3>
+<h3 id="_domain_concepts">8.2. Domain Concepts</h3>
 <div class="paragraph">
-<p><em>&lt;explanation&gt;</em></p>
+<p>The quiz game is designed to allow users to choose from predefined categories sourced from Wikidata, creating a dynamic and personalized experience. The system supports multiple categories that users can combine to create customized quizzes. The following domain concepts are integral:</p>
 </div>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Categories and Questions</strong>: Categories are predefined areas from Wikidata, such as history, science, or geography. Users can select any number of categories to tailor their quiz experience. The system retrieves relevant questions from Wikidata based on these categories.</p>
+</li>
+<li>
+<p><strong>Game Modes</strong>: The game supports different modes, such as playing with a time limit or in rounds. Players can also choose to play a single category or a mix of all available categories. This provides flexibility and variety in gameplay.</p>
+</li>
+<li>
+<p><strong>User Profiles</strong>: Users can log in, track their progress, and view their historical performance and rankings. Each user profile includes a personalized quiz history, best scores, and achievements.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_concept_n">8.3. <em>&lt;Concept n&gt;</em></h3>
+<h3 id="_user_experience_ux_concepts">8.3. User Experience (UX) Concepts</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Responsibility and Accessibility</strong>: The design is focused on ensuring the game is accessible to a wide range of users, including those with color blindness. To ensure inclusivity, the game avoids color schemes that could cause issues for color-blind players and focuses on accessible contrast and fonts.</p>
+</li>
+<li>
+<p><strong>Round-based Play</strong>: Users can choose to play in rounds, where each round presents a set of questions, and the game tracks performance across multiple rounds.</p>
+</li>
+<li>
+<p><strong>Time-based Play</strong>: Alternatively, players can play against the clock, answering questions as quickly as possible to compete with others or themselves.</p>
+</li>
+<li>
+<p><strong>Clues and Help Options</strong>: Players have the option to use several clues, such as hints or using an LLM chat to help them answer difficult questions. Users can mimmick a call a friend for assistance using game stats to determine the best options for asking for help or even ask the audience.</p>
+</li>
+<li>
+<p><strong>Ranking and History</strong>: A ranking system tracks the performance of players, allowing users to see how they compare to others. Historical data is stored to allow users to review past quizzes and track improvement over time.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_technology_and_architecture_concepts">8.4. Technology and Architecture Concepts</h3>
 <div class="paragraph">
-<p><em>&lt;explanation&gt;</em></p>
+<p>The system is built using React and JavaScript to provide a dynamic and interactive user interface. The architecture is designed with the following concepts in mind:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>React Components</strong>: The game’s interface is built using reusable React components, making the system modular and easy to maintain.</p>
+</li>
+<li>
+<p><strong>Wikidata Integration</strong>: The game interacts with Wikidata via predefined categories. When a user selects a category, the system fetches questions dynamically, ensuring a rich and diverse quiz experience.</p>
+</li>
+<li>
+<p><strong>State Management</strong>: React’s state management system is used to track user selections, game progress, and scores. It ensures a smooth and responsive experience as users navigate through the game.</p>
+</li>
+<li>
+<p><strong>Azure Deployment</strong>: The game will be hosted on Azure to ensure scalability, reliability, and easy deployment. Azure provides a secure and robust infrastructure for hosting both the frontend and backend components.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_development_and_operational_concepts">8.5. Development and Operational Concepts</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Agile Development</strong>: The project is developed using an Agile methodology, specifically in 3-week sprints. This allows for iterative development, rapid feedback, and continuous improvement.</p>
+</li>
+<li>
+<p><strong>Continuous Deployment</strong>: The game is deployed through Azure, with automated build and deployment pipelines to ensure smooth updates and patches.</p>
+</li>
+<li>
+<p><strong>Scalability</strong>: As the number of users grows, the system is designed to scale horizontally. Azure’s cloud infrastructure supports scaling to handle increased traffic and ensure high availability during peak usage times.</p>
+</li>
+</ul>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
@@ -2406,19 +2478,19 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 <p>The most important domain and technical terms that your stakeholders use when discussing the system.</p>
 </div>
 <div class="paragraph">
-<p>You can also see the glossary as source for translations if you work in multi-language teams.</p>
+<p>You can also see the glossary as a source for translations if you work in multi-language teams.</p>
 </div>
 <div class="paragraph">
 <div class="title">Motivation</div>
-<p>You should clearly define your terms, so that all stakeholders</p>
+<p>You should clearly define your terms so that all stakeholders:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>have an identical understanding of these terms</p>
+<p>Have an identical understanding of these terms.</p>
 </li>
 <li>
-<p>do not use synonyms and homonyms</p>
+<p>Do not use synonyms and homonyms.</p>
 </li>
 </ul>
 </div>
@@ -2435,10 +2507,12 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_techniques">12.1. Techniques</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 66.6667%;">
+<col style="width: 50%;">
+<col style="width: 50%;">
 </colgroup>
 <thead>
 <tr>
@@ -2448,22 +2522,129 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Term-1&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;definition-1&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Authentication</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The process of verifying a user&#8217;s identity to grant access to different parts of the application.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Term-2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;definition-2&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Authorization</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Determines what actions or resources a user has permission to access based on their authentication status.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Caching</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A technique used to store frequently accessed data to improve performance and reduce API calls.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Kanban</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A project management methodology that visualizes work using boards and columns to track progress efficiently.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Sprint</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A three-week development cycle in which specific tasks and features are implemented and tested.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Deployment</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The process of making the application live and accessible to users, planned to be done using Azure.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Technical Debt</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The cost of additional work caused by choosing a quick but suboptimal solution in software development.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_terminology">12.2. Terminology</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Term</th>
+<th class="tableblock halign-left valign-top">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Wikidata</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A free, collaborative knowledge base that provides structured data, used as the primary source for quiz questions.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>RTVE</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Radiotelevisión Española, the Spanish public television broadcaster and one of our stakeholders.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Saber y Ganar</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A famous Spanish TV show involving answering questions to win prizes.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Business Risk</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Potential challenges that could impact the success of the project, such as missed deadlines or low user engagement.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Game Mode</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The different ways users can play the quiz, such as timed rounds or standard question-answer sessions.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Clues</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hints provided to help users answer quiz questions, generated either by the LLM or other game mechanics.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Ranking System</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A feature that tracks and displays user scores to create competition among players.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Accessibility</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Design choices made to ensure the game is usable by as many people as possible, including those with disabilities (e.g., colorblind-friendly UI).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_technologies">12.3. Technologies</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Term</th>
+<th class="tableblock halign-left valign-top">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>React</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A JavaScript library for building user interfaces, used for developing the frontend of the quiz game.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>LLM (Large Language Model)</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A type of artificial intelligence model, such as ChatGPT, used to generate hints and assist players in the game.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>API (Application Programming Interface)</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A set of rules and protocols that allow different software applications to communicate with each other, such as fetching data from Wikidata.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>OAuth / JWT</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authentication mechanisms used to secure user logins and manage access.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>MongoDB</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A NoSQL database used for storing data in a flexible, document-based format.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
 Version 8.2 EN<br>
-Last updated 2025-03-18 16:56:54 +0100
+Last updated 2025-02-07 11:16:46 +0100
 </div>
 </div>
 </body>
