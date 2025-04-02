@@ -4,6 +4,10 @@ FROM node:22
 # Set the working directory in the container
 WORKDIR /usr/src/gatewayservice
 
+# Set environment variables
+ARG FRONTEND_URL
+ENV FRONTEND_URL=${FRONTEND_URL}
+
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
