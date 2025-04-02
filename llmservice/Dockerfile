@@ -4,6 +4,10 @@ FROM node:22
 # Set the working directory in the container
 WORKDIR /usr/src/llmservice
 
+# Set environment variables for the Node.js application
+ARG LLM_API_KEY
+ENV LLM_API_KEY=${LLM_API_KEY}
+
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
