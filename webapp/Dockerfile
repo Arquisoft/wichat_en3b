@@ -3,8 +3,8 @@ FROM node:22
 COPY . /app
 WORKDIR /app
 
-ARG API_URI="http://localhost:8000"
-ENV REACT_APP_API_ENDPOINT=$API_URI
+ARG REACT_APP_API_ENDPOINT
+ENV REACT_APP_API_ENDPOINT=${REACT_APP_API_ENDPOINT}
 
 #Install the dependencies
 RUN npm install
