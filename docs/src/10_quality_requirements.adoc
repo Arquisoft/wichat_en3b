@@ -48,6 +48,43 @@ In any case the tree should include links to the scenarios of the following sect
 
 
 ****
+The Quality Tree is a structured representation of the key quality attributes of our system. The root represents the overall concept of "Quality," which is then divided into different branches representing essential quality attributes derived from our Quality Goals (section 1.2). Each branch further expands into measurable and concrete evaluation scenarios.
+
+Below is an outline of the Quality Tree:
+
+* **Quality**
+
+    * **Testability**
+
+        * Maintain at least 85% code coverage.
+
+        * Implement automated testing for all major functionalities.
+
+    * **Usability**
+
+        * Ensure an intuitive user interface suitable for all age groups.
+
+        * Conduct usability tests with different user demographics.
+
+    * **Portability**
+
+        * Deploy the application on various devices with minimal performance impact.
+
+    * **Security & Privacy**
+
+        * Restrict user data access to authorized individuals.
+
+        * Implement secure authentication mechanisms.
+
+    * **Performance**
+
+        * Maintain consistent response times regardless of concurrent users.
+
+        * Perform load testing to simulate heavy traffic conditions.
+
+Each of these categories will have detailed scenarios describing expected system behavior under different conditions.
+
+
 endif::arc42help[]
 
 === Quality Scenarios
@@ -77,3 +114,32 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 Tabular or free form text.
 ****
 endif::arc42help[]
+
+
+==== Usage Scenarios
+
+|===
+| Scenario ID | Scenario Description 
+| UQ-01 | A user selects an answer, and the system provides feedback within one second. 
+| UQ-02 | A user requests a hint, and the AI assistant provides contextual guidance without revealing the answer. 
+| UQ-03 | The application maintains stable response times (under 500ms per request) even with 100 concurrent users. 
+| UQ-04 | A new user navigates the application for the first time and completes a game without requiring external guidance. 
+| UQ-05 | A request to fetch a new question returns a response from the database within 300ms. 
+|===
+
+==== Change Scenarios
+
+|===
+| Scenario ID | Scenario Description 
+| CQ-01 | Integration of a new LLM model should not degrade performance beyond a 10% increase in response time. 
+| CQ-02 | Adding a new game mode should not require modifications to more than 10% of the existing codebase. 
+| CQ-03 | Migrating the database to a new provider should require only configuration changes without altering business logic. 
+| CQ-04 | Enhancing security policies should not introduce more than 5% additional latency per request. 
+|===
+
+By defining these scenarios, we ensure that our system meets stakeholder expectations and maintains high-quality standards throughout its lifecycle.
+
+
+
+
+

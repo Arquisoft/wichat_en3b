@@ -46,27 +46,31 @@ Data must be valid and not collide with some account that already exists.
 
 [plantuml,"SignUp",png]
 ----
+
 actor User
-participant Web
-database MongoDB
+participant WebApp
+participant UserService
+database DataBase
 
-User --> Web: Select to sign up
 
-loop Until user has no errors and does not exist
-    Web --> User: Show sign up fields
-    User --> Web: Fill sign up fields
-    Web --> Web: Validate sign up fields
-    Web --> MongoDB: Check that user does not exist
-    MongoDB --> Web: Inform if user exists
+User --> WebApp: Select to sign up
+
+loop Until a new user is added or going back to LogIn
+    WebApp --> User: Show sign up fields
+    User --> WebApp: Fill sign up fields and press add user
+    WebApp --> UserService: Validate sign up fields
+    UserService --> DataBase: Check that user does not exist
+    DataBase --> DataBase: Save the new user
+    DataBase --> UserService: Response 
+    UserService --> WebApp: Response
+    WebApp --> User: Informs that the user is correctly added
 
     alt Validations are incorrect or user already exists
-        Web --> User: Show errors
+        WebApp --> User: Show errors and retry filling the fields
     end
 end
 
-Web --> MongoDB: Save new user
-MongoDB --> Web: Inform that the user has been saved
-Web --> User: Session started with new user
+
 ----
 
 
@@ -77,103 +81,136 @@ The user wants to log in with an account that has already been created.
 [plantuml,"LogIn",png]
 ----
 actor User
-participant Web
-database MongoDB
+participant WebApp
+participant AuthService
+database DataBase
 
-User --> Web: Select to log in
+User --> WebApp: Select to log in
 
 loop Until user enters valid credentials and exists
-    Web --> User: Show login fields
-    User --> Web: Fill login fields
-    Web --> Web: Validate credentials
-    
-    
-    Web --> MongoDB: Check if user exists
-    MongoDB --> Web: Inform if user exists
 
+    WebApp --> User: Show login fields
+    User --> WebApp: Fill login fields and press LogIn
+    WebApp --> AuthService: Validate credentials
+    AuthService --> DataBase: Validate credentials
+    DataBase --> DataBase: Validate
+    DataBase --> AuthService: Response
+    AuthService --> WebApp: Response
+    
+    
     alt Credentials are incorrect or user does not exist
-        Web --> User: Show errors
+        WebApp --> User: Show errors and try again
     end
+    
+    alt Credentials are authenticated
+        WebApp --> WebApp: Goes to the home page for users
+    end
+    
+    
 end
-
-Web --> User: Session started successfully
 ----
 
 
-=== Playing the game
+=== Playing a game
 
 Selecting the game mode and playing it.
 
 [plantuml,"Playing",png]
 ----
-actor User
-participant Web
-participant LLM
-participant Wikidata
-participant QuestionAPI
-database Database
 
-User --> Web: Choose Category
-Web--> Wikidata: Get a question
-Wikidata-->QuestionAPI: Store question&answer
-QuestionAPI --> Wikidata: Send question
-Wikidata --> LLM: Give information
-Wikidata --> Web: Send question
-User --> Web: Answer the question
-Web--> Wikidata: Pass the answer
-Wikidata-->QuestionAPI: Pass the answer
-QuestionAPI-->QuestionAPI: Check
-QuestionAPI-->Database: Update Points
-QuestionAPI --> Wikidata: Send result
-Wikidata --> Web: Send result
-User-->Web: Other category || Other round
+actor User
+participant WebApp
+participant QuestionService
+database DataBase
+
+User --> WebApp: Choose Category
+User --> WebApp: Choose way of playing
+WebApp --> WebApp: Show the game screen
+loop For each round (10 rounds)
+    WebApp --> QuestionService: Get an image and 4 options
+    QuestionService --> DataBase: Get 4 rows and one of them with its image
+    DataBase --> QuestionService: Response in a JSON
+    QuestionService --> WebApp: Response in a JSON
+    WebApp --> User: Presents the round to the user
+    User --> WebApp: Choose the an answer
+    WebApp --> WebApp: Checks if it is the correct one or not
+    
+    alt Is the correct one
+        WebApp--> WebApp: Marks it on green
+    end
+    
+    alt Is the not the correct one
+        WebApp--> WebApp: Marks the correct on green and the miss on red
+    end
+    
+end
+
 ----
 
 
-=== Hints
+=== LLMChat during a game
 
-The application has several types of hints, but we can define a general structure 
-that matches with all of them, just by varying few details for each type.
+The application has a chatbot which can give hints during a round in the game, under no circumstances will it say the correct option. This is the procedure that follows when is invoked: 
 
 [plantuml,"Hints",png]
 ----
-actor User
-participant Web
-participant Wikidata
-participant LLM
 
-User --> Web: Ask for a Hint
-Web --> Wikidata: Ask for information
-Wikidata --> Web: Return information
-Web --> LLM: Send current information and query
-LLM --> Web: Return the hint
-Web --> User: Show the hint
+actor User
+participant WebApp
+participant LLMService
+
+User --> WebApp: Ask for a Hint on the ChatBot
+WebApp --> LLMService: Send the initial prompt
+LLMService --> WebApp: Returns an answer and is printed
+loop Maintain a conversation
+    User --> WebApp: Ask more hints
+    WebApp --> LLMService: Sends the message by the user
+    LLMService --> WebApp: Send an answer
+    WebApp --> User: Show the hint from the LLM
+end
+
 ----
 
 
 
-=== Rankings
+=== Show statistics
 
-Seeing the ranking of best scores. It can be the general one or the one for each category.
+Seeing the statistics of the round, and general at each category.
 
 [plantuml,"Rankings",png]
 ----
+
 actor User
-participant Web
-database Database
+participant WebApp
+participant UserService
+database DataBase
 
-User --> Web: Login
-Web --> Web: See general ranking
-Web --> Database: Get results
-Database --> Database: Getting all results
-Database --> Web: Retriving to User
-Web --> User: Presenting rankings
+User --> WebApp: Login
 
-User --> Web: Choose a category 
-Web --> Database: Get results
-Database --> Database: Getting results
-Database --> Web: Retriving to User
-Web --> User: Presenting rankings
+WebApp --> UserService: Getting all statistics
+UserService --> DataBase: Get all them
+DataBase --> UserService: Response
+UserService --> WebApp: Response
+
+WebApp --> WebApp: See /home with rankings for all categories for all users
+WebApp --> User: Allows to go through them or play a game
+
+alt Play a game
+    loop plays all rounds
+    
+    end
+    
+    WebApp--> WebApp: Shows the statistics for that concrete game
+    
+    alt Return Home
+        WebApp--> WebApp: Goes from the game to again /home
+    end
+    
+    alt Play Again
+        WebApp--> WebApp: Play another game
+    end
+end
+
 ----
 
 

@@ -19,9 +19,53 @@ This should be your motto for systematic detection and evaluation of risks and t
 List of risks and/or technical debts, probably including suggested measures to minimize, mitigate or avoid risks or reduce technical debts.
 
 
+
 .Further Information
 
 See https://docs.arc42.org/section-11/[Risks and Technical Debt] in the arc42 documentation.
 
 ****
 endif::arc42help[]
+
+=== Risks
+[cols="d,2d,d,2d", options="header"]
+|===
+|Risk |Description |Severity| What to do?
+
+|Jumping though the URL
+|This can be so dangerous as some users that maybe enter our application as guest arrive to points that are reserved for logIn users. Also we can face situations in which a user can go directly to /game without selecting the mode of playing or even the categories. 
+|High
+|Authentication methods must be used in order to solve this and restricting each area depending the case, maybe some only for users that are authenticated or different cases depending the window.
+
+|LLM Giving the correct answer
+|Can happen that the LLM if it does not receive the corrent propmt can give the answer directly to the user, and this is not its purpose. It must give clues without saying the correct answer or neither discarting the rest of the options.
+|Medium
+|Try to perfect the prompt in order to avoid games that are completly useless as the LLM can say the correct answer.
+
+
+
+|LLM Time Response 
+|Can make the user wait for a huge time until he/she recieves and answer. And the problem is not only that because our ChatBot must be conversational and in case of make wait in each message it will be a loss of time considerable. 
+|Medium 
+|Testing a lot what the response time is for giving hints and try different models.
+
+|Repeated Questions
+|Can happen that as we save in the database all the different possible questions, that two questions from the same image appears in the consecutive questions, which is not a good approach
+|Low
+|Is weird this to happen because in our queries we retrieve like 100 options but maybe implementing something like a cache to avoid the repetition of it unless in the same game, it would be nice. 
+
+|Credentials With Low Security
+|As we have our application the logIn/signUp not requires a specific length of the password or normal things related to security that are asked.
+|Low
+|Maybe this can be solved by putting some rules when creating new users in order to avoid this things to happen. 
+
+|Low level README and Doc
+|It will not happen because we already have a powerfull README and the DOC too but it can be a risk to not add the correct information in the different points because the first thing that is see in the README and then the doc.
+|Low
+|Try to work on it during all the deliverables and improve it.
+
+|===
+
+=== Technical Debt
+
+At this point we cannot think of one, as it is true that is our first time dealing with these new technologies but besides the initial part of getting into it, we cannot think as some of them that are making as working worse or slower.

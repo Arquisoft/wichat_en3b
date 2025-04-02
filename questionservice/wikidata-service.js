@@ -72,47 +72,26 @@ LIMIT 200
 `
 };
 
-
-mongoose.connect(mongoDB)
-    .then(async () => {
-        console.log("✅ Connected to MongoDB");
-
-        if (process.env.NODE_ENV === "test") { // If the environment is test, do not load data
-            return;
-        }
+async function startUp() {
+    try {
+        await mongoose.connect(mongoDB);
+        console.log("Connected to MongoDB");
 
         await clearDatabase(); // Clear the database before loading new data
         await fetchAndStoreData(); // Fetch data and store it in MongoDB when the service starts
-    })
-    .catch(err => console.error("❌ Error connecting to the DB:", err));
+    } catch (err) {
+        console.error("❌ Error connecting to the DB:", err);
+    }
+}
 
 // Function to clear the database
 async function clearDatabase() {
     try {
+        console.log("Clearing the database...");
         await WikidataObject.deleteMany({});
+        console.log("✅ Database cleared successfully.");
     } catch (error) {
         console.error("Error clearing the database:", error);
-    }
-}
-
-// Function to fetch the alternative description of an image from Wikimedia Commons
-async function getImageDescription(imageUrl) {
-    const fileName = decodeURIComponent(imageUrl.split("/").pop()); // Extract the image filename
-    const commonsApiUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=File:${fileName}&prop=imageinfo&iiprop=extmetadata&format=json`;
-
-    try {
-        const response = await axios.get(commonsApiUrl);
-        const pages = response.data.query.pages;
-        const pageId = Object.keys(pages)[0]; // Get the first (and only) page ID
-
-        if (pages[pageId].imageinfo) {
-            const metadata = pages[pageId].imageinfo[0].extmetadata;
-            return metadata.ImageDescription?.value || "No alternative text available"; // Return image description or fallback message
-        }
-        return "No alternative text available"; // If no description is found, return a default message
-    } catch (error) {
-        console.error("Error fetching image description:", error);
-        return "No alternative text available"; // Return a fallback message in case of an error
     }
 }
 
@@ -167,8 +146,6 @@ app.post("/load", async (req, res) => {
         }
 
         selectedModes = modes; // Store the selected modes in the global variable
-        //await clearDatabase(); // Clear the database before loading new data
-        //await fetchAndStoreData(modes); // Fetch data and store it in MongoDB
 
         res.status(200).json({ message: "Data successfully stored" });
     } catch (error) {
@@ -219,7 +196,13 @@ app.get("/getModes", (req, res) => {
 
 const server = app.listen(port, () => {
     console.log(`Question Service listening at http://localhost:${port}`);
+    if (process.env.NODE_ENV === "test") {
+        console.log("Test mode detected. Skipping data load.");
+        return;
+    }
+
+    startUp(); // Start the service and load data
 });
 
 // Exporting the function so that it can be used in other files
-module.exports = server;
+module.exports = { server, startUp };

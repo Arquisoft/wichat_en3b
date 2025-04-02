@@ -97,7 +97,7 @@ const Home = () => {
                 {/* Statistics tab */}
                 <Box hidden={activeTab !== 0} my={4}>
                     <CardHeader title="Your Statistics" sx={{ p: 0, mb: 2 }} />
-                    {userStats ? (
+                    {userStats?.username ? (
                         <Box>
                             <Typography variant="body1">Total score: {getStatLabel(userStats, "points")}</Typography>
                             <Typography variant="body1">Accuracy rate: {getStatLabel(userStats, "accuracy")}</Typography>
