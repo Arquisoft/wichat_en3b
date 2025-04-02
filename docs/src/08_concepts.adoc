@@ -81,7 +81,7 @@ The quiz game is designed to allow users to choose from predefined categories so
 
 - **Ranking and History**: A ranking system tracks the performance of players, allowing users to see how they compare to others. Historical data is stored to allow users to review past quizzes and track improvement over time.
 
-=== **Technology and Architecture Concepts**
+=== Technology and Architecture Concepts
 
 The system is built using React and JavaScript to provide a dynamic and interactive user interface. The architecture is designed with the following concepts in mind:
 
@@ -93,7 +93,7 @@ The system is built using React and JavaScript to provide a dynamic and interact
 
 - **Azure Deployment**: The game will be hosted on Azure to ensure scalability, reliability, and easy deployment. Azure provides a secure and robust infrastructure for hosting both the frontend and backend components.
 
-=== **Development and Operational Concepts**
+=== Development and Operational Concepts
 
 - **Agile Development**: The project is developed using an Agile methodology, specifically in 3-week sprints. This allows for iterative development, rapid feedback, and continuous improvement.
 
