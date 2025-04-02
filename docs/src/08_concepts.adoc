@@ -59,11 +59,11 @@ endif::arc42help[]
 
 This section highlights the overarching principles and solutions that are relevant to multiple parts of the quiz game system, which interacts with Wikidata. These concepts contribute to the conceptual integrity of the system and ensure consistency across the architecture and user experience.
 
-=== _<Motivation>_
+=== **Motivation**
 
-_<The cross-cutting concepts form the foundation of the system’s conceptual integrity, enabling a coherent and consistent approach to development. They help achieve key qualities like accessibility, user experience, security, and scalability, which are important across various components of the system.>_
+The cross-cutting concepts form the foundation of the system’s conceptual integrity, enabling a coherent and consistent approach to development. They help achieve key qualities like accessibility, user experience, security, and scalability, which are important across various components of the system.
 
-=== _<**Domain Concepts**>_
+=== **Domain Concepts**
 
 The quiz game is designed to allow users to choose from predefined categories sourced from Wikidata, creating a dynamic and personalized experience. The system supports multiple categories that users can combine to create customized quizzes. The following domain concepts are integral:
 
@@ -73,7 +73,7 @@ The quiz game is designed to allow users to choose from predefined categories so
 
 - **User Profiles**: Users can log in, track their progress, and view their historical performance and rankings. Each user profile includes a personalized quiz history, best scores, and achievements.
 
-=== _<**User Experience (UX) Concepts**>_
+=== **User Experience (UX) Concepts**
 
 The user experience is a key focus of this system, with an emphasis on accessibility and responsiveness. The game provides the following UX features:
 
@@ -86,7 +86,7 @@ The user experience is a key focus of this system, with an emphasis on accessibi
   
 - **Ranking and History**: A ranking system tracks the performance of players, allowing users to see how they compare to others. Historical data is stored to allow users to review past quizzes and track improvement over time.
 
-=== _<**Technology and Architecture Concepts**>_
+=== **Technology and Architecture Concepts**
 
 The system is built using React and JavaScript to provide a dynamic and interactive user interface. The architecture is designed with the following concepts in mind:
 
@@ -98,7 +98,7 @@ The system is built using React and JavaScript to provide a dynamic and interact
 
 - **Azure Deployment**: The game will be hosted on Azure to ensure scalability, reliability, and easy deployment. Azure provides a secure and robust infrastructure for hosting both the frontend and backend components.
 
-=== _<**Security and Safety Concepts**>_
+=== **Security and Safety Concepts**
 
 Although the quiz game focuses on entertainment and learning, security is a critical aspect:
 
@@ -108,7 +108,7 @@ Although the quiz game focuses on entertainment and learning, security is a crit
 
 - **Privacy**: The system is designed to protect user privacy, ensuring personal data is not exposed or misused.
 
-=== _<**Development and Operational Concepts**>_
+=== **Development and Operational Concepts**
 
 - **Agile Development**: The project is developed using an Agile methodology, specifically in 3-week sprints. This allows for iterative development, rapid feedback, and continuous improvement.
 
@@ -116,6 +116,3 @@ Although the quiz game focuses on entertainment and learning, security is a crit
 
 - **Scalability**: As the number of users grows, the system is designed to scale horizontally. Azure’s cloud infrastructure supports scaling to handle increased traffic and ensure high availability during peak usage times.
 
-=== _<Concept n>_
-
-_<explanation>_
