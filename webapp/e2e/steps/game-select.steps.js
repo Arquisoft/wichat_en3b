@@ -64,7 +64,11 @@ defineFeature(feature, test => {
         await expect(page).toClick('button', { text: 'FLAGS' });
         await expect(page).toClick('button', { text: 'ATHLETES' });
         await expect(page).toClick('button', { text: 'SINGERS' });
-        //Click on next to play
+        //Click on next to select game type
+        await expect(page).toClick('button', { text: 'NEXT' });
+        //Select rounds
+        await expect(page).toClick('input[type="checkbox"][name="rounds"]');
+        //Click on next
         await expect(page).toClick('button', { text: 'NEXT' });
     });
   })
