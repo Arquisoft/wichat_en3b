@@ -9,36 +9,58 @@ ifdef::arc42help[]
 .Contents
 The most important domain and technical terms that your stakeholders use when discussing the system.
 
-You can also see the glossary as source for translations if you work in multi-language teams.
+You can also see the glossary as a source for translations if you work in multi-language teams.
 
 .Motivation
-You should clearly define your terms, so that all stakeholders
+You should clearly define your terms so that all stakeholders:
 
-* have an identical understanding of these terms
-* do not use synonyms and homonyms
-
+* Have an identical understanding of these terms.
+* Do not use synonyms and homonyms.
 
 .Form
-
 A table with columns <Term> and <Definition>.
 
 Potentially more columns in case you need translations.
 
-
 .Further Information
-
 See https://docs.arc42.org/section-12/[Glossary] in the arc42 documentation.
-
 ****
 endif::arc42help[]
 
-[cols="e,2e" options="header"]
+=== Techniques
+[options="header"]
 |===
-|Term |Definition
+| Term | Definition 
+| **Authentication** | The process of verifying a user's identity to grant access to different parts of the application. 
+| **Authorization** | Determines what actions or resources a user has permission to access based on their authentication status. 
+| **Caching** | A technique used to store frequently accessed data to improve performance and reduce API calls. 
+| **Kanban** | A project management methodology that visualizes work using boards and columns to track progress efficiently. 
+| **Sprint** | A three-week development cycle in which specific tasks and features are implemented and tested. 
+| **Deployment** | The process of making the application live and accessible to users, planned to be done using Azure. 
+| **Technical Debt** | The cost of additional work caused by choosing a quick but suboptimal solution in software development. 
+|===
 
-|<Term-1>
-|<definition-1>
+=== Terminology
+[options="header"]
+|===
+| Term | Definition 
+| **Wikidata** | A free, collaborative knowledge base that provides structured data, used as the primary source for quiz questions. 
+| **RTVE** | Radiotelevisión Española, the Spanish public television broadcaster and one of our stakeholders. 
+| **Saber y Ganar** | A famous Spanish TV show involving answering questions to win prizes. 
+| **Business Risk** | Potential challenges that could impact the success of the project, such as missed deadlines or low user engagement. 
+| **Game Mode** | The different ways users can play the quiz, such as timed rounds or standard question-answer sessions. 
+| **Clues** | Hints provided to help users answer quiz questions, generated either by the LLM or other game mechanics. 
+| **Ranking System** | A feature that tracks and displays user scores to create competition among players. 
+| **Accessibility** | Design choices made to ensure the game is usable by as many people as possible, including those with disabilities (e.g., colorblind-friendly UI). 
+|===
 
-|<Term-2>
-|<definition-2>
+=== Technologies
+[options="header"]
+|===
+| Term | Definition 
+| **React** | A JavaScript library for building user interfaces, used for developing the frontend of the quiz game. 
+| **LLM (Large Language Model)** | A type of artificial intelligence model, such as ChatGPT, used to generate hints and assist players in the game. 
+| **API (Application Programming Interface)** | A set of rules and protocols that allow different software applications to communicate with each other, such as fetching data from Wikidata. 
+| **OAuth / JWT** | Authentication mechanisms used to secure user logins and manage access. 
+| **MongoDB** | A NoSQL database used for storing data in a flexible, document-based format. 
 |===
