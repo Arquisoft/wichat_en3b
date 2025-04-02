@@ -36,7 +36,7 @@ endif::arc42help[]
 | **Caching** | A technique used to store frequently accessed data to improve performance and reduce API calls. 
 | **Kanban** | A project management methodology that visualizes work using boards and columns to track progress efficiently. 
 | **Sprint** | A three-week development cycle in which specific tasks and features are implemented and tested. 
-| **Deployment** | The process of making the application live and accessible to users, planned to be done using Azure. 
+| **Deployment** | The process of making the application live and accessible to users. Initially planned to be done using Azure, finally Oracle was chosen. 
 | **Technical Debt** | The cost of additional work caused by choosing a quick but suboptimal solution in software development. 
 |===
 

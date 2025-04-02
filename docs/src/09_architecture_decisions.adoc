@@ -35,3 +35,18 @@ There you will find links and examples about ADR.
 
 ****
 endif::arc42help[]
+
+[options="header", cols="1,1,1,2"]
+|===
+| **ELEMENT** | **OPTIONS** | **DECISION** | **REASON**
+| **Architecture** | Microservices, frontend & backend | Microservices | We chose the microservices architecture for its scalability, flexibility and decoupling, allowing the game to evolve easily and handle increased loads efficiently.
+| **Language** | Java, JavaScript | JavaScript | The initial prototype was written using JavaScript so we decided to keep on with it.
+| **Backend** framework | SpringBoot, Express, Node.js | Express, Node.js | Since we chose JavaScript as the language, this options would make integration with the front easier.
+| **Database** | MongoDB (NoSQL), PostgreSQL, MySQL | MongoDB | MongoDB was the database used in the prototype of the project so we continued with it. It allows flexible storage of questions and answers, along with horizontal scalability.
+| **Cloud service** | Oracle Cloud, Azure Cloud | Oracle cloud | We started using Azure but Oracle offers more flexibility and it's easier to use so we finally decided to change.
+| **Frontend** | React | React | Although we had never worked with it before, it is a powerful framework which provides predefined and reusable components.
+| **Deployment** | Docker | Docker | It is a fast option and allows an easy maintaining of the application. Also, it was the option used in the initial prototype.
+| **LLM** | Empathy (Mistral, Qwen), Gemini | Mistral | We tried the three options and they all met our needs for the project but we decided to stick with Mistral, which was an option in the initial prototye.
+| **Wikidata** | Direct HTTP request, Wikidata Query Service (WDQS), MediaWiki Action API, Wikibase REST API, Dumps | WDQS | We decided to use the Wikidata Query Service, with queries in SPARQL, making data retrieval structured and efficient without overloading our backend.
+| **Component navigation** | React-router, Link | React-router | This option provides efficient route and state management, preventing component conflicts and enhancing user experience.
+|===

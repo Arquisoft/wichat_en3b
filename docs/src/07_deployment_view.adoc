@@ -62,49 +62,57 @@ endif::arc42help[]
 
 [plantuml,"Deployment-View",png]
 ----
+@startuml
 title Deployment Diagram
 
-cloud "User" as user #lightgreen
+actor "User" as user #lightgreen
 
 node Device as device #lightgreen {
     node "Web Browser" as browser
-  }
+}
 
-cloud "Azure Ubuntu Server" as server #lightyellow {
+cloud "Oracle Cloud Server" as server #lightyellow {
     node "Docker" as docker #lightblue {
         node "WebApp" as webapp
-        node "Gateway" as gateway
+        node "GatewayService" as gateway
         database "MongoDB" as db
 
-        folder "Microservices" as microservices #pink {
-            component "AuthService" as authservice
-            component "UserService" as userservice
+        folder "Backend" as microservices #pink {
+            node "Users" as users {
+              component "AuthService" as authservice
+              component "UserService" as userservice
+            }
             component "LLMservice" as llmservice
+            component "QuestionService" as questionservice
         }
     }
     
 }
 
-cloud "External Service" #orange {
+cloud "External Services" as external #orange {
     node "WikiData" as wikidata
+    node "Empathy" as empathy
 }
 
-user --> device : Interacts With
+user -left-> device : Interacts With
 browser --> webapp : HTTPS Request
-webapp --> gateway : Uses
-gateway --> authservice : Handles Authentication
-gateway --> userservice : Handles User Data
-gateway --> llmservice : Handles Hints
-microservices --> wikidata : Retrieves Questions & Answers
-userservice <--> db : Stores/Retrieves User Data
+webapp <--> gateway : Frontend
+gateway <--> authservice : Handles Authentication
+gateway <--> userservice : Handles User Data
+gateway <--> llmservice : Handles Hints
+empathy --> llmservice : LLM 
+wikidata --> questionservice : Retrieves Pictures & Questions
+userservice <--> db : Stores/Retrieves User Data & Statistics
 authservice <--> db : Authenticates User Data
+
+@enduml
 ----
 
 Motivation::
 
 The diagram above represents the initial version of our architecture, outlining the separation between its components. Our design follows a client-server model, where the server communicates with Wikidata to retrieve questions. This clear distinction between the frontend (client) and backend (server) ensures modularity, allowing different implementations to remain interchangeable as long as they adhere to the common API.
 
-We utilize an Ubuntu server hosted on Azure, providing an isolated and pre-configured environment optimized for running our services. Hosting on Azure helps reduce infrastructure costs by reducing concerns such as security, availability, and maintenance.
+We utilize a server hosted on Oracle, providing an isolated and pre-configured environment optimized for running our services. Hosting on Oracle helps reduce infrastructure costs and enhances flexibility.
 
 We use Docker because it helps package our application and its dependencies into a standardized unit, ensuring it runs consistently across different environments, regardless of the machine's setup. Instead of using a monolithic architecture, we’ve chosen a microservices approach with Docker containers. This allows each service to be isolated, with its own resources, preventing conflicts and improving scalability and resilience. Each service has its own Docker image, which gives us flexibility in development and deployment. Our project includes services like the web application, gateway, user authentication, and MongoDB server. This Docker-based setup makes deployment, management, and resource use more efficient, while boosting flexibility and scalability.
 
@@ -118,12 +126,15 @@ The web app, gateway, and services run within Docker containers, all hosted on a
 [options="header"]
 |===
 | Component          | Description  
-| Web App           | User interface that interacts with the rest of the application.  
-| Gateway           | Manages communication between the web app and various services.  
-| Auth Service      | Handles user authentication.  
-| User Service      | Manages users and their history, providing some functions for API consumers.  
-| Users Database    | Stores user data and game history.   
-| WikiData         | External API used to retrieve information from WikiData.  
+| Web App            | User interface that interacts with the rest of the application.  
+| Gateway            | Manages communication between the web app and various services.  
+| User Service       | Manages user data and statistics, providing some functions for API consumers.  
+| Auth Service       | Handles user authentication.  
+| LLM Service        | Provides hints to the user while playing.
+| Question Service   | Manages pictures and data for the questions.
+| Database (MongoDB) | Stores user data and game history.   
+| Empathy            | External LLM used to obtain the hints.
+| WikiData           | External API used to retrieve information from WikiData.  
 |===
 
 ifdef::arc42help[]

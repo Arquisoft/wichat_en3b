@@ -91,14 +91,14 @@ The system is built using React and JavaScript to provide a dynamic and interact
 
 - **State Management**: React’s state management system is used to track user selections, game progress, and scores. It ensures a smooth and responsive experience as users navigate through the game.
 
-- **Azure Deployment**: The game will be hosted on Azure to ensure scalability, reliability, and easy deployment. Azure provides a secure and robust infrastructure for hosting both the frontend and backend components.
+- **Oracle Deployment**: The game will be hosted on Oracle to ensure scalability, flexibility, and easy deployment. Oracle provides a secure and robust infrastructure for hosting both the frontend and backend components.
 
 === Development and Operational Concepts
 
 - **Agile Development**: The project is developed using an Agile methodology, specifically in 3-week sprints. This allows for iterative development, rapid feedback, and continuous improvement.
 
-- **Continuous Deployment**: The game is deployed through Azure, with automated build and deployment pipelines to ensure smooth updates and patches.
+- **Continuous Deployment**: The game is deployed through Oracle, with automated build and deployment pipelines to ensure smooth updates and patches.
 
-- **Scalability**: As the number of users grows, the system is designed to scale horizontally. Azure’s cloud infrastructure supports scaling to handle increased traffic and ensure high availability during peak usage times.
+- **Scalability**: As the number of users grows, the system is designed to scale horizontally. Oracle's cloud infrastructure supports scaling to handle increased traffic and ensure high availability during peak usage times.
 
 

@@ -202,12 +202,13 @@ skinparam databaseStyle cylinder
 actor "User" as user
 
 node "Browser" as browser {
-  artifact "Frontend" as Web
+  artifact "Webapp (frontend)" as Web
 }
 
 node "Server" as server {
   node "Backend" as backend {
     artifact "Authentication Service" as Auth
+    artifact "User Service" as User
     artifact "Gateway Service" as Gateway
     artifact "LLM Service" as LLMSvc
     artifact "Questions Service" as QnA
@@ -221,14 +222,15 @@ node "External Services" as ext {
 }
 
 user -right-> Web
-Web --> Auth
-Web --> Gateway
-Auth --> DB
-Gateway --> LLMSvc
-Gateway --> QnA
-LLMSvc --> LLM
-QnA --> Wikidata
-QnA --> DB
+Web <--> Gateway
+Auth <--> DB
+Gateway <--> LLMSvc
+Gateway <--> QnA
+Gateway <--> Auth
+Gateway <--> User
+LLMSvc <-- LLM
+QnA <-- Wikidata
+QnA <--> DB
 
 @enduml
 ----
@@ -237,6 +239,7 @@ QnA --> DB
 |===
 | **Name** | Responsibility
 | **Authentication Service** | Handles user authentication, login and signup.
+| **User Service** | Retrieves the data of the users as well as their stadistics to generate the ranking.
 | **Game Service** | Manages game state and logic. Uses more concrete services like LLM and Question to divide responsibilities.
 | **LLM Service** | Provides chat functionality, sending requests to an LLM, receiving and processing responses to show hints to the user.
 | **Question Service** | Creates and provides questions using data obtained from Wikidata.
