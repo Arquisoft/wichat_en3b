@@ -25,10 +25,18 @@ if (fs.existsSync(openapiPath)) {
   // Parse the YAML content into a JavaScript object representing the Swagger document
   const swaggerDocument = YAML.parse(file);
 
+  // Disable the "Try it out" button
+  const swaggerOptions = {
+    swaggerOptions: {
+      supportedSubmitMethods: [] 
+    }
+  };
+  
   // Serve the Swagger UI documentation at the '/api-doc' endpoint
   // This middleware serves the Swagger UI files and sets up the Swagger UI page
   // It takes the parsed Swagger document as input
-  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
+  
 } else {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
