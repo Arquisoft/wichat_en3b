@@ -71,6 +71,7 @@ function GameModeSelection() {
             <FormControlLabel
               control={
                 <Checkbox
+                  name="rounds"
                   checked={selectedMode === "rounds"}
                   onChange={() => handleModeChange("rounds")}
                   color="primary"
@@ -80,13 +81,13 @@ function GameModeSelection() {
             />
             <FormControlLabel
               control={
-                <Checkbox checked={selectedMode === "time"} onChange={() => handleModeChange("time")} color="primary" />
+                <Checkbox checked={selectedMode === "time"} onChange={() => handleModeChange("time")} color="primary" name="time" />
               }
               label="TIME"
             />
             <FormControlLabel
               control={
-                <Checkbox checked={selectedMode === "hide"} onChange={() => handleModeChange("hide")} color="primary" />
+                <Checkbox checked={selectedMode === "hide"} onChange={() => handleModeChange("hide")} color="primary" name="hide" />
               }
               label="HIDE"
             />
