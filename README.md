@@ -14,7 +14,7 @@
 | Javier Menéndez Osendi   | uo294866@uniovi.es           |
 | Daniel Rodríguez Fernández| uo293655@uniovi.es          |
 
-[Link to our game 👾](https://arquisoft.github.io/wichat_en3b/)
+[Link to our game 👾](http://158.179.209.153:3000)
 
 [Read the Documentation 📖](https://arquisoft.github.io/wichat_en3b/)
 
