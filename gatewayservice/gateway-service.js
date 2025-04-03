@@ -155,10 +155,10 @@ app.get('/getRound', async (req, res) => {
   }
 });
 
-app.get('/getModes', async (req, res) => {
+app.get('/getTopics', async (req, res) => {
   try {
-    const modesResponse = await axios.get(questionServiceUrl + '/getModes');
-    res.json(modesResponse.data);
+    const topicsResponse = await axios.get(questionServiceUrl + '/getTopics');
+    res.json(topicsResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }

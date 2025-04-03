@@ -27,7 +27,7 @@ const Home = () => {
                 console.error("Error fetching user stats:", err);
             });
 
-        axios.get("/getModes")
+        axios.get("/getTopics")
             .then((res) => {
                 setGamemodes(["all", ...res.data.modes]);
             }).catch((err) => {

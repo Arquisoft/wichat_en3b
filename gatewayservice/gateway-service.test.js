@@ -43,7 +43,7 @@ describe('Gateway Service', () => {
                 return Promise.resolve({ data: { round: 'mockedRoundData' } });
             } else if (url.endsWith('/refresh')) {
                 return Promise.resolve({ data: { accessToken: 'mockedToken' } });
-            } else if (url.endsWith('/getModes')) {
+            } else if (url.endsWith('/getTopics')) {
                 return Promise.resolve({ data: { modes: ['city', 'athlete'] } });
             } else if (url.endsWith('/userstats/user/testuser')) {
                 return Promise.resolve({ data: { message: 'Fetched user statistics for user: testuser' } });
@@ -294,9 +294,9 @@ describe('Gateway Service', () => {
         expect(response.body.error).toBe('Question service error');
     });
 
-    // Test /getModes endpoint
-    it('should fetch modes from the question service', async () => {
-        const response = await request(app).get('/getModes').set('Authorization', `Bearer ${token}`);
+    // Test /getTopics endpoint
+    it('should fetch topics from the question service', async () => {
+        const response = await request(app).get('/getTopics').set('Authorization', `Bearer ${token}`);
 
         expect(response.statusCode).toBe(200);
         expect(response.body.modes).toEqual(['city', 'athlete']);

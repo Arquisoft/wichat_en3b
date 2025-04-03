@@ -104,8 +104,8 @@ describe("Express Service API Endpoints", () => {
         consoleErrorMock.mockRestore(); // Restore the original console.error
     });
 
-    it("should return a list of available modes", async () => {
-        const response = await request(app).get("/getModes");
+    it("should return a list of available topics", async () => {
+        const response = await request(app).get("/getTopics");
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("modes");
         expect(Array.isArray(response.body.modes)).toBe(true);

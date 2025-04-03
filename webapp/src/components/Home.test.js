@@ -77,7 +77,7 @@ describe("Home component", () => {
             stats: [{ username: "otheruser", totalScore: 1000, correctRate: 0.9, totalQuestions: 200, totalGamesPlayed: 20 }]
         };
 
-        mockAxios.onGet("/getModes").reply(200, { modes: [] });
+        mockAxios.onGet("/getTopics").reply(200, { topics: [] });
         mockAxios.onGet("/userstats/mode/all").reply(200, mockStats);
 
         render(
