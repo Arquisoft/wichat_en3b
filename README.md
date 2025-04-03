@@ -2,7 +2,10 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_en3b&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_en3b)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_en3b&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_en3b)
 
-<img src="logo.png" alt="Wichat Logo" width="500"/>
+
+👾 **[Play the Game](http://158.179.209.153:3000)** | 📖 **[Read the Documentation](https://arquisoft.github.io/wichat_en3b/)**
+
+<img src="logo.png" alt="Wichat Logo" width="450"/>
 
 # Meet our team 👥
 | Name                     | Email                        |
@@ -13,10 +16,6 @@
 | Marco Lorenzo Martínez   | uo294324@uniovi.es           |
 | Javier Menéndez Osendi   | uo294866@uniovi.es           |
 | Daniel Rodríguez Fernández| uo293655@uniovi.es          |
-
-[Link to our game 👾](http://158.179.209.153:3000)
-
-[Read the Documentation 📖](https://arquisoft.github.io/wichat_en3b/)
 
 # About WICHAT 💡
 Wichat_en3b is a fun and interactive web-based quiz game we created for the Software Architecture course (2024/2025). It’s more than just your average chat app — we’ve packed it with several cool features that make it stand out. At its core, Wichat is built using React for the frontend and Node.js (Express) for the backend, while MongoDB handles the database. But what truly makes it special is the integration with an AI-powered LLM from Empathy, which brings smart assistance to your game experience.
@@ -34,7 +33,6 @@ But that’s not all. The game rewards you for quick answers, so the faster you 
 
 Create an account or log in to challenge your friends and see who’s the ultimate trivia champion. Whether you're here to test your own knowledge or compete with others, Wichat Quiz is the perfect way to have fun and learn something new along the way!
 
-
 # Technologies
 
 <p float="left">
@@ -51,8 +49,10 @@ This is a base project for the Software Architecture course in 2024/2025. It is 
 - **LLM service**. The LLM (Large Language Model) service is another key piece of the project. This Express-based service is responsible for communicating with the integrated LLM (powered by Empathy) to provide AI-driven responses and assistance to users. The LLM service processes requests from the web application, querying the language model to generate responses based on user input. This service also manages the interaction with the model's API, ensuring smooth communication between the app and the AI.
 - **Gateway service**. The gateway service acts as a reverse proxy and a centralized point for routing requests from the public (users). Built with Express, it exposes the public-facing endpoints and directs incoming requests to the appropriate backend services (user, auth, and LLM services). It plays a crucial role in managing traffic and ensuring that requests are securely routed to the right components. By acting as an intermediary, it decouples the front-end from the backend services, providing a more secure and flexible architecture.Express service that is exposed to the public and serves as a proxy to the two previous ones.
 - **Webapp**. The web application is the front-end component of the system, built with React. It provides the user interface, allowing users to interact with the system. Through the webapp, users can log in, register as new users, and engage with the AI-powered quiz game. The web application communicates with the backend services via the gateway service, utilizing the exposed endpoints to handle user authentication, registration, and interactions with the LLM. The webapp also provides an interactive, dynamic interface for playing the quiz game, switching between categories, and displaying results.
+- **Question Service**. This Express-based service is responsible for generating quiz questions by retrieving data from Wikidata using SPARQL queries. It connects to a MongoDB database to store and manage quiz-related data, such as cities, flags, athletes, and singers. The service periodically fetches and updates data, ensuring an up-to-date and diverse set of questions. It provides endpoints for loading quiz data and generating game rounds with random questions, selecting items dynamically based on available categories.
 
-All of these services are integrated with a shared MongoDB database, where the user and authentication services store and retrieve user-related data. The database is accessed using Mongoose, a powerful ODM (Object-Document Mapper) for MongoDB, which simplifies data operations and ensures the seamless flow of information between services.
+All of these services interact with a shared MongoDB database, where user-related data is managed by the user and authentication services. Mongoose, a robust Object-Document Mapper (ODM), simplifies database interactions, enabling efficient data storage, retrieval, and validation. This shared database ensures smooth communication between services, maintaining consistency and synchronization across the system.  
+
 
 ## Quick start guide
 
