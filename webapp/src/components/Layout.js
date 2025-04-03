@@ -3,6 +3,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import { Outlet, NavLink } from 'react-router';
 import useAuth from "../hooks/useAuth";
 import axios from "../api/axios";
+import useTheme from "../hooks/useTheme";
 
 const StyledNavlink = ({ to, label, icon }) => {
     return (
@@ -16,6 +17,7 @@ const StyledNavlink = ({ to, label, icon }) => {
 
 const Layout = () => {
     const { auth, setAuth } = useAuth();
+    const { toggleTheme } = useTheme();
 
     const handleLogout = async () => {
         try {
@@ -43,6 +45,12 @@ const Layout = () => {
                 <StyledNavlink to="/home" label="Home" icon={<HomeIcon />} />
                 <Box sx={{ ml: "auto" }}>
                     <>
+                    <Button 
+                        value="check"
+                        onClick={toggleTheme}
+                        sx={{ color: "white", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+                        Toggle Theme
+                    </Button>
                         {auth.username
                             ? <Button onClick={handleLogout} sx={{ color: "white", gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
                                 Log Out

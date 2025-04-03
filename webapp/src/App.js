@@ -68,7 +68,6 @@ const StyledNavLink = styled(NavLink)({
 function App() {
   return (
     <Container maxWidth="sm">
-      <CssBaseline />
       <StyledPaper elevation={3}>
         <Box sx={{ textAlign: "center", mb: 4 }}>
           <School sx={{ fontSize: 60, color: "#3f51b5", mb: 2 }} />
