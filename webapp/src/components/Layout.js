@@ -17,7 +17,7 @@ const StyledNavlink = ({ to, label, icon }) => {
 
 const Layout = () => {
     const { auth, setAuth } = useAuth();
-    const { toggleTheme } = useTheme();
+    const { theme, toggleTheme } = useTheme();
 
     const handleLogout = async () => {
         try {
@@ -34,13 +34,13 @@ const Layout = () => {
             minWidth: "100vw",
             minHeight: "100vh",
             p: 0,
-            background: "linear-gradient(to bottom right,rgb(200, 240, 255), rgb(255, 240, 200))"
+            background: theme.palette.background.gradient.bg
         }}>
             <AppBar position="static" sx={{
                 display: "flex",
                 flexDirection: "row",
                 padding: "0.5rem",
-                background: "linear-gradient(to right,rgb(70, 80, 180),rgb(100, 90, 200))"
+                background: theme.palette.background.gradient.main.right,
             }}>
                 <StyledNavlink to="/home" label="Home" icon={<HomeIcon />} />
                 <Box sx={{ ml: "auto" }}>
