@@ -1,3 +1,7 @@
+[![Actions Status](https://github.com/arquisoft/wichat_en3b/workflows/CI%20for%20wichat_en3b/badge.svg)](https://github.com/arquisoft/wichat_en3b/actions)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_en3b&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_en3b)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_en3b&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_en3b)
+
 <img src="logo.png" alt="Wichat Logo" width="500"/>
 
 # Meet our team 👥
@@ -31,11 +35,7 @@ But that’s not all. The game rewards you for quick answers, so the faster you 
 Create an account or log in to challenge your friends and see who’s the ultimate trivia champion. Whether you're here to test your own knowledge or compete with others, Wichat Quiz is the perfect way to have fun and learn something new along the way!
 
 
-# wichat_en3b
-
-[![Actions Status](https://github.com/arquisoft/wichat_en3b/workflows/CI%20for%20wichat_en3b/badge.svg)](https://github.com/arquisoft/wichat_en3b/actions)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_en3b&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_en3b)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_en3b&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_en3b)
+# Technologies
 
 <p float="left">
 <img src="https://blog.wildix.com/wp-content/uploads/2020/06/react-logo.jpg" height="100">
