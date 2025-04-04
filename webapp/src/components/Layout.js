@@ -34,13 +34,13 @@ const Layout = () => {
             minWidth: "100vw",
             minHeight: "100vh",
             p: 0,
-            background: theme.palette.background.gradient.bg
+            background: theme.palette.gradient.bg
         }}>
             <AppBar position="static" sx={{
                 display: "flex",
                 flexDirection: "row",
                 padding: "0.5rem",
-                background: theme.palette.background.gradient.main.right,
+                background: theme.palette.gradient.main.right,
             }}>
                 <StyledNavlink to="/home" label="Home" icon={<HomeIcon />} />
                 <Box sx={{ ml: "auto" }}>

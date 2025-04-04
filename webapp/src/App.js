@@ -1,16 +1,15 @@
 "use client"
 
-import { Container, CssBaseline, Typography, Button, Box, Paper, Grid } from "@mui/material"
+import { Container, Typography, Button, Box, Paper, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { Outlet, NavLink } from "react-router"
 import { School, Login, Person } from "@mui/icons-material"
+import useTheme from "./hooks/useTheme";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   marginTop: theme.spacing(4),
   marginBottom: theme.spacing(4),
-  background: "linear-gradient(to bottom right, #f5f7fa, #e4e8f0)",
-  borderRadius: theme.shape.borderRadius,
   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
   position: "relative",
   overflow: "hidden",
@@ -21,7 +20,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     left: 0,
     width: "100%",
     height: "5px",
-    background: "linear-gradient(to right, #3f51b5, #7e57c2)",
+    background: theme.palette.gradient.main.right,
   },
 }))
 
@@ -39,21 +38,19 @@ const ActionButton = styled(Button)(({ theme }) => ({
 }))
 
 const GuestButton = styled(ActionButton)(({ theme }) => ({
-  background: "linear-gradient(to right, #3f51b5, #7e57c2)",
-  color: theme.palette.common.white,
+  background: theme.palette.gradient.main.right,
   "&:hover": {
-    background: "linear-gradient(to right, #303f9f, #5e35b1)",
+    background: theme.palette.gradient.hover.right,
     transform: "translateY(-3px)",
     boxShadow: theme.shadows[4],
   },
 }))
 
 const LoginButton = styled(ActionButton)(({ theme }) => ({
-  background: theme.palette.common.white,
-  color: theme.palette.primary.main,
+  background: "transparent",
   border: `1px solid ${theme.palette.primary.main}`,
   "&:hover": {
-    background: theme.palette.grey[100],
+    background: "rgba(128, 128, 128, 0.1)",
     transform: "translateY(-3px)",
     boxShadow: theme.shadows[2],
   },
@@ -66,6 +63,8 @@ const StyledNavLink = styled(NavLink)({
 })
 
 function App() {
+  const { theme } = useTheme();
+
   return (
     <Container maxWidth="sm">
       <StyledPaper elevation={3}>
@@ -76,7 +75,7 @@ function App() {
             variant="h4"
             sx={{
               fontWeight: "bold",
-              background: "linear-gradient(to right, #3f51b5, #7e57c2)",
+              background: theme.palette.gradient.main.right,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               mb: 1,

@@ -4,11 +4,13 @@ import { BarChart, ChevronRight, FilterAlt, People } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
+import useTheme from "../hooks/useTheme";
 
 const Home = () => {
     const axios = useAxios();
     const { auth } = useAuth();
     const navigate = useNavigate();
+    const { theme } = useTheme();
 
     const [activeTab, setActiveTab] = useState(0);
     const [gamemode, setGamemode] = useState("all");
@@ -57,7 +59,7 @@ const Home = () => {
 
     return (
         <Container sx={{
-            bgcolor: "rgba(255, 255, 255, 0.5)",
+            bgcolor: "background.transparent",
             backdropFilter: "blur(10px)",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
             borderRadius: 4,
@@ -121,7 +123,7 @@ const Home = () => {
                                 onChange={(_, val) => setStat(val)}
                                 variant="scrollable"
                                 scrollButtons="auto"
-                                sx={{ bgcolor: "rgba(64, 64, 64, 0.1)", borderRadius: 2, gap: 1 }}
+                                sx={{ bgcolor: "background.translucent", borderRadius: 2, gap: 1 }}
                             >
                                 {stats.map((stat) => <Tab key={stat} value={stat} label={stat} />)}
                             </Tabs>
@@ -142,13 +144,13 @@ const Home = () => {
                             </Select>
                         </FormControl>
                     </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "rgba(255, 255, 255, 0.8)", borderRadius: 2, maxHeight: "40vh", overflowY: "auto" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "background.translucent", borderRadius: 2, maxHeight: "40vh", overflowY: "auto" }}>
                         {ranking.map((user, index) => (
                             <>
                                 <Box key={user._id} sx={{
                                     p: 2,
                                     borderRadius: 2,
-                                    bgcolor: auth.username === user.username ? "rgba(25, 118, 210, 0.1)" : "transparent",
+                                    bgcolor: auth.username === user.username ? theme.palette.primary.transparent : "transparent",
                                     border: auth.username === user.username ? 1 : 0,
                                     borderColor: "primary.main",
                                     display: "flex",
