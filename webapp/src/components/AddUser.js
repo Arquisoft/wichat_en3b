@@ -2,9 +2,8 @@
 import React, { useState } from 'react';
 import axios from '../api/axios';
 import { Container, Typography, TextField, Button, Snackbar, Box, Paper } from '@mui/material';
-import { NavLink } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import logInPic from './photos/logInPic.png';
-
 
 const AddUser = () => {
   const [username, setUsername] = useState('');
@@ -12,10 +11,17 @@ const AddUser = () => {
   const [error, setError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
+  const navigate = useNavigate();
+
   const addUser = async () => {
     try {
       await axios.post("/adduser", { username, password });
       setOpenSnackbar(true);
+    
+      setTimeout(() => {
+        navigate('/login');
+      }, 500);
+    
     } catch (error) {
       setError(error.response?.data?.error || 'Unknown error');
     }
