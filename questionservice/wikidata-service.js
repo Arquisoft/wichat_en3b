@@ -15,8 +15,8 @@ const mongoDB = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongo-db-w
 // SPARQL endpoint for WikiData
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
 
-// Global variable to store the selected game modes
-let selectedModes = [];
+// Global variable to store the selected game topics
+let selectedTopics = [];
 
 // Define the SPARQL queries to fetch data from Wikidata
 const QUERIES = {
@@ -98,9 +98,9 @@ async function clearDatabase() {
 async function fetchAndStoreData() {
     console.log("Fetching data from Wikidata and storing it in the database");
     try {
-        const fetchPromises = Object.entries(QUERIES).map(async ([mode, query]) => {
-            console.log(`-> Fetching data for mode: ${mode}`);
-            console.time(`Time taken for ${mode}`);
+        const fetchPromises = Object.entries(QUERIES).map(async ([topic, query]) => {
+            console.log(`-> Fetching data for topic: ${topic}`);
+            console.time(`Time taken for ${topic}`);
 
             const response = await axios.get(SPARQL_ENDPOINT, {
                 params: { query, format: "json" },
@@ -108,10 +108,10 @@ async function fetchAndStoreData() {
             });
 
             const items = response.data.results.bindings.map(item => ({
-                id: item[mode]?.value?.split("/").pop() || "Unknown",
-                name: item[`${mode}Label`]?.value || "No Name",
+                id: item[topic]?.value?.split("/").pop() || "Unknown",
+                name: item[`${topic}Label`]?.value || "No Name",
                 imageUrl: item.image?.value || "",
-                mode
+                topic
             }));
 
             const bulkOps = items.map(item => ({
@@ -126,8 +126,8 @@ async function fetchAndStoreData() {
                 await WikidataObject.bulkWrite(bulkOps);
             }
 
-            console.timeEnd(`Time taken for ${mode}`);
-            console.log(`✔ Finished storing ${mode} data.`);
+            console.timeEnd(`Time taken for ${topic}`);
+            console.log(`✔ Finished storing ${topic} data.`);
         });
 
         await Promise.all(fetchPromises);
@@ -140,12 +140,12 @@ async function fetchAndStoreData() {
 // Endpoint to fetch data from Wikidata and store it in the database
 app.post("/load", async (req, res) => {
     try {
-        const { modes } = req.body;
-        if (!modes || !Array.isArray(modes)) {
-            return res.status(400).json({ error: "Invalid modes parameter" });
+        const { topics } = req.body;
+        if (!topics || !Array.isArray(topics)) {
+            return res.status(400).json({ error: "Invalid topics parameter" });
         }
 
-        selectedModes = modes; // Store the selected modes in the global variable
+        selectedTopics = topics; // Store the selected topics in the global variable
 
         res.status(200).json({ message: "Data successfully stored" });
     } catch (error) {
@@ -157,15 +157,15 @@ app.post("/load", async (req, res) => {
 // Function to get random items from MongoDB
 async function getRandomItems() {
     try {
-        const randomMode = selectedModes[Math.floor(Math.random() * selectedModes.length)]; // Choose a random mode from the selected ones
+        const randomTopic = selectedTopics[Math.floor(Math.random() * selectedTopics.length)]; // Choose a random topic from the selected ones
         const items = await WikidataObject.aggregate([
-            { $match: { mode: randomMode } }, // Filter by the chosen mode
+            { $match: { topic: randomTopic } }, // Filter by the chosen topic
             { $sample: { size: 4 } } // Retrieve 4 random items
         ]);
 
         const randomItem = items[Math.floor(Math.random() * items.length)]; // Choose one random item
         return {
-            mode: randomMode,
+            topic: randomTopic,
             items: items.map(item => ({ name: item.name })), // Return only names
             itemWithImage: randomItem // Return one item with an image
         };
@@ -178,11 +178,11 @@ async function getRandomItems() {
 // Endpoint to get a game round with random items
 app.get("/getRound", async (req, res) => {
     try {
-        if (selectedModes.length === 0) {
-            return res.status(400).json({ error: "No modes available. Load data first." });
+        if (selectedTopics.length === 0) {
+            return res.status(400).json({ error: "No topics available. Load data first." });
         }
 
-        const data = await getRandomItems(); // Use stored modes instead of receiving them in the request
+        const data = await getRandomItems(); // Use stored topics instead of receiving them in the request
         res.json(data);
     } catch (error) {
         console.error("Error in /getRound endpoint:", error);
@@ -190,8 +190,8 @@ app.get("/getRound", async (req, res) => {
     }
 });
 
-app.get("/getModes", (req, res) => {
-    res.json({ modes: Object.keys(QUERIES) }); // Return the available game modes
+app.get("/getTopics", (req, res) => {
+    res.json({ topics: Object.keys(QUERIES) }); // Return the available game topics
 });
 
 const server = app.listen(port, () => {

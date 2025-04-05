@@ -127,7 +127,7 @@ const GameTopicSelection = () => {
 
   const startGame = async () => {
     try {
-      await axios.post("/loadQuestion", { modes: selectedTopics });
+      await axios.post("/loadQuestion", { topics: selectedTopics });
     } catch (error) {
       console.error("Error fetching game data:", error);
     }

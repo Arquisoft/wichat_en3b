@@ -11,8 +11,8 @@ const Home = () => {
     const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState(0);
-    const [gamemode, setGamemode] = useState("all");
-    const [gamemodes, setGamemodes] = useState(["all"]);
+    const [gametopic, setGameTopic] = useState("all");
+    const [gametopics, setGameTopics] = useState(["all"]);
     const [stat, setStat] = useState("points");
     const [ranking, setRanking] = useState([]);
     const [userStats, setUserStats] = useState(null);
@@ -27,22 +27,22 @@ const Home = () => {
                 console.error("Error fetching user stats:", err);
             });
 
-        axios.get("/getModes")
+        axios.get("/getTopics")
             .then((res) => {
-                setGamemodes(["all", ...res.data.modes]);
+                setGameTopics(["all", ...res.data.topics]);
             }).catch((err) => {
-                console.error("Error fetching gamemodes:", err);
+                console.error("Error fetching gametopics:", err);
             });
     }, []);
 
     useEffect(() => {
-        axios.get(`/userstats/mode/${gamemode}`)
+        axios.get(`/userstats/topic/${gametopic}`)
             .then((res) => {
                 setRanking(res.data.stats);
             }).catch((err) => {
                 console.error("Error fetching user stats:", err);
             });
-    }, [gamemode]);
+    }, [gametopic]);
 
     const getStatLabel = (user, stat) => {
         switch (stat) {
@@ -127,16 +127,16 @@ const Home = () => {
                             </Tabs>
                         </Box>
                         <FormControl variant="outlined" size="small" sx={{ justifySelf: "end", minWidth: 150 }}>
-                            <InputLabel>Game Mode</InputLabel>
+                            <InputLabel>Game topic</InputLabel>
                             <Select
-                                value={gamemode}
-                                onChange={(e) => setGamemode(e.target.value)}
-                                label="Game Mode"
+                                value={gametopic}
+                                onChange={(e) => setGameTopic(e.target.value)}
+                                label="Game topic"
                                 startAdornment={<FilterAlt fontSize="small" sx={{ mr: 1, opacity: 0.7 }} />}
                             >
-                                {gamemodes.map((mode) => (
-                                    <MenuItem key={mode} value={mode}>
-                                        {mode}
+                                {gametopics.map((topic) => (
+                                    <MenuItem key={topic} value={topic}>
+                                        {topic}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -178,14 +178,14 @@ const Home = () => {
                 </Box>
             </Box>
 
-            {/* Game mode selection */}
+            {/* Game topic selection */}
             <Paper elevation={3} sx={{ p: 2, display: "flex", justifyContent: "space-between", gap: 2 }}>
                 <Box>
                     <Typography variant="h5" fontWeight="bold">
                         Ready to play?
                     </Typography>
                     <Typography variant="body1" sx={{ opacity: 0.8 }}>
-                        Choose a game mode and test your knowledge!
+                        Choose a game topic and test your knowledge!
                     </Typography>
                 </Box>
                 <Button

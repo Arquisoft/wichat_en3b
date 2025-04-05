@@ -203,8 +203,8 @@ function Game() {
   // Check if the game is still loading after modifying the round data
   useEffect(() => {
     if (roundData && roundData.items.length > 0) {
-      let wh = (roundData.mode === "athlete" || roundData.mode === "singer") ? "Who" : "What";
-      setRoundPrompt(`${wh} is this ${roundData.mode}?`);
+      let wh = (roundData.topic === "athlete" || roundData.topic === "singer") ? "Who" : "What";
+      setRoundPrompt(`${wh} is this ${roundData.topic}?`);
       setLoading(false);
     } else {
       setLoading(true);
@@ -281,7 +281,7 @@ const endGame = async (questions) => {
       updatedQuestions = [
         ...prev,
         {
-          mode: roundData.mode,
+          topic: roundData.topic,
           isCorrect: isCorrect,
           pointsIncrement: pointsIncrement,
         },
