@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import axios from '../api/axios';
 
 
-import { Container, Typography, TextField, Button, Snackbar, Box, Paper } from '@mui/material';
+import { Container, Typography, TextField, Button, Snackbar, Box, Paper, Alert, FormHelperText } from '@mui/material';
 import { NavLink, useNavigate } from 'react-router';
 import logInPic from './photos/logInPic.png';
 
@@ -11,11 +11,52 @@ const AddUser = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const navigate = useNavigate();
 
+
+const validateForm = () => {
+  let isValid = true;
+  
+  const usernameRegex = /^\w+$/;
+  if (!username) {
+    setUsernameError('Username is required');
+    isValid = false;
+  } else if (!usernameRegex.test(username)) {
+    setUsernameError('Username can only contain letters, numbers, and underscores');
+    isValid = false;
+  } else {
+    setUsernameError('');
+  }
+  
+  const passwordRegExp = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  if (!password) {
+    setPasswordError('Password is required');
+    isValid = false;
+  } else if (password.length < 8) {
+    setPasswordError('Password must be at least 8 characters long');
+    isValid = false;
+  } else if (!passwordRegExp.test(password)) {
+    setPasswordError('Password must have at least one capital letter, one digit and one special character');
+    isValid = false;
+  } else {
+    setPasswordError('');
+  }
+  
+  return isValid;
+};
+
   const addUser = async () => {
+
+    setError('');
+
+    if (!validateForm()){
+      return; 
+    }
+
     try {
       await axios.post("/adduser", { username, password });
       setOpenSnackbar(true);
@@ -25,7 +66,16 @@ const AddUser = () => {
       }, 500);
     
     } catch (error) {
-      setError(error.response?.data?.error || 'Unknown error');
+      const errorMsg = error.response?.data?.error || 'Unknown error';
+      setError(errorMsg);
+
+      if (errorMsg.includes('Username already taken')) {
+        setUsernameError('Username already taken');
+      } else if (errorMsg.includes('username')) {
+        setUsernameError(errorMsg);
+      } else if (errorMsg.includes('password') || errorMsg.includes('Password')) {
+        setPasswordError(errorMsg);
+      }
     }
   };
 
@@ -48,7 +98,12 @@ const AddUser = () => {
             fullWidth
             label="Username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              setUsernameError('');
+            }}
+            error={!!usernameError}
+            helperText={usernameError}
             sx={{ mb: 2 }}
           />
           <TextField
@@ -58,9 +113,18 @@ const AddUser = () => {
             label="Password"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setPasswordError('');
+            }}
+            error={!!passwordError}
+            helperText={passwordError}
             sx={{ mb: 2 }}
           />
+
+          <FormHelperText sx={{ mb: 2, mx: 1 }}>
+            Password must contain at least 8 characters, including a capital letter, a number, and a special character.
+          </FormHelperText>
 
           <Button
             fullWidth
@@ -132,11 +196,17 @@ const AddUser = () => {
         </Box>
       </Paper>
 
-      {/* Notifications */}
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="User added successfully" />
-      {error && (
-        <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')} message={`Error: ${error}`} />
+      {/* General Error Notification */}
+      {error && !usernameError && !passwordError && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {error}
+        </Alert>
       )}
+
+      {/* Success Notification */}
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="User added successfully" />
+
+
     </Container>
   );
 };

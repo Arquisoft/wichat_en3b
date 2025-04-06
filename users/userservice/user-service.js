@@ -19,17 +19,40 @@ mongoose.connect(mongoUri);
 
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
+
+  const passwordRegExp = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  const usernameRegex = /^\w+$/;
+
+
   for (const field of requiredFields) {
+    
     if (!(field in req.body)) {
       throw new Error(`Missing required field: ${field}`);
     }
   }
+
+  if (!usernameRegex.test(req.body.username)) {
+    throw new Error('The username is not valid. It needs a number, a special character and at least a capital letter and a lowercase letter.');
+  }
+
+  if (!passwordRegExp.test(req.body.password)) {
+    throw new Error('Password must have at least one capital letter, one digit and one special character.');
+  }
+
+  if(!req.body.password || req.body.password.length < 8)
+    throw new Error('The lenght of the password must be of 8 characters or more. ')
+  
 }
 
 app.post('/adduser', async (req, res) => {
   try {
     // Check if required fields are present in the request body
     validateRequiredFields(req, ['username', 'password']);
+
+    const usersOnSystem = await User.find({ username: req.body.username }).lean();
+    if (usersOnSystem.length > 0) {
+        return res.status(400).json({ error: 'Username already taken' });
+    }
 
     // Encrypt the password before saving it
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
