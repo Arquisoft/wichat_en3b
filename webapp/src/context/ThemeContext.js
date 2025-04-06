@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { createTheme, ThemeProvider as MuiThemeProvider, alpha } from "@mui/material/styles";
-import { blue, cyan, deepPurple, grey, red, teal, yellow } from "@mui/material/colors";
+import { cyan, deepPurple, grey, red, teal, yellow } from "@mui/material/colors";
 import { CssBaseline, darken, lighten } from "@mui/material";
 
 const ThemeContext = createContext();
@@ -22,10 +22,12 @@ const themes = {
             primary: {
                 main: "#5254bc",
             },
-            secondary: blue,
+            secondary: {
+                main: "#8653bd",
+            },
             background: {
                 default: "#fff",
-                paper: grey[50],
+                paper: grey[100],
             },
             text: {
                 primary: grey[900],
@@ -33,53 +35,56 @@ const themes = {
             },
             gradient: {
                 bg: `linear-gradient(to bottom right, ${cyan[100]}, ${yellow[100]})`,
-                main: createGradient(lighten("#5254bc", 0.1), darken("#5254bc", 0.1)),
-                hover: createHoverGradient(lighten("#5254bc", 0.1), darken("#5254bc", 0.1))
+                main: createGradient("#5254bc", darken("#8653bd", 0.1)),
+                hover: createHoverGradient("#5254bc", darken("#8653bd", 0.1))
             }
         },
     }),
-    dark: createTheme({
+    blue: createTheme({
         palette: {
             mode: "dark",
             primary: {
-                main: red[700],
-                light: red[500],
-                dark: red[900],
-                contrastText: '#fff',
+                main: "#023e7d",
             },
-            secondary: teal,
+            secondary: {
+                main: "#4299E1",
+            },
             background: {
-                default: '#121212',
-                paper: '#1e1e1e',
+                default: "#1A202C",
+                paper: "#2D3748",
             },
             text: {
-                primary: '#fff',
-                secondary: grey[500],
+                primary: "#f5f5f5",
+                secondary: "#a0aec0",
             },
             gradient: {
-                bg: `linear-gradient(to bottom right, ${red[900]}, ${teal[700]})`,
-                main: createGradient(red[700], teal[300]),
-                hover: createHoverGradient(red[700], teal[300])
+                bg: "linear-gradient(to bottom right, #2D3748, #1A202C)",
+                main: createGradient(lighten("#023e7d", 0.1), darken("#023e7d", 0.2)),
+                hover: createHoverGradient(lighten("#023e7d", 0.1), darken("#023e7d", 0.2))
             }
         },
     }),
-    yellow: createTheme({
+    green: createTheme({
         palette: {
-            mode: 'light',
-            primary: yellow,
-            secondary: deepPurple,
+            mode: "light",
+            primary: {
+                main: "#588157",
+            },
+            secondary: {
+                main: "#3c6e71",
+            },
             background: {
-                default: grey[200],
-                paper: grey[50],
+                default: "#fff",
+                paper: grey[100],
             },
             text: {
                 primary: grey[900],
                 secondary: grey[700],
             },
             gradient: {
-                bg: `linear-gradient(to bottom right, ${yellow[50]}, ${yellow[200]})`,
-                main: createGradient(yellow[600], yellow[800]),
-                hover: createHoverGradient(yellow[600], yellow[800]),
+                bg: "linear-gradient(to bottom, #faedcd, #ddb892)",
+                main: createGradient("#588157", "#31572c"),
+                hover: createHoverGradient("#588157", "#31572c")
             }
         },
     }),

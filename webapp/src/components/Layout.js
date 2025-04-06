@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Container, MenuItem, Select } from "@mui/material";
+import { alpha, AppBar, Box, Button, Container, MenuItem, Select } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import { Outlet, NavLink } from 'react-router';
 import useAuth from "../hooks/useAuth";
@@ -8,7 +8,11 @@ import useTheme from "../hooks/useTheme";
 const StyledNavlink = ({ theme, to, label, icon }) => {
     return (
         <NavLink to={to}>
-            <Button sx={{ color: theme.palette.primary.contrastText, gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+            <Button sx={{
+                color: theme.palette.primary.contrastText,
+                gap: "0.5rem",
+                "&:hover": { backgroundColor: alpha(theme.palette.primary.contrastText, 0.1) }
+            }}>
                 {icon} {label}
             </Button>
         </NavLink>
@@ -47,7 +51,7 @@ const Layout = () => {
                     <>
                         <Select
                             onChange={(e) => selectTheme(e.target.value)}
-                            sx={{ "& .MuiSelect-icon": { color: "white" } }}
+                            sx={{ color: "primary.contrastText", "& .MuiSelect-icon": { color: "primary.contrastText" } }}
                             variant="outlined"
                             size="small"
                         >
@@ -58,7 +62,11 @@ const Layout = () => {
                             ))}
                         </Select>
                         {auth.username
-                            ? <Button onClick={handleLogout} sx={{ color: "primary.contrastText", gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+                            ? <Button onClick={handleLogout} sx={{
+                                color: "primary.contrastText",
+                                gap: "0.5rem",
+                                "&:hover": { backgroundColor: alpha(theme.palette.primary.contrastText, 0.1) }
+                            }}>
                                 Log Out
                             </Button>
                             : <StyledNavlink to="/login" label="Login" theme={theme} />}

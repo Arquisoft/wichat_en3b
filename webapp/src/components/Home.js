@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
+import { alpha, Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
 import { BarChart, ChevronRight, FilterAlt, People } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
@@ -59,7 +59,7 @@ const Home = () => {
 
     return (
         <Container sx={{
-            bgcolor: "background.transparent",
+            bgcolor: alpha(theme.palette.background.paper, 0.5),
             backdropFilter: "blur(10px)",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
             borderRadius: 4,
@@ -123,7 +123,7 @@ const Home = () => {
                                 onChange={(_, val) => setStat(val)}
                                 variant="scrollable"
                                 scrollButtons="auto"
-                                sx={{ bgcolor: "background.translucent", borderRadius: 2, gap: 1 }}
+                                sx={{ bgcolor: "background.default", borderRadius: 2, gap: 1 }}
                             >
                                 {stats.map((stat) => <Tab key={stat} value={stat} label={stat} />)}
                             </Tabs>
