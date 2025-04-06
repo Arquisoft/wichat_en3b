@@ -472,7 +472,7 @@ function Game() {
               ) : (
                 roundData && (
                   <>
-                    <Typography variant="h4" component="h2" align="center" gutterBottom color="primary" sx={{ fontWeight: "bold", textDecoration: "underline" }}>
+                    <Typography variant="h4" component="h2" align="center" gutterBottom color="primary" sx={{ fontWeight: "bold" }}>
                       Round {round}/{totalRounds}
                     </Typography>
                     <ImageContainer>
@@ -519,7 +519,15 @@ function Game() {
           </Card>
         </Grid>
       </Grid>
-      <Dialog open={showStatistics} onClose={() => setShowStatistics(false)}>
+      <Dialog 
+        open={showStatistics} 
+        onClose={(event, reason) => {
+          // Prevent the user to interact with the rest of the screen when the dialog is shown
+          if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+            setShowStatistics(false)
+          }
+        }}
+        >
         <DialogTitle sx={{ fontWeight: "bold", color: "primary.main" }}>Game Over</DialogTitle>
         <DialogContent>
           <Typography variant="body1"><b>Final Score:</b> {score}</Typography>
@@ -527,14 +535,14 @@ function Game() {
           <Typography variant="body1"><b>Accuracy Rate:</b> {((correctAnswers / totalRounds) * 100).toFixed(2)}%</Typography>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-          <Button variant="contained" color="primary" onClick={handleNewGame}>
-            New Game
-          </Button>
           <NavLink to="/home">
             <Button variant="contained" color="secondary">
               Return Home
             </Button>
           </NavLink>
+          <Button variant="contained" color="primary" onClick={handleNewGame}>
+            New Game
+          </Button>
         </DialogActions>
       </Dialog>
     </GameContainer>

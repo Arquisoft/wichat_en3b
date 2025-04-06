@@ -166,7 +166,7 @@ function Game() {
   const [showStatistics, setShowStatistics] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
-  const TIME = 60;
+  const TIME = 1;
   const [timeLeft, setTimeLeft] = useState(TIME);
   const [gameEnded, setGameEnded] = useState(false);
 
@@ -493,7 +493,7 @@ function Game() {
                         variant="determinate"
                         value={(timeLeft / TIME) * 100}
                         sx={{
-                          height: 10,
+                          height: 20,
                           borderRadius: 5,
                           backgroundColor: "rgba(0, 0, 0, 0.1)",
                           "& .MuiLinearProgress-bar": {
@@ -560,7 +560,15 @@ function Game() {
         </Grid>
       </Grid>
       {/* Game statistics (dialog) */}
-      <Dialog open={showStatistics} onClose={() => setShowStatistics(false)} disableBackdropClick disableEscapeKeyDown>
+      <Dialog 
+        open={showStatistics} 
+        onClose={(event, reason) => {
+          // Prevent the user to interact with the rest of the screen when the dialog is shown
+          if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+            setShowStatistics(false)
+          }
+        }}
+        >
         <DialogTitle sx={{ fontWeight: "bold", color: "primary.main" }}>Game Over</DialogTitle>
         <DialogContent>
           <Typography variant="body1"><b>Final Score:</b> {score}</Typography>
@@ -568,14 +576,14 @@ function Game() {
           <Typography variant="body1"><b>Accuracy Rate:</b> {((correctAnswers / totalRounds) * 100).toFixed(2)}%</Typography>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-          <Button variant="contained" color="primary" onClick={handleNewGame}>
-            New Game
-          </Button>
           <NavLink to="/home">
             <Button variant="contained" color="secondary">
               Return Home
             </Button>
           </NavLink>
+          <Button variant="contained" color="primary" onClick={handleNewGame}>
+            New Game
+          </Button>
         </DialogActions>
       </Dialog>
     </GameContainer>
