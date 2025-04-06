@@ -16,14 +16,14 @@ const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
 mongoose.connect(mongoUri);
 
 const checkInput = (input) => {
-  return  String(input).replace(/\w/g, '');
+  return  String(input).replace(/[^a-zA-Z0-9_]/g, '');
 };
 
 // Function to validate required fields in the request body
-function validateRequiredFields(req, requiredFields) {
+async function validateRequiredFields(req, requiredFields) {
 
   const passwordRegExp = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-  const usernameRegex = /^\w+$/;
+  const usernameRegExp = /^\w+$/;
 
 
   for (const field of requiredFields) {
@@ -33,27 +33,33 @@ function validateRequiredFields(req, requiredFields) {
     }
   }
 
-  if (!usernameRegex.test(req.body.username)) {
-    throw new Error('The username is not valid. It needs a number, a special character and at least a capital letter and a lowercase letter.');
+  if (!usernameRegExp.test(req.body.username)) {
+    throw new Error(`The username is not valid.`);
   }
 
   if (!passwordRegExp.test(req.body.password)) {
-    throw new Error('Password must have at least one capital letter, one digit and one special character.');
+    throw new Error(`Password must have at least one capital letter, one digit and one special character.`);
   }
 
   if(!req.body.password || req.body.password.length < 8)
-    throw new Error('The lenght of the password must be of 8 characters or more. ')
+    throw new Error(`The length of the password must be of 8 characters or more. `); 
   
+  if (req.body.username.length < 3) {
+    throw new Error(`The length of the username is not valid.`);
+  }
+
 }
 
 app.post('/adduser', async (req, res) => {
   try {
     // Check if required fields are present in the request body
-    validateRequiredFields(req, ['username', 'password']);
+    await validateRequiredFields(req, ['username', 'password']);
 
-    const usersOnSystem = checkInput(req.body.username); 
-    const userNameCorrect = await User.find({ username: usersOnSystem }).lean();
-    if (userNameCorrect.length > 0) {
+    // Sanitize username to prevent MongoDB injection attacks
+    const checkedUsername  = checkInput(req.body.username);
+
+    const existingUsers = await User.find({ username: checkedUsername }).lean();
+    if (existingUsers.length > 0) {
         return res.status(400).json({ error: 'Username already taken' });
     }
 
@@ -68,7 +74,11 @@ app.post('/adduser', async (req, res) => {
     await newUser.save();
     res.json(newUser);
   } catch (error) {
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.username) {
+      res.status(400).json({ error: "Username already taken" });
+    } 
     res.status(400).json({ error: error.message });
+
   }
 });
 

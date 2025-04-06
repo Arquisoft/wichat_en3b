@@ -17,45 +17,11 @@ const AddUser = () => {
 
   const navigate = useNavigate();
 
-
-const validateForm = () => {
-  let isValid = true;
-  
-  const usernameRegex = /^\w+$/;
-  if (!username) {
-    setUsernameError('Username is required');
-    isValid = false;
-  } else if (!usernameRegex.test(username)) {
-    setUsernameError('Username can only contain letters, numbers, and underscores');
-    isValid = false;
-  } else {
-    setUsernameError('');
-  }
-  
-  const passwordRegExp = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-  if (!password) {
-    setPasswordError('Password is required');
-    isValid = false;
-  } else if (password.length < 8) {
-    setPasswordError('Password must be at least 8 characters long');
-    isValid = false;
-  } else if (!passwordRegExp.test(password)) {
-    setPasswordError('Password must have at least one capital letter, one digit and one special character');
-    isValid = false;
-  } else {
-    setPasswordError('');
-  }
-  
-  return isValid;
-};
-
   const addUser = async () => {
 
     setError('');
-
-    if (!validateForm()){
-      return; 
-    }
+    setUsernameError('');
+    setPasswordError('');
 
     try {
       await axios.post("/adduser", { username, password });
@@ -66,16 +32,21 @@ const validateForm = () => {
       }, 500);
     
     } catch (error) {
-      const errorMsg = error.response?.data?.error || 'Unknown error';
-      setError(errorMsg);
+      
+      const errorMsg = error.response && error.response.data && error.response.data.error
+      ? error.response.data.error
+      : error.message || 'Unknown error';
+    
+    setError(errorMsg);
 
-      if (errorMsg.includes('Username already taken')) {
-        setUsernameError('Username already taken');
-      } else if (errorMsg.includes('username')) {
-        setUsernameError(errorMsg);
-      } else if (errorMsg.includes('password') || errorMsg.includes('Password')) {
-        setPasswordError(errorMsg);
-      }
+    if (errorMsg.includes('Username already taken')) {
+      setUsernameError('Username already taken');
+    } else if (errorMsg.toLowerCase().includes('username')) {
+      setUsernameError(errorMsg);
+    } else if (errorMsg.toLowerCase().includes('password')) {
+      setPasswordError(errorMsg);
+    }
+    
     }
   };
 
