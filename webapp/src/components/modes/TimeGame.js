@@ -166,7 +166,7 @@ function Game() {
   const [showStatistics, setShowStatistics] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
-  const TIME = 1;
+  const TIME = 60;
   const [timeLeft, setTimeLeft] = useState(TIME);
   const [gameEnded, setGameEnded] = useState(false);
 
@@ -485,7 +485,7 @@ function Game() {
                   <>
                     <Box sx={{ width: "100%", mb: 3 }}>
                       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                        <Typography variant="h6" fontWeight="bold" color="text.secondary">
+                        <Typography variant="h6" fontWeight="bold" color="primary">
                           Time remaining: {timeLeft}s
                         </Typography>
                       </Box>

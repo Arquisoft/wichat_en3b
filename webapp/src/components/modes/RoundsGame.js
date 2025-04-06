@@ -9,11 +9,11 @@ import ChatIcon from "@mui/icons-material/Chat"
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents"
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn"
 import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
-import Chat from "./LLMChat"
-import useAxios from "../hooks/useAxios"
-import GraphComponent from './GraphComponent';
-import CallFriend from "./CallFriend"
-import PhoneDialog from "./phone/PhoneDialog";
+import Chat from "../LLMChat"
+import useAxios from "../../hooks/useAxios"
+import GraphComponent from '../lifelines/GraphComponent';
+import CallFriend from "../lifelines/CallFriend"
+import PhoneDialog from "../phone/PhoneDialog";
 
 import useAuth from "../../hooks/useAuth"
 import { NavLink } from "react-router";

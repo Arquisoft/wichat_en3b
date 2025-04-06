@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Typography, TextField, Button, Snackbar, Checkbox, FormControlLabel, Box, Paper } from '@mui/material';
 import { NavLink, useLocation, useNavigate } from 'react-router';
-import logInPic from './photos/logInPic.png';
+import logInPic from '../photos/logInPic.png';
 
 import useAuth from "../../hooks/useAuth";
 import axios from "../../api/axios";
