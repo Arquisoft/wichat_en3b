@@ -4,6 +4,10 @@ const userSchema = new mongoose.Schema({
     username: {
       type: String,
       required: true,
+      unique: true, 
+      minlength: 3, 
+      maxlength: 15, 
+      match: /^\w+$/,
     },
     password: {
       type: String,

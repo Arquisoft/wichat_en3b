@@ -25,8 +25,8 @@ describe('AddUser component', () => {
 
     mockAxios.onPost("/adduser").reply(200);
 
-    fireEvent.change(usernameInput, { target: { value: 'testUser' } });
-    fireEvent.change(passwordInput, { target: { value: 'testPassword' } });
+    fireEvent.change(usernameInput, { target: { value: 'TestUser1' } });
+    fireEvent.change(passwordInput, { target: { value: 'TestPassword1!' } });
 
     fireEvent.click(addUserButton);
 
@@ -48,13 +48,15 @@ describe('AddUser component', () => {
 
     mockAxios.onPost("/adduser").reply(500, { error: 'Internal Server Error' });
 
-    fireEvent.change(usernameInput, { target: { value: 'testUser' } });
-    fireEvent.change(passwordInput, { target: { value: 'testPassword' } });
+    fireEvent.change(usernameInput, { target: { value: 'TestUser1' } });
+    fireEvent.change(passwordInput, { target: { value: 'TestPassword1!' } });
 
     fireEvent.click(addUserButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Error: Internal Server Error/i)).toBeInTheDocument();
+      expect(
+        screen.getByText((content, node) => content.includes('Internal Server Error'))
+      ).toBeInTheDocument();
     });
   });
 });
