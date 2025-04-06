@@ -13,6 +13,7 @@ import Chat from "./LLMChat"
 import useAxios from "../hooks/useAxios"
 import GraphComponent from './GraphComponent';
 import CallFriend from "./CallFriend"
+import PhoneDialog from "./phone/PhoneDialog";
 
 import useAuth from "../hooks/useAuth"
 import { NavLink } from "react-router";
@@ -157,6 +158,8 @@ function Game() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false);
   const [callFriendUsed, setCallFriendUsed] = useState(false);
+  const [phoneOut, setPhoneOut] = useState(false);
+
   const [askAudience, setAskAudience] = useState(false);
   const [useChatUsed, setUseChatUsed] = useState(false);
   const [isCallFriendOpen, setIsCallFriendOpen] = useState(false);
@@ -256,6 +259,7 @@ const endGame = async (questions) => {
     setQuestions([]);
     setFiftyFiftyUsed(false);
     setCallFriendUsed(false);
+    setPhoneOut(false);
     setAskAudience(false);
     setUseChatUsed(false);
     setHiddenOptions([]);
@@ -338,6 +342,15 @@ const endGame = async (questions) => {
     // alert("Your friend thinks the answer might be: " + roundData.itemWithImage.name);
     setCallFriendUsed(true);
     setIsCallFriendOpen(true);
+  };
+
+  const handlePhoneOut = () => {
+    if (phoneOut || !roundData) return;
+    setPhoneOut(true);
+  };
+
+  const handlePhoneOutClose = () => {
+    setPhoneOut(false);
   };
 
   const handleCloseCallFriend = () => {
@@ -430,11 +443,23 @@ const endGame = async (questions) => {
               >
                 Use the Chat - 200 🪙 {useChatUsed && "(Used)"}
               </LifelineButton>
+              <LifelineButton
+                variant="contained"
+                onClick={handlePhoneOut}
+                colorVariant="purple"
+              >
+                Phone Out
+              </LifelineButton>
               {callFriendUsed && (<CallFriend
                 open={isCallFriendOpen}
                 onClose={handleCloseCallFriend}
                 correctAnswer={roundData.itemWithImage.name}
                 possibleAnswers={roundData.items.map(item => item.name)}
+              />)}
+              {phoneOut && (<PhoneDialog
+                open={phoneOut}
+                onClose={handlePhoneOutClose}
+                key={chatKey} roundData={roundData}
               />)}
             </CardContent>{showGraph && (
             <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
