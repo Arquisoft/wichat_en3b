@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Container, Typography, Button, Paper, Box } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { NavLink } from 'react-router';
+import { useNavigate } from 'react-router';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -79,6 +79,18 @@ function GameModeSelection() {
     setSelectedMode(mode === selectedMode ? null : mode)
   }
 
+  const navigate = useNavigate();
+
+  const goToGame = (mode) => {
+    switch (mode) {
+      case "rounds": navigate("/roundsgame"); break;
+      case "time": navigate("/timegame"); break;
+      case "hide": alert("Not yet implemented"); break;
+      default: break;
+    }
+  }
+  
+
   return (
     <StyledContainer maxWidth="md">
       <Typography variant="h3" component="h1" align="center" gutterBottom sx={{ fontWeight: "bold", color: "#3f51b5" }}>
@@ -112,16 +124,15 @@ function GameModeSelection() {
         </Box>
       </SectionPaper>
 
-      <NavLink to="/game" style={{ width: "100%", textDecoration: "none" }}>
-        <StyledButton
-          variant="contained"
-          color="primary"
-          size="large"
-          disabled={!selectedMode}
-          fullWidth>
-          NEXT
-        </StyledButton>
-      </NavLink>
+      <StyledButton
+        variant="contained"
+        color="primary"
+        size="large"
+        disabled={!selectedMode}
+        onClick={() => goToGame(selectedMode)}
+        fullWidth>
+        NEXT
+      </StyledButton>
     </StyledContainer>
   )
 }
