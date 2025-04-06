@@ -3,8 +3,8 @@ import { render, fireEvent, screen, waitFor, act } from "@testing-library/react"
 import { MemoryRouter } from "react-router";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import Game from "./Game";
-import useAxios from "../hooks/useAxios";
+import RoundsGame from "./RoundsGame";
+import useAxios from "../../hooks/useAxios";
 
 jest.mock("../hooks/useAxios", () => jest.fn());
 const mockAxios = new MockAdapter(axios);
@@ -33,7 +33,7 @@ describe("Game component", () => {
 
     render(
       <MemoryRouter>
-        <Game />
+        <RoundsGame />
       </MemoryRouter>
     );
 
@@ -60,7 +60,7 @@ describe("Game component", () => {
 
     render(
       <MemoryRouter>
-        <Game />
+        <RoundsGame />
       </MemoryRouter>
     );
 
@@ -88,7 +88,7 @@ describe("Game component", () => {
   
     render(
       <MemoryRouter>
-        <Game />
+        <RoundsGame />
       </MemoryRouter>
     );
   

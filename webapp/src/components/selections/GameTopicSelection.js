@@ -5,7 +5,7 @@ import { Container, Typography, Radio, RadioGroup, FormControlLabel, FormControl
 import { styled } from "@mui/material/styles"
 import { NavLink } from "react-router"
 import { LocationCity, Flag, SportsBasketball, MusicNote } from "@mui/icons-material"
-import useAxios from "../hooks/useAxios"
+import useAxios from "../../hooks/useAxios"
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(4),

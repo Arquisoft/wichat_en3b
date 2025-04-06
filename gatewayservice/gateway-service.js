@@ -155,9 +155,9 @@ app.get('/getRound', async (req, res) => {
   }
 });
 
-app.get('/getTopics', async (req, res) => { //aqui
+app.get('/getTopics', async (req, res) => {
   try {
-    const topicsResponse = await axios.get(questionServiceUrl + '/getTopics'); //aqui
+    const topicsResponse = await axios.get(questionServiceUrl + '/getTopics'); 
     res.json(topicsResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
@@ -192,6 +192,15 @@ app.get('/userstats/topic/:topic', async (req, res) => {
 });
 
 app.get('/userstats/:username/:topic', async (req, res) => {
+  try {
+    const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username + '/' + req.params.topic);
+    res.json(statsResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.post('/setModes', async (req, res) => {
   try {
     const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username + '/' + req.params.topic);
     res.json(statsResponse.data);

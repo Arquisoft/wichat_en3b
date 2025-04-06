@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Login from './Login';
-import useAuth from '../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 
 const mockAxios = new MockAdapter(axios);
 

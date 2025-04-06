@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { Container, Typography, TextField, Button, Snackbar, Checkbox, FormControlLabel } from '@mui/material';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 
-import useAuth from "../hooks/useAuth";
-import axios from "../api/axios";
+import useAuth from "../../hooks/useAuth";
+import axios from "../../api/axios";
 
 const Login = () => {
   const { setAuth, persist, setPersist } = useAuth();

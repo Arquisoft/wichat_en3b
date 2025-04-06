@@ -4,7 +4,7 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import GameTopicSelection from "./GameTopicSelection";
-import useAxios from "../hooks/useAxios";
+import useAxios from "../../hooks/useAxios";
 
 jest.mock("../hooks/useAxios", () => () => ({ post: jest.fn() }));
 
