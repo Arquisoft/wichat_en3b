@@ -1,75 +1,108 @@
 import { createContext, useState, useEffect } from "react";
 import { createTheme, ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
-import { CssBaseline, GlobalStyles } from "@mui/material";
+import { CssBaseline } from "@mui/material";
+import { yellow } from "@mui/material/colors";
 
 const ThemeContext = createContext();
 
-// Define light and dark theme palettes
-const lightTheme = createTheme({
-    palette: {
-        mode: "light",
-        primary: {
-            main: "#2196f3",
-            transparent: "rgba(33, 150, 243, 0.1)",
-        },
-        secondary: {
-            main: "#7e57c2",
-        },
-        background: {
-            default: "#fff",
-            paper: "#eee",
-            transparent: "rgba(255, 255, 255, 0.5)",
-            translucent: "rgba(255, 255, 255, 0.8)",
-        },
-        text: {
-            primary: "rgba(0, 0, 0, 0.87)",
-        },
-        gradient: {
-            bg: "linear-gradient(to bottom right,rgb(200, 240, 255), rgb(255, 240, 200))",
-            main: {
-                right: "linear-gradient(to right, #3f51b5, #7e57c2)",
-                left: "linear-gradient(to left, #3f51b5, #7e57c2)",
+const themes = {
+    light: createTheme({
+        palette: {
+            mode: "light",
+            primary: {
+                main: "#2196f3",
+                transparent: "rgba(33, 150, 243, 0.1)",
             },
-            hover: {
-                right: "linear-gradient(to right,rgba(63, 81, 181, 0.8),rgba(126, 87, 194, 0.8))",
-                left: "linear-gradient(to left,rgba(63, 81, 181, 0.8),rgba(126, 87, 194, 0.8))",
-            }
-        },
-    },
-});
-
-const darkTheme = createTheme({
-    palette: {
-        mode: "dark",
-        primary: {
-            main: "#c1121f",
-            transparent: "rgba(193, 18, 31, 0.1)",
-        },
-        secondary: {
-            main: "#2a9d8f",
-        },
-        background: {
-            default: "#121212",
-            paper: "#222",
-            transparent: "rgba(0, 0, 0, 0.3)",
-            translucent: "rgba(0, 0, 0, 0.5)",
-        },
-        text: {
-            primary: "#fff",
-        },
-        gradient: {
-            bg: "linear-gradient(to bottom right, rgb(202, 29, 52), rgb(92, 210, 189))",
-            main: {
-                right: "linear-gradient(to right,rgb(8, 154, 168),rgb(255, 200, 0))",
-                left: "linear-gradient(to left,rgb(138, 88, 30),rgb(29, 149, 39))",
+            secondary: {
+                main: "#7e57c2",
             },
-            hover: {
-                right: "linear-gradient(to right,rgba(8, 155, 168, 0.8),rgba(255, 200, 0, 0.8))",
-                left: "linear-gradient(to left,rgba(138, 88, 30, 0.8),rgba(29, 149, 39, 0.8))",
-            }
+            background: {
+                default: "#fff",
+                paper: "#eee",
+                transparent: "rgba(255, 255, 255, 0.5)",
+                translucent: "rgba(255, 255, 255, 0.8)",
+            },
+            text: {
+                primary: "rgba(0, 0, 0, 0.87)",
+            },
+            gradient: {
+                bg: "linear-gradient(to bottom right,rgb(200, 240, 255), rgb(255, 240, 200))",
+                main: {
+                    right: "linear-gradient(to right, #3f51b5, #7e57c2)",
+                    left: "linear-gradient(to left, #3f51b5, #7e57c2)",
+                },
+                hover: {
+                    right: "linear-gradient(to right,rgba(63, 81, 181, 0.8),rgba(126, 87, 194, 0.8))",
+                    left: "linear-gradient(to left,rgba(63, 81, 181, 0.8),rgba(126, 87, 194, 0.8))",
+                }
+            },
         },
-    },
-});
+    }),
+    dark: createTheme({
+        palette: {
+            mode: "dark",
+            primary: {
+                main: "#c1121f",
+                transparent: "rgba(193, 18, 31, 0.1)",
+            },
+            secondary: {
+                main: "#2a9d8f",
+            },
+            background: {
+                default: "#fff",
+                paper: "#eee",
+                transparent: "rgba(255, 255, 255, 0.5)",
+                translucent: "rgba(255, 255, 255, 0.8)",
+            },
+            text: {
+                primary: "#fff",
+            },
+            gradient: {
+                bg: "linear-gradient(to bottom right, rgb(202, 29, 52), rgb(92, 210, 189))",
+                main: {
+                    right: "linear-gradient(to right,rgb(8, 154, 168),rgb(255, 200, 0))",
+                    left: "linear-gradient(to left,rgb(138, 88, 30),rgb(29, 149, 39))",
+                },
+                hover: {
+                    right: "linear-gradient(to right,rgba(8, 155, 168, 0.8),rgba(255, 200, 0, 0.8))",
+                    left: "linear-gradient(to left,rgba(138, 88, 30, 0.8),rgba(29, 149, 39, 0.8))",
+                }
+            },
+        },
+    }),
+    yellow: createTheme({
+        palette: {
+            mode: "light",
+            primary: {
+                main: yellow[500],
+                transparent: "rgba(255, 235, 59, 0.1)",
+            },
+            secondary: {
+                main: "#7e57c2",
+            },
+            background: {
+                default: "#121212",
+                paper: "#222",
+                transparent: "rgba(0, 0, 0, 0.3)",
+                translucent: "rgba(0, 0, 0, 0.5)",
+            },
+            text: {
+                primary: "rgba(0, 0, 0, 0.87)",
+            },
+            gradient: {
+                bg: `linear-gradient(to bottom right, ${yellow[50]}, ${yellow[100]})`,
+                main: {
+                    right: `linear-gradient(to right, ${yellow[400]}, ${yellow[700]})`,
+                    left: `linear-gradient(to left, ${yellow[400]}, ${yellow[700]})`,
+                },
+                hover: {
+                    right: `linear-gradient(to right, ${yellow[400]}, ${yellow[700]})`,
+                    left: `linear-gradient(to left, ${yellow[500]}, ${yellow[700]})`,
+                }
+            },
+        },
+    }),
+};
 
 export const ThemeProvider = ({ children }) => {
     // Try to get the saved theme preference from localStorage, default to 'dark'
@@ -84,18 +117,16 @@ export const ThemeProvider = ({ children }) => {
     }, []);
 
     // Toggle theme function
-    const toggleTheme = () => {
-        const newMode = mode === "light" ? "dark" : "light";
-        setMode(newMode);
-        localStorage.setItem("themeMode", newMode);
-        console.log(theme);
+    const selectTheme = (newTheme) => {
+        setMode(newTheme);
+        localStorage.setItem("themeMode", newTheme);
     };
 
     // Select the appropriate theme based on mode
-    const theme = mode === "light" ? lightTheme : darkTheme;
+    const theme = themes[mode];
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <ThemeContext.Provider value={{ theme, themes, selectTheme }}>
             <MuiThemeProvider theme={theme}>
                 <CssBaseline />
                 {children}

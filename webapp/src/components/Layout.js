@@ -1,14 +1,14 @@
-import { AppBar, Box, Button, Container } from "@mui/material";
+import { AppBar, Box, Button, Container, MenuItem, Select } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import { Outlet, NavLink } from 'react-router';
 import useAuth from "../hooks/useAuth";
 import axios from "../api/axios";
 import useTheme from "../hooks/useTheme";
 
-const StyledNavlink = ({ to, label, icon }) => {
+const StyledNavlink = ({ theme, to, label, icon }) => {
     return (
         <NavLink to={to}>
-            <Button sx={{ color: "white", gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+            <Button sx={{ color: theme.palette.text.primary, gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
                 {icon} {label}
             </Button>
         </NavLink>
@@ -17,7 +17,7 @@ const StyledNavlink = ({ to, label, icon }) => {
 
 const Layout = () => {
     const { auth, setAuth } = useAuth();
-    const { theme, toggleTheme } = useTheme();
+    const { theme, themes, selectTheme } = useTheme();
 
     const handleLogout = async () => {
         try {
@@ -42,20 +42,26 @@ const Layout = () => {
                 padding: "0.5rem",
                 background: theme.palette.gradient.main.right,
             }}>
-                <StyledNavlink to="/home" label="Home" icon={<HomeIcon />} />
+                <StyledNavlink to="/home" label="Home" icon={<HomeIcon />} theme={theme} />
                 <Box sx={{ ml: "auto" }}>
                     <>
-                    <Button 
-                        value="check"
-                        onClick={toggleTheme}
-                        sx={{ color: "white", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
-                        Toggle Theme
-                    </Button>
+                        <Select
+                            onChange={(e) => selectTheme(e.target.value)}
+                            sx={{ "& .MuiSelect-icon": { color: "white" } }}
+                            variant="outlined"
+                            size="small"
+                        >
+                            {Object.keys(themes).map((themeKey) => (
+                                <MenuItem key={themeKey} value={themeKey}>
+                                    {themeKey.charAt(0).toUpperCase() + themeKey.slice(1)} {/* Capitalize theme names */}
+                                </MenuItem>
+                            ))}
+                        </Select>
                         {auth.username
-                            ? <Button onClick={handleLogout} sx={{ color: "white", gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+                            ? <Button onClick={handleLogout} sx={{ color: theme.palette.text.primary, gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
                                 Log Out
                             </Button>
-                            : <StyledNavlink to="/login" label="Login" />}
+                            : <StyledNavlink to="/login" label="Login" theme={theme} />}
                     </>
                 </Box>
             </AppBar>
