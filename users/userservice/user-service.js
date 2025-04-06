@@ -15,7 +15,9 @@ app.use(express.json());
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
 mongoose.connect(mongoUri);
 
-
+const checkInput = (input) => {
+  return  String(input).replace(/\w/g, '');
+};
 
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
@@ -49,8 +51,9 @@ app.post('/adduser', async (req, res) => {
     // Check if required fields are present in the request body
     validateRequiredFields(req, ['username', 'password']);
 
-    const usersOnSystem = await User.find({ username: req.body.username }).lean();
-    if (usersOnSystem.length > 0) {
+    const usersOnSystem = checkInput(req.body.username); 
+    const userNameCorrect = await User.find({ username: usersOnSystem }).lean();
+    if (userNameCorrect.length > 0) {
         return res.status(400).json({ error: 'Username already taken' });
     }
 
