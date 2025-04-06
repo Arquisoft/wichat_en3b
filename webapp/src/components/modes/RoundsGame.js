@@ -235,10 +235,8 @@ function Game() {
     };
   }, [loading]);
 
-
-
   // Add the game statistics to the database and show the statistics dialog
-const endGame = async (questions) => {
+  const endGame = async (questions) => {
     try {
       await axios.post("/addgame", { username: auth.username, questions }).then(res => console.log(res.data));
     } catch (error) {

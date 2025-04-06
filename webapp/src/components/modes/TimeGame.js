@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AppBar, Toolbar, Typography, Button, Card, CardContent, Grid, Box, Container, Paper, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
+import { AppBar, Toolbar, Typography, Button, Card, CardContent, Grid, Box, Container, Paper, LinearProgress, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline"
 import PhoneIcon from "@mui/icons-material/Phone"
@@ -244,21 +244,7 @@ function Game() {
     }
     setShowStatistics(true);
   };
-
-  const endRound = async () => {
-    setTotalRounds(totalRounds+1);
-    setSelectedAnswer(null);
-    setRoundData(null);
-
-    try {
-      const data = await loadRound();
-      setRoundData(data);
-    } catch (error) {
-      console.error("Error loading new round", error);
-      setLoading(false);
-    }
-  }
-
+  
   const handleNewGame = async () => {
     setShowStatistics(false);
     setRoundData(null);
@@ -272,6 +258,7 @@ function Game() {
     setSelectedAnswer(null);
     setTotalRounds(0)
     setGameEnded(false);
+    setTimeLeft(TIME);
     gameSetup();
   };
 
@@ -301,7 +288,19 @@ function Game() {
       return updatedQuestions;
     });
 
-    await endRound();
+    setTimeout(async () => {
+      setTotalRounds(totalRounds+1);
+      setSelectedAnswer(null);
+      setRoundData(null);
+  
+      try {
+        const data = await loadRound();
+        setRoundData(data);
+      } catch (error) {
+        console.error("Error loading new round", error);
+        setLoading(false);
+      }
+    }, 1000);
   }
 
   useEffect(() => {
@@ -474,7 +473,6 @@ function Game() {
             <CardContent>
               {loading ? (
                 <LoadingContainer>
-                  <CircularProgress size={60} thickness={4} color="primary" />
                   <Typography variant="h6" color="textSecondary" sx={{ mt: 3 }}>
                     Loading question...
                   </Typography>
@@ -485,33 +483,37 @@ function Game() {
               ) : (
                 roundData && (
                   <>
-                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 2 }}>
-                      <Box sx={{ position: "relative", display: "inline-flex" }}>
-                        <CircularProgress
-                          variant="determinate"
-                          value={(timeLeft / TIME) * 100}
-                          size={100}
-                          thickness={5}
-                          sx={{
-                            color: timeLeft > 30 ? "success.main" : timeLeft > 10 ? "warning.main" : "error.main",
-                          }}
-                        />
-                        <Box
-                          sx={{
-                            top: 0,
-                            left: 0,
-                            bottom: 0,
-                            right: 0,
-                            position: "absolute",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Typography variant="h5" component="div" color="primary.main" fontWeight="bold">
-                            {timeLeft}
-                          </Typography>
-                        </Box>
+                    <Box sx={{ width: "100%", mb: 3 }}>
+                      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                        <Typography variant="h6" fontWeight="bold" color="text.secondary">
+                          Time remaining: {timeLeft}s
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={(timeLeft / TIME) * 100}
+                        sx={{
+                          height: 10,
+                          borderRadius: 5,
+                          backgroundColor: "rgba(0, 0, 0, 0.1)",
+                          "& .MuiLinearProgress-bar": {
+                            borderRadius: 5,
+                            backgroundColor: timeLeft > 30 ? "success.main" : timeLeft > 10 ? "warning.main" : "error.main",
+                          },
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          top: 0,
+                          left: 0,
+                          bottom: 0,
+                          right: 0,
+                          position: "absolute",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
                       </Box>
                     </Box>
                     <ImageContainer>
@@ -558,7 +560,7 @@ function Game() {
         </Grid>
       </Grid>
       {/* Game statistics (dialog) */}
-      <Dialog open={showStatistics} onClose={() => setShowStatistics(false)}>
+      <Dialog open={showStatistics} onClose={() => setShowStatistics(false)} disableBackdropClick disableEscapeKeyDown>
         <DialogTitle sx={{ fontWeight: "bold", color: "primary.main" }}>Game Over</DialogTitle>
         <DialogContent>
           <Typography variant="body1"><b>Final Score:</b> {score}</Typography>
