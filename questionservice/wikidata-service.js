@@ -140,7 +140,7 @@ app.post("/load", async (req, res) => {
         const { topics } = req.body;
 
         if (!topics || !Array.isArray(topics) || topics.length === 0) {
-            return res.status(400).json({ error: "Invalid modes parameter" });
+            return res.status(400).json({ error: "Invalid topics parameter" });
         }
 
         res.status(200).json({ message: "Selected topics are valid" });
@@ -157,7 +157,7 @@ async function getRandomItems(topics) {
             throw new Error("No valid topics provided.");
         }
 
-        const randomTopic = topics[Math.floor(Math.random() * topics.length)]; // Choose a random mode from the selected ones
+        const randomTopic = topics[Math.floor(Math.random() * topics.length)]; // Choose a random topic from the selected ones
         const items = await WikidataObject.aggregate([
             { $match: { topic: randomTopic } }, // Filter by the chosen topic
             { $sample: { size: 4 } } // Retrieve 4 random items

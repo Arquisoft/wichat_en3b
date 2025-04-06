@@ -132,13 +132,13 @@ app.post('/askllm', async (req, res) => {
 // Add the /loadQuestion endpoint for filling the data base
 app.post('/loadQuestion', async (req, res) => {
   try {
-    const { modes } = req.body;
+    const { topics } = req.body;
 
-    if (!modes || !Array.isArray(modes)) {
-      return res.status(400).json({ error: "Invalid modes parameter" });
+    if (!topics || !Array.isArray(topics)) {
+      return res.status(400).json({ error: "Invalid topics parameter" });
     }
 
-    const questionResponse = await axios.post(questionServiceUrl + '/load', { modes });
+    const questionResponse = await axios.post(questionServiceUrl + '/load', { topics });
 
     res.json(questionResponse.data);
   } catch (error) {
@@ -182,18 +182,18 @@ app.get('/userstats/user/:username', async (req, res) => {
   }
 });
 
-app.get('/userstats/mode/:mode', async (req, res) => {
+app.get('/userstats/topic/:topic', async (req, res) => {
   try {
-    const usersResponse = await axios.get(userServiceUrl + '/userstats/mode/' + req.params.mode);
+    const usersResponse = await axios.get(userServiceUrl + '/userstats/topic/' + req.params.topic);
     res.json(usersResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
 
-app.get('/userstats/:username/:mode', async (req, res) => {
+app.get('/userstats/:username/:topic', async (req, res) => {
   try {
-    const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username + '/' + req.params.mode);
+    const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username + '/' + req.params.topic);
     res.json(statsResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
