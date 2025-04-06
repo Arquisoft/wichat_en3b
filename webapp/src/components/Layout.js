@@ -8,7 +8,7 @@ import useTheme from "../hooks/useTheme";
 const StyledNavlink = ({ theme, to, label, icon }) => {
     return (
         <NavLink to={to}>
-            <Button sx={{ color: theme.palette.text.primary, gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+            <Button sx={{ color: theme.palette.primary.contrastText, gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
                 {icon} {label}
             </Button>
         </NavLink>
@@ -58,7 +58,7 @@ const Layout = () => {
                             ))}
                         </Select>
                         {auth.username
-                            ? <Button onClick={handleLogout} sx={{ color: theme.palette.text.primary, gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+                            ? <Button onClick={handleLogout} sx={{ color: "primary.contrastText", gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
                                 Log Out
                             </Button>
                             : <StyledNavlink to="/login" label="Login" theme={theme} />}

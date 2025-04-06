@@ -39,10 +39,11 @@ const ActionButton = styled(Button)(({ theme }) => ({
 }))
 
 const LoginButton = styled(ActionButton)(({ theme }) => ({
-  background: "transparent",
-  border: `1px solid ${theme.palette.primary.main}`,
+  color: theme.palette.secondary.main,
+  background: theme.palette.background.default,
+  border: `1px solid ${theme.palette.secondary.main}`,
   "&:hover": {
-    background: "rgba(128, 128, 128, 0.1)",
+    background: theme.palette.action.hover,
     transform: "translateY(-3px)",
     boxShadow: theme.shadows[4],
   },
@@ -62,7 +63,7 @@ function App() {
     <Container maxWidth="sm">
       <StyledPaper elevation={3}>
         <Box sx={{ textAlign: "center", mb: 4 }}>
-          <School sx={{ fontSize: 60, color: "#3f51b5", mb: 2 }} />
+          <School sx={{ fontSize: 60, color: "primary.main", mb: 2 }} />
           <Typography
             component="h1"
             variant="h4"
@@ -80,7 +81,7 @@ function App() {
             Welcome to the 2025 edition of the Software Architecture course
           </Typography>
         </Box>
-        
+
         <Grid container sx={{ mt: 4 }}>
           <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
             <StyledNavLink to="/login">
@@ -90,7 +91,7 @@ function App() {
             </StyledNavLink>
           </Grid>
         </Grid>
-        
+
       </StyledPaper>
       <Outlet />
     </Container>
