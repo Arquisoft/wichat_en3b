@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Container, Typography, FormControlLabel, FormControl, Checkbox, Button, Paper, Box } from "@mui/material"
+import { Container, Typography, Button, Paper, Box } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { NavLink } from 'react-router';
 
@@ -51,6 +51,27 @@ const StyledButton = styled(Button)(({ theme }) => ({
   }),
 }))
 
+const ModeButton = styled(Button, {
+  shouldForwardProp: (prop) => prop !== "isSelected",
+})(({ theme, isSelected }) => ({
+  padding: theme.spacing(2, 3),
+  borderRadius: theme.shape.borderRadius,
+  fontWeight: "bold",
+  background: isSelected ? "linear-gradient(to right, #2196f3, #9c27b0)" : theme.palette.background.paper,
+  color: isSelected ? theme.palette.common.white : theme.palette.text.primary,
+  border: isSelected ? "none" : `1px solid ${theme.palette.divider}`,
+  boxShadow: isSelected ? theme.shadows[3] : "none",
+  transition: theme.transitions.create(["background", "transform", "box-shadow"], {
+    duration: theme.transitions.duration.short,
+  }),
+  "&:hover": {
+    background: isSelected ? "linear-gradient(to right, #1e88e5, #1e88e5)" : theme.palette.action.hover,
+    transform: "translateY(-2px)",
+    boxShadow: isSelected ? theme.shadows[4] : theme.shadows[1],
+  },
+  textAlign: "center",
+}))
+
 function GameModeSelection() {
   const [selectedMode, setSelectedMode] = useState(null)
 
@@ -66,43 +87,38 @@ function GameModeSelection() {
 
       <SectionPaper elevation={3}>
         <SectionTitle variant="h5">SELECT THE MODE</SectionTitle>
-        <FormControl component="fieldset" fullWidth>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="rounds"
-                  checked={selectedMode === "rounds"}
-                  onChange={() => handleModeChange("rounds")}
-                  color="primary"
-                />
-              }
-              label="ROUNDS"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox checked={selectedMode === "time"} onChange={() => handleModeChange("time")} color="primary" name="time" />
-              }
-              label="TIME"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox checked={selectedMode === "hide"} onChange={() => handleModeChange("hide")} color="primary" name="hide" />
-              }
-              label="HIDE"
-            />
-          </Box>
-        </FormControl>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "center", mt: 2 }}>
+          <ModeButton
+            fullWidth
+            onClick={() => handleModeChange("rounds")}
+            isSelected={selectedMode === "rounds"}
+          >
+            ROUNDS
+          </ModeButton>
+          <ModeButton
+            fullWidth
+            onClick={() => handleModeChange("time")}
+            isSelected={selectedMode === "time"}
+          >
+            TIME
+          </ModeButton>
+          <ModeButton
+            fullWidth
+            onClick={() => handleModeChange("hide")}
+            isSelected={selectedMode === "hide"}
+          >
+            HIDE
+          </ModeButton>
+        </Box>
       </SectionPaper>
 
-      <NavLink to="/game">
+      <NavLink to="/game" style={{ width: "100%", textDecoration: "none" }}>
         <StyledButton
           variant="contained"
           color="primary"
           size="large"
           disabled={!selectedMode}
-          fullWidth
-        >
+          fullWidth>
           NEXT
         </StyledButton>
       </NavLink>
