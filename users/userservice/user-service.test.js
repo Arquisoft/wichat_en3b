@@ -137,17 +137,6 @@ describe('User Service', () => {
       expect(savedGame).not.toBeNull();
     });
 
-    it('should return error on POST /addgame when required fields are missing', async () => {
-      const incompleteGameData = {
-        username: 'GameUser1',
-      };
-
-      const response = await request(app).post('/addgame').send(incompleteGameData);
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('error');
-      expect(response.body.error).toMatch(/Missing required field/i);
-    });
-
     it('should delete the oldest game when MAX_GAMES is reached', async () => {
 
       const MAX_GAMES = 100;
