@@ -3,7 +3,7 @@
 import { Container, Typography, Button, Box, Paper, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { Outlet, NavLink } from "react-router"
-import { School, Login, Person } from "@mui/icons-material"
+import { School, Login } from "@mui/icons-material"
 import useTheme from "./hooks/useTheme";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -30,17 +30,9 @@ const ActionButton = styled(Button)(({ theme }) => ({
   borderRadius: "30px",
   fontWeight: "bold",
   width: "100%",
+  maxWidth: "200px",
   transition: "transform 0.2s ease-in-out",
   "&:hover": {
-    transform: "translateY(-3px)",
-    boxShadow: theme.shadows[4],
-  },
-}))
-
-const GuestButton = styled(ActionButton)(({ theme }) => ({
-  background: theme.palette.gradient.main.right,
-  "&:hover": {
-    background: theme.palette.gradient.hover.right,
     transform: "translateY(-3px)",
     boxShadow: theme.shadows[4],
   },
@@ -52,14 +44,15 @@ const LoginButton = styled(ActionButton)(({ theme }) => ({
   "&:hover": {
     background: "rgba(128, 128, 128, 0.1)",
     transform: "translateY(-3px)",
-    boxShadow: theme.shadows[2],
+    boxShadow: theme.shadows[4],
   },
 }))
 
 const StyledNavLink = styled(NavLink)({
   textDecoration: "none",
   width: "100%",
-  display: "block",
+  display: "flex",
+  justifyContent: "center",
 })
 
 function App() {
@@ -87,23 +80,17 @@ function App() {
             Welcome to the 2025 edition of the Software Architecture course
           </Typography>
         </Box>
-
-        <Grid container spacing={2} sx={{ mt: 4 }}>
-          <Grid item xs={12} sm={6}>
-            <StyledNavLink to="/home">
-              <GuestButton variant="contained" startIcon={<Person />}>
-                Continue as Guest
-              </GuestButton>
-            </StyledNavLink>
-          </Grid>
-          <Grid item xs={12} sm={6}>
+        
+        <Grid container sx={{ mt: 4 }}>
+          <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
             <StyledNavLink to="/login">
-              <LoginButton variant="outlined" startIcon={<Login />}>
-                Login
+              <LoginButton variant="contained" startIcon={<Login />}>
+                LOGIN
               </LoginButton>
             </StyledNavLink>
           </Grid>
         </Grid>
+        
       </StyledPaper>
       <Outlet />
     </Container>
