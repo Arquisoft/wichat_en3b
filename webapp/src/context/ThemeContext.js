@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { createTheme, ThemeProvider as MuiThemeProvider, alpha } from "@mui/material/styles";
-import { cyan, deepPurple, grey, red, teal, yellow } from "@mui/material/colors";
+import { amber, blue, blueGrey, brown, cyan, deepOrange, deepPurple, green, grey, indigo, lightBlue, lightGreen, orange, pink, purple, red, teal, yellow } from "@mui/material/colors";
 import { CssBaseline, darken, lighten } from "@mui/material";
 
 const ThemeContext = createContext();
@@ -16,6 +16,7 @@ const createHoverGradient = (color1, color2, opacity = 0.8) => ({
 });
 
 const themes = {
+    // light themes
     classic: createTheme({
         palette: {
             mode: "light",
@@ -26,8 +27,8 @@ const themes = {
                 main: "#8653bd",
             },
             background: {
-                default: "#fff",
-                paper: grey[100],
+                default: blue[50],
+                paper: grey[200],
             },
             text: {
                 primary: grey[900],
@@ -40,7 +41,104 @@ const themes = {
             }
         },
     }),
-    blue: createTheme({
+    desert: createTheme({
+        palette: {
+            mode: "light",
+            primary: {
+                main: "#588157",
+            },
+            secondary: {
+                main: "#3c6e71",
+            },
+            background: {
+                default: "#fff",
+                paper: grey[200],
+            },
+            text: {
+                primary: grey[900],
+                secondary: grey[700],
+            },
+            gradient: {
+                bg: "linear-gradient(to bottom, #faedcd, #ddb892)",
+                main: createGradient("#588157", "#31572c"),
+                hover: createHoverGradient("#588157", "#31572c")
+            }
+        },
+    }),
+    temple: createTheme({
+        palette: {
+            mode: "light",
+            primary: {
+                main: grey[600],
+            },
+            secondary: {
+                main: amber[700],
+            },
+            background: {
+                default: grey.A100,
+                paper: blueGrey[100],
+            },
+            text: {
+                primary: grey[900],
+                secondary: grey[700],
+            },
+            gradient: {
+                bg: `linear-gradient(to bottom, ${grey[100]}, ${blueGrey[200]})`,
+                main: createGradient(darken(amber[600], 0.05), red[800]),
+                hover: createHoverGradient(darken(amber[600], 0.05), red[800])
+            }
+        },
+    }),
+    cherryBlossom: createTheme({
+        palette: {
+            mode: "light",
+            primary: {
+                main: pink[300],
+            },
+            secondary: {
+                main: lightGreen[500],
+            },
+            background: {
+                default: lighten(pink[50], 0.5),
+                paper: "#fff",
+            },
+            text: {
+                primary: grey[800],
+                secondary: grey[600],
+            },
+            gradient: {
+                bg: `linear-gradient(to top right, ${pink[100]}, ${lightGreen[100]})`,
+                main: createGradient(pink[300], lightGreen[600]),
+                hover: createHoverGradient(pink[300], lightGreen[600])
+            }
+        },
+    }),
+    forest: createTheme({
+        palette: {
+            mode: "light",
+            primary: {
+                main: green[800],
+            },
+            secondary: {
+                main: brown[500],
+            },
+            background: {
+                default: lightGreen[50],
+                paper: "#fff",
+            },
+            text: {
+                primary: brown[900],
+                secondary: grey[700],
+            },
+            gradient: {
+                bg: `linear-gradient(to top left, ${lightGreen[100]}, ${yellow[100]})`,
+                main: createGradient(lightGreen[800], green[900]),
+                hover: createHoverGradient(lightGreen[800], green[900])
+            }
+        },
+    }),
+    // dark themes
+    deepSea: createTheme({
         palette: {
             mode: "dark",
             primary: {
@@ -64,27 +162,51 @@ const themes = {
             }
         },
     }),
-    green: createTheme({
+    night: createTheme({
         palette: {
-            mode: "light",
+            mode: "dark",
             primary: {
-                main: "#588157",
+                main: grey[600],
             },
             secondary: {
-                main: "#3c6e71",
+                main: grey[700],
             },
             background: {
-                default: "#fff",
-                paper: grey[100],
+                default: '#23272A',
+                paper: '#2C2F33',
             },
             text: {
-                primary: grey[900],
-                secondary: grey[700],
+                primary: "#f5f5f5",
+                secondary: " #a0aec0",
             },
             gradient: {
-                bg: "linear-gradient(to bottom, #faedcd, #ddb892)",
-                main: createGradient("#588157", "#31572c"),
-                hover: createHoverGradient("#588157", "#31572c")
+                bg: `linear-gradient(to bottom, #23272A, #2C2F33)`,
+                main: createGradient(grey[800], grey[900]),
+                hover: createHoverGradient(grey[700], grey[900])
+            }
+        },
+    }),
+    garnetDepth: createTheme({
+        palette: {
+            mode: "dark",
+            primary: {
+                main: pink[800],
+            },
+            secondary: {
+                main: purple[300],
+            },
+            background: {
+                default: '#211a2c',
+                paper: '#2f2b41',
+            },
+            text: {
+                primary: '#f5f5f5',
+                secondary: '#a0aec0',
+            },
+            gradient: {
+                bg: `linear-gradient(to bottom left, #33051e, #1e0631)`,
+                main: createGradient(pink[900], darken(purple[800], 0.2)),
+                hover: createHoverGradient(pink[900], darken(purple[800], 0.2))
             }
         },
     }),
