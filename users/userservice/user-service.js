@@ -19,19 +19,20 @@ const checkInput = (input) => {
   return  String(input).replace(/[^a-zA-Z0-9_]/g, '');
 };
 
-// Function to validate required fields in the request body
-async function validateRequiredFields(req, requiredFields) {
-
-  const passwordRegExp = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-  const usernameRegExp = /^\w+$/;
-
-
+function validateRequiredFields(req, requiredFields) {
   for (const field of requiredFields) {
-    
     if (!(field in req.body)) {
       throw new Error(`Missing required field: ${field}`);
     }
   }
+}
+
+// Function to validate required fields in the request body
+function validateUser(req) {
+  validateRequiredFields(req, ['username', 'password']);
+
+  const passwordRegExp = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  const usernameRegExp = /^\w+$/;
 
   if (!usernameRegExp.test(req.body.username)) {
     throw new Error(`The username is not valid.`);
@@ -47,13 +48,12 @@ async function validateRequiredFields(req, requiredFields) {
   if (req.body.username.length < 3) {
     throw new Error(`The length of the username is not valid.`);
   }
-
 }
 
 app.post('/adduser', async (req, res) => {
   try {
     // Check if required fields are present in the request body
-    await validateRequiredFields(req, ['username', 'password']);
+    await validateUser(req);
 
     // Sanitize username to prevent MongoDB injection attacks
     const checkedUsername  = checkInput(req.body.username);
