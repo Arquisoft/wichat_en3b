@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { createTheme, ThemeProvider as MuiThemeProvider, alpha } from "@mui/material/styles";
-import { amber, blue, blueGrey, brown, cyan, deepOrange, deepPurple, green, grey, indigo, lightBlue, lightGreen, orange, pink, purple, red, teal, yellow } from "@mui/material/colors";
+import { amber, blue, blueGrey, brown, cyan, green, grey, lightGreen, pink, purple, red, yellow } from "@mui/material/colors";
 import { CssBaseline, darken, lighten } from "@mui/material";
 
 const ThemeContext = createContext();
@@ -186,7 +186,7 @@ const themes = {
             }
         },
     }),
-    garnetDepth: createTheme({
+    garnet: createTheme({
         palette: {
             mode: "dark",
             primary: {
