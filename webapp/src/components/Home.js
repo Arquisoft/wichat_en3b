@@ -38,11 +38,18 @@ const Home = () => {
     useEffect(() => {
         axios.get(`/userstats/topic/${gametopic}`)
             .then((res) => {
-                setRanking(res.data.stats);
+                // sort the ranking based on the selected stat
+                const sortedRanking = res.data.stats.sort((a, b) => {
+                    if (stat === "points") return b.totalScore - a.totalScore;
+                    if (stat === "accuracy") return b.correctRate - a.correctRate;
+                    if (stat === "gamesPlayed") return b.totalGamesPlayed - a.totalGamesPlayed;
+                });
+                setRanking(sortedRanking);
             }).catch((err) => {
                 console.error("Error fetching user stats:", err);
             });
-    }, [gametopic]);
+    }, [stat, gametopic]);
+
 
     const getStatLabel = (user, stat) => {
         switch (stat) {
