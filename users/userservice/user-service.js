@@ -53,7 +53,7 @@ function validateUser(req) {
 app.post('/adduser', async (req, res) => {
   try {
     // Check if required fields are present in the request body
-    await validateUser(req);
+    validateUser(req);
 
     // Sanitize username to prevent MongoDB injection attacks
     const checkedUsername  = checkInput(req.body.username);
