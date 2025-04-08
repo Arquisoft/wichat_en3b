@@ -16,7 +16,7 @@ import CallFriend from "./CallFriend"
 import PhoneDialog from "./phone/PhoneDialog";
 
 import useAuth from "../hooks/useAuth"
-import { NavLink } from "react-router";
+import { NavLink , useNavigate} from "react-router";
 
 // Custom styled components
 const GameContainer = styled(Container)(({ theme }) => ({
@@ -171,17 +171,27 @@ function Game() {
   const [showStatistics, setShowStatistics] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
-
+  const navigate = useNavigate();
+  
   // Function to load the data for each round.
   const loadRound = async () => {
     try {
+      
       setLoading(true)
       setChatKey(chatKey + 1);
 
       const selectedTopics = JSON.parse(localStorage.getItem('selectedTopics'));
-      const response = await axios.get("/getRound", {
-        params: { topics: selectedTopics }
-      });
+      let response = ""; 
+
+      if (!selectedTopics || !Array.isArray(selectedTopics) || selectedTopics.length === 0) {
+        await navigate("/home", {replace:true}); 
+      }
+      else {
+        response = await axios.get("/getRound", {
+          params: { topics: selectedTopics }
+        });
+      }
+      
       setHiddenOptions([])
       return response.data
     } catch (error) {
@@ -247,6 +257,7 @@ function Game() {
 const endGame = async (questions) => {
     try {
       await axios.post("/addgame", { username: auth.username, questions }).then(res => console.log(res.data));
+      localStorage.setItem('selectedTopics', "");
     } catch (error) {
       console.error("Error saving user stadistics:", error);
     }
