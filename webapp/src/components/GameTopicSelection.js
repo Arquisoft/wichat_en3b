@@ -127,6 +127,9 @@ const GameTopicSelection = () => {
 
   const startGame = async () => {
     try {
+      // Saving the topics in localStorage
+      localStorage.setItem('selectedTopics', JSON.stringify(selectedTopics));
+      
       await axios.post("/loadQuestion", { topics: selectedTopics });
     } catch (error) {
       console.error("Error fetching game data:", error);

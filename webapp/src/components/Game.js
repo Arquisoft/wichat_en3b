@@ -175,7 +175,10 @@ function Game() {
       setLoading(true)
       setChatKey(chatKey + 1);
 
-      const response = await axios.get("/getRound");
+      const selectedTopics = JSON.parse(localStorage.getItem('selectedTopics'));
+      const response = await axios.get("/getRound", {
+        params: { topics: selectedTopics }
+      });
       setHiddenOptions([])
       return response.data
     } catch (error) {

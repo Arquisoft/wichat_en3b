@@ -148,10 +148,15 @@ app.post('/loadQuestion', async (req, res) => {
 
 app.get('/getRound', async (req, res) => {
   try {
-    const roundResponse = await axios.get(questionServiceUrl + '/getRound');
+    const { topics } = req.query;
+
+    const roundResponse = await axios.get(questionServiceUrl + '/getRound', {
+      params:{topics: topics}
+    });
+
     res.json(roundResponse.data);
   } catch (error) {
-    res.status(error.response.status).json({ error: error.response.data.error });
+    res.status(error.response?.status).json({ error: error.response.data.error });
   }
 });
 
