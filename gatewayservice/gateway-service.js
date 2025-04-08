@@ -132,14 +132,6 @@ app.post('/askllm', async (req, res) => {
 // Add the /loadQuestion endpoint for filling the data base
 app.post('/loadQuestion', async (req, res) => {
   try {
-    const { topics } = req.body;
-
-    if (!topics || !Array.isArray(topics)) {
-      return res.status(400).json({ error: "Invalid topics parameter" });
-    }
-
-    const questionResponse = await axios.post(questionServiceUrl + '/load', { topics });
-
     res.json(questionResponse.data);
   } catch (error) {
     res.status(error.response?.status || 500).json({ error: 'Error fetching question data' });

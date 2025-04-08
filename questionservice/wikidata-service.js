@@ -134,22 +134,6 @@ async function fetchAndStoreData() {
     }
 }
 
-// Endpoint to verify that the topics are valid
-app.post("/load", async (req, res) => {
-    try {
-        const { topics } = req.body;
-
-        if (!topics || !Array.isArray(topics) || topics.length === 0) {
-            return res.status(400).json({ error: "Invalid topics parameter" });
-        }
-
-        res.status(200).json({ message: "Selected topics are valid" });
-    } catch (error) {
-        console.error("Error in /load endpoint:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
-
 // Function to get random items from MongoDB
 async function getRandomItems(topics) {
     try {

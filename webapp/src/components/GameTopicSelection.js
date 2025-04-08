@@ -128,6 +128,12 @@ const GameTopicSelection = () => {
   const startGame = async () => {
     try {
       // Saving the topics in localStorage
+      
+
+      if (!selectedTopics || !Array.isArray(selectedTopics) || selectedTopics.length === 0) {
+          throw new Error('Invalid topics parameter'); 
+      }
+
       localStorage.setItem('selectedTopics', JSON.stringify(selectedTopics));
       
       await axios.post("/loadQuestion", { topics: selectedTopics });
