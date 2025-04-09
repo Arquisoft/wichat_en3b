@@ -10,22 +10,31 @@ import i18n from "../i18n";
 const mockAxios = new MockAdapter(axios);
 
 describe('AddUser component', () => {
+  const renderLayout = () => {
+    render(
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <AddUser />
+        </MemoryRouter>
+      </I18nextProvider>
+    );
+  };
+
+  const getInputsAndButton = () => {
+    const usernameInput = screen.getByLabelText(i18n.t("username"));
+    const passwordInput = screen.getByLabelText(i18n.t("password"));
+    const addUserButton = screen.getByRole('button', { name: i18n.t("signUp") });
+    return { usernameInput, passwordInput, addUserButton };
+  };
+
   beforeEach(() => {
     mockAxios.reset();
   });
 
   it('should add user successfully', async () => {
-    render(
-      <I18nextProvider i18n={i18n}>
-      <MemoryRouter>
-        <AddUser />
-      </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderLayout();
 
-    const usernameInput = screen.getByLabelText(i18n.t("username"));
-    const passwordInput = screen.getByLabelText(i18n.t("password"));
-    const addUserButton = screen.getByRole('button', { name: i18n.t("signUp") });
+    const { usernameInput, passwordInput, addUserButton } = getInputsAndButton();
 
     mockAxios.onPost("/adduser").reply(200);
 
@@ -40,17 +49,9 @@ describe('AddUser component', () => {
   });
 
   it('should handle error when adding user', async () => {
-    render(
-      <I18nextProvider i18n={i18n}>
-      <MemoryRouter>
-        <AddUser />
-      </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderLayout();
 
-    const usernameInput = screen.getByLabelText(i18n.t("username"));
-    const passwordInput = screen.getByLabelText(i18n.t("password"));
-    const addUserButton = screen.getByRole('button', { name: i18n.t("signUp") });
+    const { usernameInput, passwordInput, addUserButton } = getInputsAndButton();
 
     mockAxios.onPost("/adduser").reply(500, { error: 'Internal Server Error' });
 

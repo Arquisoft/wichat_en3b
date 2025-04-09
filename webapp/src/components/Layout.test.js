@@ -13,8 +13,7 @@ jest.mock("../api/axios", () => ({
 }));
 
 describe("Layout Component", () => {
-  test("renders Layout component correctly", () => {
-    useAuth.mockReturnValue({ auth: {} });
+  const renderLayout = () => {
     render(
       <I18nextProvider i18n={i18n}>
         <MemoryRouter>
@@ -22,45 +21,31 @@ describe("Layout Component", () => {
         </MemoryRouter>
       </I18nextProvider>
     );
+  }
 
+  test("renders Layout component correctly", () => {
+    useAuth.mockReturnValue({ auth: {} });
+    renderLayout();
     expect(screen.getByText(i18n.t("home"))).toBeInTheDocument();
   });
 
   test("shows Login button when user is not authenticated", () => {
     useAuth.mockReturnValue({ auth: {} });
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <Layout />
-        </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderLayout();
 
     expect(screen.getByText(i18n.t("login"))).toBeInTheDocument();
   });
 
   test("shows Sign up button when user is not authenticated", () => {
     useAuth.mockReturnValue({ auth: {} });
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <Layout />
-        </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderLayout();
 
     expect(screen.getByText(i18n.t("signUp"))).toBeInTheDocument();
   });
 
   test("shows Log Out button when user is authenticated", () => {
     useAuth.mockReturnValue({ auth: { username: "testuser" } });
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <Layout />
-        </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderLayout();
 
     expect(screen.getByText(i18n.t("logout"))).toBeInTheDocument();
   });
@@ -69,14 +54,7 @@ describe("Layout Component", () => {
     const setAuthMock = jest.fn();
     useAuth.mockReturnValue({ auth: { username: "testuser" }, setAuth: setAuthMock });
     axios.post.mockResolvedValue({});
-
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <Layout />
-        </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderLayout();
 
     const logoutButton = screen.getByText(i18n.t("logout"));
     await userEvent.click(logoutButton);
@@ -93,13 +71,7 @@ describe("Layout Component", () => {
 
     const consoleErrorMock = jest.spyOn(console, "error").mockImplementation(() => {});
 
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <Layout />
-        </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderLayout();
 
     const logoutButton = screen.getByText(i18n.t("logout"));
     await userEvent.click(logoutButton);
