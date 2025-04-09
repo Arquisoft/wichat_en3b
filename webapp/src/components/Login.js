@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Container, Typography, TextField, Button, Snackbar, Checkbox, FormControlLabel, Box, Paper } from '@mui/material';
+import { Container, Typography, Button, Snackbar, Checkbox, FormControlLabel, Box, Paper } from '@mui/material';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 import logInPic from './photos/logInPic.png';
 
 import useAuth from "../hooks/useAuth";
 import axios from "../utils/axios";
+import CustomTextField from './CustomTextField'; // Import the external CustomTextField
 
 const Login = () => {
   const { setAuth, persist, setPersist } = useAuth();
@@ -30,20 +31,6 @@ const Login = () => {
     registerHere: "registerHere",
     loginQuestion: "loginQuestion",
   };
-
-  // Reusable CustomTextField component
-  const CustomTextField = ({ name, labelKey, value, onChange, type = "text" }) => (
-    <TextField
-      name={name}
-      margin="normal"
-      fullWidth
-      label={t(labelKey)}
-      value={value}
-      onChange={onChange}
-      type={type}
-      sx={{ mb: 2 }}
-    />
-  );
 
   const loginUser = async () => {
     try {
