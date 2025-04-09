@@ -24,6 +24,8 @@ describe("Game component", () => {
   beforeEach(() => {
     jest.spyOn(console, "error").mockImplementation(() => {});
     useAxios.mockReturnValue(axios);
+    // Mock sessionStorage
+    Storage.prototype.getItem = jest.fn(() => JSON.stringify(["city"]));
   });
 
   afterAll(() => {
@@ -32,7 +34,7 @@ describe("Game component", () => {
 
   it("should render the game and load the first question", async () => {
     mockAxios.onGet("/getRound").reply(200, {
-      mode: "city",
+      topic: "city",
       itemWithImage: { name: "Paris", imageUrl: "paris.jpg" },
       items: [
         { name: "Paris" },
@@ -41,25 +43,31 @@ describe("Game component", () => {
         { name: "Madrid" }
       ]
     });
-
+  
     render(
       <MemoryRouter>
         <Game />
       </MemoryRouter>
     );
-
+  
+    // Wait more explicitly for the question prompt to appear
     await waitFor(() => {
-      expect(screen.getByText(/What is this city\?/i)).toBeInTheDocument();
-      expect(screen.getByText("Paris")).toBeInTheDocument();
-      expect(screen.getByText("London")).toBeInTheDocument();
-      expect(screen.getByText("Berlin")).toBeInTheDocument();
-      expect(screen.getByText("Madrid")).toBeInTheDocument();
-    });
+      expect(screen.getByTestId("question-prompt")).toBeInTheDocument();
+    }, { timeout: 3000 });
+    
+    // Now check the content
+    expect(screen.getByTestId("question-prompt")).toHaveTextContent(/What is this city\?/i);
+    
+    // Check options are present
+    expect(screen.getByText("Paris")).toBeInTheDocument();
+    expect(screen.getByText("London")).toBeInTheDocument();
+    expect(screen.getByText("Berlin")).toBeInTheDocument();
+    expect(screen.getByText("Madrid")).toBeInTheDocument();
   });
 
   it("should allow selecting an answer and update the score if correct", async () => {
     mockAxios.onGet("/getRound").reply(200, {
-      mode: "city",
+      topic: "city",
       itemWithImage: { name: "Paris", imageUrl: "paris.jpg" },
       items: [
         { name: "Paris" },
@@ -68,18 +76,23 @@ describe("Game component", () => {
         { name: "Madrid" }
       ]
     });
-
+  
+    mockAxios.onPost("/addgame").reply(200, {});
+  
     render(
       <MemoryRouter>
         <Game />
       </MemoryRouter>
     );
-
-    await waitFor(() => screen.getByText(/What is this city\?/i));
-
+  
+    // Wait for the question prompt to appear
+    await waitFor(() => {
+      expect(screen.getByTestId("question-prompt")).toBeInTheDocument();
+    });
+  
     const correctAnswer = screen.getByText("Paris");
     fireEvent.click(correctAnswer);
-
+  
     await waitFor(() => {
       expect(screen.getByText(/Score: 50/i)).toBeInTheDocument();
     });
@@ -87,7 +100,7 @@ describe("Game component", () => {
 
   it("should remove two incorrect options when 50/50 is used and disable the button", async () => {
     mockAxios.onGet("/getRound").reply(200, {
-      mode: "city",
+      topic: "city",
       itemWithImage: { name: "Paris", imageUrl: "paris.jpg" },
       items: [
         { name: "Paris" },
@@ -96,24 +109,38 @@ describe("Game component", () => {
         { name: "Madrid" }
       ]
     });
-
+  
     render(
       <MemoryRouter>
         <Game />
       </MemoryRouter>
     );
-
-    await waitFor(() => screen.getByText(/What is this city\?/i));
-
-    const fiftyFiftyButton = screen.getByText(/50\/50/i);
-    fireEvent.click(fiftyFiftyButton);
-
-    await waitFor(() => expect(fiftyFiftyButton).toBeDisabled());
-
+  
+    // Wait for the question prompt to appear
     await waitFor(() => {
-      const remainingOptions = screen.getAllByRole("button", { name: /Paris|London|Berlin|Madrid/i })
-        .filter((btn) => !btn.disabled);
-      expect(remainingOptions.length).toBe(2);
+      expect(screen.getByTestId("question-prompt")).toBeInTheDocument();
     });
+  
+    // Find the 50/50 button by text content
+    const fiftyFiftyButton = screen.getByText(/50\/50/i);
+    expect(fiftyFiftyButton).toBeInTheDocument();
+    
+    // Click the button
+    fireEvent.click(fiftyFiftyButton);
+  
+    // Wait for the button to be disabled
+    await waitFor(() => {
+      expect(fiftyFiftyButton).toBeDisabled();
+    });
+  
+    // Get all option buttons that are not hidden
+    const visibleOptions = await waitFor(() => {
+      // Get all buttons containing city names that aren't disabled
+      const allButtons = screen.getAllByRole("button", { name: /Paris|London|Berlin|Madrid/i });
+      return allButtons.filter(btn => !btn.disabled);
+    });
+    
+    // Expect exactly 2 options to be visible (not hidden)
+    expect(visibleOptions.length).toBe(2);
   });
 });

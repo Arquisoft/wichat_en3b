@@ -523,7 +523,7 @@ const endGame = async (questions) => {
                       />
                     </ImageContainer>
                     <Container sx={{ textAlign: "center", mb: 2 }}>
-                      <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
+                      <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
                     </Container>
                     <Grid container spacing={2}>
                       {roundData.items.map((item, index) => (
