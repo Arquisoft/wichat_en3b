@@ -4,11 +4,9 @@ import { MemoryRouter } from 'react-router';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Login from './Login';
-import useAuth from '../hooks/useAuth';
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
-import { get } from 'mongoose';
-import { paste } from '@testing-library/user-event/dist/cjs/clipboard/paste.js';
+
 
 const mockAxios = new MockAdapter(axios);
 
