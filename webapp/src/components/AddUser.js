@@ -1,11 +1,11 @@
-// src/components/AddUser.js
 import React, { useState } from 'react';
 import axios from '../utils/axios';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
-import { Container, Typography, TextField, Button, Snackbar, Box, Paper, Alert, FormHelperText } from '@mui/material';
+import { Container, Typography, Button, Snackbar, Box, Paper, Alert, FormHelperText } from '@mui/material';
 import { NavLink, useNavigate } from 'react-router';
 import logInPic from './photos/logInPic.png';
+import CustomTextField from './CustomTextField'; // Import the external CustomTextField
 
 const AddUser = () => {
   const [username, setUsername] = useState('');
@@ -15,7 +15,7 @@ const AddUser = () => {
   const [passwordError, setPasswordError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const labels = {
     createAccount: "createAccount",
@@ -28,27 +28,9 @@ const AddUser = () => {
     registerTxtBubble: "registerTxtBubble",
   };
 
-  const CustomTextField = ({ name, labelKey, value, onChange, error, helperText }) => {
-
-    return (
-      <TextField
-        name={name}
-        margin="normal"
-        fullWidth
-        label={t(labelKey)}
-        value={value}
-        onChange={onChange}
-        error={!!error}
-        helperText={helperText}
-        sx={{ mb: 2 }}
-    />
-  );
-};
-
   const navigate = useNavigate();
 
   const addUser = async () => {
-
     setError('');
     setUsernameError('');
     setPasswordError('');
@@ -56,33 +38,28 @@ const AddUser = () => {
     try {
       await axios.post("/adduser", { username, password });
       setOpenSnackbar(true);
-    
+
       setTimeout(() => {
         navigate('/login');
       }, 500);
-    
     } catch (error) {
-      
-      const errorMsg = error.response && error.response.data && error.response.data.error
-      ? error.response.data.error
-      : error.message || 'Unknown error';
-    
-    setError(errorMsg);
+      const errorMsg = error.response?.data?.error || error.message || 'Unknown error';
+      setError(errorMsg);
 
-    if (errorMsg.includes('Username already taken')) {
-      setUsernameError('Username already taken');
-    } else if (errorMsg.toLowerCase().includes('username')) {
-      setUsernameError(errorMsg);
-    } else if (errorMsg.toLowerCase().includes('password')) {
-      setPasswordError(errorMsg);
-    }
-    
+      if (errorMsg.includes('Username already taken')) {
+        setUsernameError(t("usernameTaken"));
+      } else if (errorMsg.toLowerCase().includes('username')) {
+        setUsernameError(errorMsg);
+      } else if (errorMsg.toLowerCase().includes('password')) {
+        setPasswordError(errorMsg);
+      }
     }
   };
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
+
   return (
     <Container maxWidth="md" sx={{ mt: 6 }}>
       <Paper elevation={4} sx={{ display: 'flex', borderRadius: 4, overflow: 'hidden' }}>
@@ -113,6 +90,7 @@ const AddUser = () => {
             }}
             error={passwordError}
             helperText={passwordError}
+            type="password"
           />
 
           <FormHelperText sx={{ mb: 2, mx: 1 }}>
