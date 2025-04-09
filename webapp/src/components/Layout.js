@@ -2,7 +2,7 @@ import { AppBar, Box, Button, Container } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import { Outlet, NavLink } from 'react-router';
 import useAuth from "../hooks/useAuth";
-import axios from "../api/axios";
+import axios from "../utils/axios";
 import { useTranslation } from "react-i18next";
 import LanguageSelect from "./LanguageSelect";
 

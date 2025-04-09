@@ -1,6 +1,6 @@
 // src/components/AddUser.js
 import React, { useState } from 'react';
-import axios from '../api/axios';
+import axios from '../utils/axios';
 import {useTranslation} from 'react-i18next';
 
 import { Container, Typography, TextField, Button, Snackbar, Box, Paper, Alert, FormHelperText } from '@mui/material';

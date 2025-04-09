@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import App from './App';
 import { I18nextProvider } from "react-i18next";
-import i18n from "./i18n";
+import i18n from "./utils/i18n";
 
 test('renders welcome message', () => {
   render(
