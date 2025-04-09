@@ -21,42 +21,47 @@ describe("Layout Component", () => {
         </MemoryRouter>
       </I18nextProvider>
     );
-  }
+  };
+
+  const mockAuth = (authState) => {
+    useAuth.mockReturnValue(authState);
+  };
+
+  const getButtonByText = (key) => screen.getByText(i18n.t(key));
+
+  beforeEach(() => {
+    jest.clearAllMocks(); // Clear mocks before each test
+  });
 
   test("renders Layout component correctly", () => {
-    useAuth.mockReturnValue({ auth: {} });
+    mockAuth({ auth: {} });
     renderLayout();
-    expect(screen.getByText(i18n.t("home"))).toBeInTheDocument();
+
+    expect(getButtonByText("home")).toBeInTheDocument();
   });
 
-  test("shows Login button when user is not authenticated", () => {
-    useAuth.mockReturnValue({ auth: {} });
+  test("shows Login and Sign up buttons when user is not authenticated", () => {
+    mockAuth({ auth: {} });
     renderLayout();
 
-    expect(screen.getByText(i18n.t("login"))).toBeInTheDocument();
-  });
-
-  test("shows Sign up button when user is not authenticated", () => {
-    useAuth.mockReturnValue({ auth: {} });
-    renderLayout();
-
-    expect(screen.getByText(i18n.t("signUp"))).toBeInTheDocument();
+    expect(getButtonByText("login")).toBeInTheDocument();
+    expect(getButtonByText("signUp")).toBeInTheDocument();
   });
 
   test("shows Log Out button when user is authenticated", () => {
-    useAuth.mockReturnValue({ auth: { username: "testuser" } });
+    mockAuth({ auth: { username: "testuser" } });
     renderLayout();
 
-    expect(screen.getByText(i18n.t("logout"))).toBeInTheDocument();
+    expect(getButtonByText("logout")).toBeInTheDocument();
   });
 
   test("calls logout API when Log Out button is clicked", async () => {
     const setAuthMock = jest.fn();
-    useAuth.mockReturnValue({ auth: { username: "testuser" }, setAuth: setAuthMock });
+    mockAuth({ auth: { username: "testuser" }, setAuth: setAuthMock });
     axios.post.mockResolvedValue({});
     renderLayout();
 
-    const logoutButton = screen.getByText(i18n.t("logout"));
+    const logoutButton = getButtonByText("logout");
     await userEvent.click(logoutButton);
 
     expect(axios.post).toHaveBeenCalledWith("/logout", {}, { withCredentials: true });
@@ -66,14 +71,14 @@ describe("Layout Component", () => {
   test("logs an error to the console when the logout API fails", async () => {
     const setAuthMock = jest.fn();
     const errorMock = new Error("Logout failed");
-    useAuth.mockReturnValue({ auth: { username: "testuser" }, setAuth: setAuthMock });
+    mockAuth({ auth: { username: "testuser" }, setAuth: setAuthMock });
     axios.post.mockRejectedValue(errorMock);
 
     const consoleErrorMock = jest.spyOn(console, "error").mockImplementation(() => {});
 
     renderLayout();
 
-    const logoutButton = screen.getByText(i18n.t("logout"));
+    const logoutButton = getButtonByText("logout");
     await userEvent.click(logoutButton);
 
     expect(consoleErrorMock).toHaveBeenCalledWith(errorMock);
