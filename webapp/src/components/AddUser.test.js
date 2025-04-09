@@ -44,7 +44,7 @@ describe('AddUser component', () => {
     fireEvent.click(addUserButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/User added successfully/i)).toBeInTheDocument();
+      expect(screen.getByText(i18n.t("userAddedSuccess"))).toBeInTheDocument();
     });
   });
 

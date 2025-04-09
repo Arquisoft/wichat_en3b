@@ -15,7 +15,8 @@
     "signUp": "Sign Up",
     "alreadyAccount": "Already have an account?",
     "loginHere": "Login here",
-    "registerTxtBubble": "Nice to see you are on board! Fill in the details and sign up to get started!"
+    "registerTxtBubble": "Nice to see you are on board! Fill in the details and sign up to get started!",
+    "userAddedSuccess": "User added successfully"
     
     
 }

@@ -15,5 +15,6 @@
     "signUp": "Registrarse",
     "alreadyAccount": "¿Ya tienes una cuenta?",
     "loginHere": "Inicia sesión aquí",
-    "registerTxtBubble": "¡Qué bien verte aquí! ¡Rellena el formulario y regístrate para comenzar!"
+    "registerTxtBubble": "¡Qué bien verte aquí! ¡Rellena el formulario y regístrate para comenzar!",
+    "userAddedSuccess": "Usuario añadido con éxito"
 }

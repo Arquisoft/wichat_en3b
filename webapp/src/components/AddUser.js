@@ -15,6 +15,36 @@ const AddUser = () => {
   const [passwordError, setPasswordError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
+  const {t} = useTranslation();
+
+  const labels = {
+    createAccount: "createAccount",
+    username: "username",
+    password: "password",
+    passwordReq: "passwordReq",
+    signUp: "signUp",
+    alreadyAccount: "alreadyAccount",
+    loginHere: "loginHere",
+    registerTxtBubble: "registerTxtBubble",
+  };
+
+  const CustomTextField = ({ name, labelKey, value, onChange, error, helperText }) => {
+
+    return (
+      <TextField
+        name={name}
+        margin="normal"
+        fullWidth
+        label={t(labelKey)}
+        value={value}
+        onChange={onChange}
+        error={!!error}
+        helperText={helperText}
+        sx={{ mb: 2 }}
+    />
+  );
+};
+
   const navigate = useNavigate();
 
   const addUser = async () => {
@@ -53,48 +83,40 @@ const AddUser = () => {
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
-  const { t } = useTranslation();
   return (
     <Container maxWidth="md" sx={{ mt: 6 }}>
       <Paper elevation={4} sx={{ display: 'flex', borderRadius: 4, overflow: 'hidden' }}>
         {/* Left Panel - Add User Form */}
         <Box sx={{ width: '50%', p: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <Typography component="h1" variant="h5" textAlign="center" fontWeight="bold" mb={3}>
-            {t("createAccount")}
+            {t(labels.createAccount)}
           </Typography>
 
-          <TextField
+          <CustomTextField
             name="username"
-            margin="normal"
-            fullWidth
-            label={t("username")}
+            labelKey={labels.username}
             value={username}
             onChange={(e) => {
               setUsername(e.target.value);
               setUsernameError('');
             }}
-            error={!!usernameError}
+            error={usernameError}
             helperText={usernameError}
-            sx={{ mb: 2 }}
           />
-          <TextField
+          <CustomTextField
             name="password"
-            margin="normal"
-            fullWidth
-            label={t("password")}
-            type="password"
+            labelKey={labels.password}
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
               setPasswordError('');
             }}
-            error={!!passwordError}
+            error={passwordError}
             helperText={passwordError}
-            sx={{ mb: 2 }}
           />
 
           <FormHelperText sx={{ mb: 2, mx: 1 }}>
-           {t("passwordReq")}
+            {t(labels.passwordReq)}
           </FormHelperText>
 
           <Button
@@ -105,18 +127,18 @@ const AddUser = () => {
             sx={{
               mt: 1,
               fontWeight: 'bold',
-              backgroundColor: '#5254bc', 
+              backgroundColor: '#5254bc',
               '&:hover': {
                 backgroundColor: '#3f47a3',
               },
             }}
           >
-            {t("signUp")}
+            {t(labels.signUp)}
           </Button>
 
           <Typography component="div" align="center" sx={{ marginTop: 3 }}>
             <NavLink to={"/login"}>
-            {t("alreadyAccount")} <strong>{t("loginHere")}</strong>
+              {t(labels.alreadyAccount)} <strong>{t(labels.loginHere)}</strong>
             </NavLink>
           </Typography>
         </Box>
@@ -137,7 +159,7 @@ const AddUser = () => {
           {/* Placeholder for animation or image */}
           <Box sx={{ mb: 3 }}>
             <img
-              src={logInPic} 
+              src={logInPic}
               alt="Presenter"
               style={{
                 maxWidth: '100%',
@@ -162,7 +184,7 @@ const AddUser = () => {
               maxWidth: '100%',
             }}
           >
-            {t("registerTxtBubble")}
+            {t(labels.registerTxtBubble)}
           </Box>
         </Box>
       </Paper>
@@ -175,9 +197,12 @@ const AddUser = () => {
       )}
 
       {/* Success Notification */}
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="User added successfully" />
-
-
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message={t("userAddedSuccess")}
+      />
     </Container>
   );
 };
