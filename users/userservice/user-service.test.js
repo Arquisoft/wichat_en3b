@@ -119,8 +119,8 @@ describe('User Service', () => {
         username: 'GameUser1',
         password: 'GameUser1!',
         questions: [
-          { mode: 'arcade', isCorrect: true, pointsIncrement: 50 },
-          { mode: 'arcade', isCorrect: false, pointsIncrement: 50 },
+          { topic: 'arcade', isCorrect: true, pointsIncrement: 50 },
+          { topic: 'arcade', isCorrect: false, pointsIncrement: 50 },
         ]
       };
 
@@ -129,8 +129,8 @@ describe('User Service', () => {
       expect(response.body).toHaveProperty('username', 'GameUser1');
       expect(response.body).toHaveProperty('score', 50);
       expect(response.body).toHaveProperty('correctRate', 0.5);
-      expect(response.body).toHaveProperty('gameMode');
-      expect(response.body.gameMode).toEqual(['arcade']);
+      expect(response.body).toHaveProperty('gameTopic');
+      expect(response.body.gameTopic).toEqual(['arcade']);
 
 
       const savedGame = await Game.findOne({ username: 'GameUser1' });
@@ -146,7 +146,7 @@ describe('User Service', () => {
           password: 'GameUser1!',
           score: i,
           correctRate: 0.5,
-          gameMode: 'classic',
+          gameTopic: 'classic',
           createdAt: new Date(Date.now() - 1000 * (MAX_GAMES - i))
         }).save();
       }
@@ -158,8 +158,8 @@ describe('User Service', () => {
         username: 'GameUser1',
         password: 'GameUser1!',
         questions: [
-          { mode: 'classic', isCorrect: true, pointsIncrement: 50 },
-          { mode: 'classic', isCorrect: false, pointsIncrement: 50 },
+          { topic: 'classic', isCorrect: true, pointsIncrement: 50 },
+          { topic: 'classic', isCorrect: false, pointsIncrement: 50 },
         ],
         createdAt: Date.now(), // Set createdAt to the current date
       };
@@ -199,20 +199,20 @@ describe('User Service', () => {
       await request(app).post('/adduser').send(allUser);
 
       // Add game data for testing
-      await addGameData('StatsUser1', 'StatsPass1!', [{ mode: 'arcade', isCorrect: true, pointsIncrement: 70 }]);
-      await addGameData('StatsUser1', 'StatsPass1!', [{ mode: 'arcade', isCorrect: false, pointsIncrement: 80 }]);
+      await addGameData('StatsUser1', 'StatsPass1!', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 70 }]);
+      await addGameData('StatsUser1', 'StatsPass1!', [{ topic: 'arcade', isCorrect: false, pointsIncrement: 80 }]);
 
-      await addGameData('User1Test', 'Password1!', [{ mode: 'flag', isCorrect: true, pointsIncrement: 70 }]);
-      await addGameData('User1Test', 'Password1!', [{ mode: 'flag', isCorrect: false, pointsIncrement: 50 }]);
-      await addGameData('User2Test', 'Password2!', [{ mode: 'flag', isCorrect: true, pointsIncrement: 80 }]);
+      await addGameData('User1Test', 'Password1!', [{ topic: 'flag', isCorrect: true, pointsIncrement: 70 }]);
+      await addGameData('User1Test', 'Password1!', [{ topic: 'flag', isCorrect: false, pointsIncrement: 50 }]);
+      await addGameData('User2Test', 'Password2!', [{ topic: 'flag', isCorrect: true, pointsIncrement: 80 }]);
 
-      await addGameData('User1Test', 'Password1!', [{ mode: 'arcade', isCorrect: true, pointsIncrement: 100 }]);
-      await addGameData('User1Test', 'Password1!', [{ mode: 'arcade', isCorrect: false, pointsIncrement: 50 }]);
-      await addGameData('User2Test', 'Password2!', [{ mode: 'arcade', isCorrect: true, pointsIncrement: 90 }]);
+      await addGameData('User1Test', 'Password1!', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 100 }]);
+      await addGameData('User1Test', 'Password1!', [{ topic: 'arcade', isCorrect: false, pointsIncrement: 50 }]);
+      await addGameData('User2Test', 'Password2!', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 90 }]);
 
-      await addGameData('AllUserTest', 'Password3!', [{ mode: 'arcade', isCorrect: true, pointsIncrement: 100 }]);
-      await addGameData('AllUserTest', 'Password3!', [{ mode: 'flag', isCorrect: false, pointsIncrement: 50 }]);
-      await addGameData('AllUserTest', 'Password3!', [{ mode: 'arcade', isCorrect: true, pointsIncrement: 90 }]);
+      await addGameData('AllUserTest', 'Password3!', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 100 }]);
+      await addGameData('AllUserTest', 'Password3!', [{ topic: 'flag', isCorrect: false, pointsIncrement: 50 }]);
+      await addGameData('AllUserTest', 'Password3!', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 90 }]);
     });
 
     it('should return user statistics on GET /userstats/user/:username', async () => {
@@ -236,8 +236,8 @@ describe('User Service', () => {
       expect(response.body.stats).toEqual([]);
     });
 
-    it('should return all statistics for a specific game mode on GET /userstats/mode/:gameMode', async () => {
-      const response = await request(app).get('/userstats/mode/flag');
+    it('should return all statistics for a specific game topic on GET /userstats/topic/:topic', async () => {
+      const response = await request(app).get('/userstats/topic/flag');
       expect(response.status).toBe(200);
       
       // Check array length and sort order
@@ -258,7 +258,7 @@ describe('User Service', () => {
       expect(user2Stats.totalGamesPlayed).toBe(1);
     });
 
-    it('should return all statistics for a specific user and mode on GET /userstats/:username/:mode', async () => {
+    it('should return all statistics for a specific user and topic on GET /userstats/:username/:topic', async () => {
       const response = await request(app).get('/userstats/User1Test/arcade');
       expect(response.status).toBe(200);
       expect(response.body.stats.username).toBe('User1Test');
@@ -267,7 +267,7 @@ describe('User Service', () => {
       expect(response.body.stats.totalGamesPlayed).toBe(2);
     });
 
-    it('should return the combined statistics for all game modes on GET /userstats/:username/all', async () => {
+    it('should return the combined statistics for all game topics on GET /userstats/:username/all', async () => {
        const response = await request(app).get('/userstats/AllUserTest/all');
       expect(response.status).toBe(200);
       expect(response.body.stats.username).toBe('AllUserTest');

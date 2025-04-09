@@ -19,9 +19,14 @@ describe('LLM Service', () => {
         jest.clearAllMocks();
     });
 
+    beforeAll(() => {
+        jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
     afterAll(() => {
         server.close();
         process.env = originalEnv;
+        console.error.mockRestore();
     });
 
     /*
