@@ -8,7 +8,7 @@ import { I18nextProvider } from "react-i18next";
 import i18n from "../utils/i18n";
 
 jest.mock("../hooks/useAuth");
-jest.mock("../api/axios", () => ({
+jest.mock("../utils/axios", () => ({
   post: jest.fn(),
 }));
 
