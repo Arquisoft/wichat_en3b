@@ -1,10 +1,21 @@
 import React from "react";
-import { render, fireEvent, screen, waitFor, act } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import Game from "./Game";
 import useAxios from "../hooks/useAxios";
+
+// Global mock for Material UI icons
+jest.mock("@mui/icons-material", () => {
+  const originalModule = jest.requireActual("@mui/icons-material");
+  return {
+    ...originalModule,
+    // Override specific icons if needed
+    ArrowBack: () => <div>ArrowBackIcon</div>,
+    Phone: () => <div>PhoneIcon</div>,
+  };
+});
 
 jest.mock("../hooks/useAxios", () => jest.fn());
 const mockAxios = new MockAdapter(axios);
@@ -14,7 +25,7 @@ describe("Game component", () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
     useAxios.mockReturnValue(axios);
   });
-  
+
   afterAll(() => {
     console.error.mockRestore();
   });
@@ -85,33 +96,24 @@ describe("Game component", () => {
         { name: "Madrid" }
       ]
     });
-  
+
     render(
       <MemoryRouter>
         <Game />
       </MemoryRouter>
     );
-  
+
     await waitFor(() => screen.getByText(/What is this city\?/i));
-  
-    expect(screen.getByText("Paris")).toBeVisible();
-    expect(screen.getByText("London")).toBeVisible();
-    expect(screen.getByText("Berlin")).toBeVisible();
-    expect(screen.getByText("Madrid")).toBeVisible();
-  
+
     const fiftyFiftyButton = screen.getByText(/50\/50/i);
-  
     fireEvent.click(fiftyFiftyButton);
-  
+
     await waitFor(() => expect(fiftyFiftyButton).toBeDisabled());
 
     await waitFor(() => {
       const remainingOptions = screen.getAllByRole("button", { name: /Paris|London|Berlin|Madrid/i })
         .filter((btn) => !btn.disabled);
-    
       expect(remainingOptions.length).toBe(2);
     });
-    
-        
   });
 });

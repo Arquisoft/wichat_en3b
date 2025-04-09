@@ -1,8 +1,16 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
-import App from './App';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
+import App from "./App";
 
-test('renders welcome message', () => {
+// Global mock for Material UI icons using a Proxy to return a simple component
+jest.mock("@mui/icons-material", () => {
+  return new Proxy({}, {
+    get: (_, prop) => () => <div>{prop}</div>
+  });
+});
+
+test("renders welcome message", () => {
   render(
     <MemoryRouter>
       <App />
