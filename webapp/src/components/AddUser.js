@@ -1,7 +1,7 @@
 // src/components/AddUser.js
 import React, { useState } from 'react';
 import axios from '../api/axios';
-
+import {useTranslation} from 'react-i18next';
 
 import { Container, Typography, TextField, Button, Snackbar, Box, Paper, Alert, FormHelperText } from '@mui/material';
 import { NavLink, useNavigate } from 'react-router';
@@ -53,21 +53,21 @@ const AddUser = () => {
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
-
+  const { t } = useTranslation();
   return (
     <Container maxWidth="md" sx={{ mt: 6 }}>
       <Paper elevation={4} sx={{ display: 'flex', borderRadius: 4, overflow: 'hidden' }}>
         {/* Left Panel - Add User Form */}
         <Box sx={{ width: '50%', p: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <Typography component="h1" variant="h5" textAlign="center" fontWeight="bold" mb={3}>
-            Register here
+            {t("createAccount")}
           </Typography>
 
           <TextField
             name="username"
             margin="normal"
             fullWidth
-            label="Username"
+            label={t("username")}
             value={username}
             onChange={(e) => {
               setUsername(e.target.value);
@@ -81,7 +81,7 @@ const AddUser = () => {
             name="password"
             margin="normal"
             fullWidth
-            label="Password"
+            label={t("password")}
             type="password"
             value={password}
             onChange={(e) => {
@@ -94,7 +94,7 @@ const AddUser = () => {
           />
 
           <FormHelperText sx={{ mb: 2, mx: 1 }}>
-            Password must contain at least 8 characters, including a capital letter, a number, and a special character.
+           {t("passwordReq")}
           </FormHelperText>
 
           <Button
@@ -111,12 +111,12 @@ const AddUser = () => {
               },
             }}
           >
-            Add User
+            {t("signUp")}
           </Button>
 
           <Typography component="div" align="center" sx={{ marginTop: 3 }}>
             <NavLink to={"/login"}>
-              Already have an account? Login here.
+            {t("alreadyAccount")} <strong>{t("loginHere")}</strong>
             </NavLink>
           </Typography>
         </Box>
@@ -162,7 +162,7 @@ const AddUser = () => {
               maxWidth: '100%',
             }}
           >
-            Nice to see you are on board! Fill in the details and add a user to get started!
+            {t("registerTxtBubble")}
           </Box>
         </Box>
       </Paper>

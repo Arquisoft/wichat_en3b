@@ -1,5 +1,6 @@
 // src/components/Login.js
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Container, Typography, TextField, Button, Snackbar, Checkbox, FormControlLabel, Box, Paper } from '@mui/material';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 import logInPic from './photos/logInPic.png';
@@ -45,6 +46,7 @@ const Login = () => {
     localStorage.setItem("persist", persist);
   }, [persist]);
 
+  const { t } = useTranslation();
 
   return (
     <Container maxWidth="md" sx={{ mt: 6 }}>
@@ -52,14 +54,14 @@ const Login = () => {
         {/* Left Panel - Login Form */}
         <Box sx={{ width: '50%', p: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <Typography component="h1" variant="h5" textAlign="center" fontWeight="bold" mb={3}>
-            Login to Start Playing
+            {t("loginStartMsg")}
           </Typography>
 
           <TextField
             name="username"
             margin="normal"
             fullWidth
-            label="Username"
+            label={t("username")}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             sx={{ mb: 2 }}
@@ -68,7 +70,7 @@ const Login = () => {
             name="password"
             margin="normal"
             fullWidth
-            label="Password"
+            label={t("password")}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -77,7 +79,7 @@ const Login = () => {
 
           <FormControlLabel
             control={<Checkbox onChange={togglePersist} checked={persist} />}
-            label="Remember me"
+            label={t("rememberMe")}
             sx={{ mb: 2 }}
           />
 
@@ -95,12 +97,12 @@ const Login = () => {
               },
             }}
           >
-            🔓 Login
+            🔓 {t("login")}
           </Button>
 
           <Typography component="div" align="center" sx={{ marginTop: 3 }}>
             <NavLink to="/signup">
-              Don’t have an account? <strong>Register here.</strong>
+              {t("noAccount")} <strong>{t("registerHere")}</strong>
             </NavLink>
           </Typography>
         </Box>
@@ -146,7 +148,7 @@ const Login = () => {
               maxWidth: '100%'
             }}
           >
-            Ready to test your knowledge? Log in and let's go!
+            {t("loginQuestion")}
           </Box>
         </Box>
       </Paper>

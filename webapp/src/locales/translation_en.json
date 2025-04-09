@@ -1,0 +1,21 @@
+{
+    "welcomeMsg": "Welcome to the 2025 edition of the Software Architecture course",
+    "login": "Login",
+    "logout": "Logout",
+    "home": "Home",
+    "loginStartMsg": "Login to Start Playing",
+    "username": "Username",
+    "password": "Password",
+    "rememberMe": "Remember Me",
+    "noAccount": "Don’t have an account?",
+    "registerHere": "Sign up here",
+    "loginQuestion": "Ready to test your knowledge? Log in and let's go!",
+    "createAccount": "Create Account",
+    "passwordReq": "Password must contain at least 8 characters, including a capital letter, a number, and a special character.",
+    "signUp": "Sign Up",
+    "alreadyAccount": "Already have an account?",
+    "loginHere": "Login here",
+    "registerTxtBubble": "Nice to see you are on board! Fill in the details and sign up to get started!"
+    
+    
+}
