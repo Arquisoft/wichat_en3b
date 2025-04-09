@@ -1,0 +1,20 @@
+{
+    "welcomeMsg": "Bienvenido a la edición 2025 del curso de Arquitectura de Software" ,
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "home": "Inicio",
+    "loginStartMsg": "Inicie sesión para comenzar",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "rememberMe": "Recuérdame",
+    "noAccount": "¿No tienes cuenta?",
+    "registerHere": "Regístrate aquí",
+    "loginQuestion": "¿Listo para probar tus conocimientos? Inicia sesión y ¡comencemos!",
+    "createAccount": "Crear cuenta",
+    "passwordReq": "La contraseña debe contener al menos 8 caracteres, una mayúscula, un dígito y un carácter especial.",
+    "signUp": "Registrarse",
+    "alreadyAccount": "¿Ya tienes una cuenta?",
+    "loginHere": "Inicia sesión aquí",
+    "registerTxtBubble": "¡Qué bien verte aquí! ¡Rellena el formulario y regístrate para comenzar!",
+    "userAddedSuccess": "Usuario añadido con éxito"
+}

@@ -103,13 +103,12 @@ app.post('/addgame', async (req, res) => {
     const questions = req.body.questions;
     const score = questions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
     const correctRate = questions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / questions.length;
-    const gameMode = [...new Set(questions.map(question => question.mode))];
-    // Create a new game entry
+    const gameTopic = [...new Set(questions.map(question => question.topic))];
     const newGame = new Game({
       username: req.body.username,
       score: score,
       correctRate: correctRate,
-      gameMode: gameMode,
+      gameTopic: gameTopic,
     });
 
     await newGame.save();
@@ -123,34 +122,34 @@ app.post('/addgame', async (req, res) => {
 //Function only called when a new game is added
 async function calculateUserStatistics(newGame, questions) {
   try {
-    for (const mode of [...newGame.gameMode, "all"]) {
+    for (const topic of [...newGame.gameTopic, "all"]) {
       let score;
       let correctRate;
       let questionsAnswered;
-      // Calculate statistics for the current mode
-      if (mode === "all") {
+      // Calculate statistics for the current topic
+      if (topic === "all") {
         // Get global statistics from the game
         score = newGame.score;
         correctRate = newGame.correctRate;
         questionsAnswered = questions.length;
       } else {
-        // Filter questions for the current mode
-        const modeQuestions = questions.filter(question => question.mode === mode);
+        // Filter questions for the current topic
+        const topicQuestions = questions.filter(question => question.topic === topic);
         
-        // Calculate partial statistics for the current mode
-        score = modeQuestions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
-        correctRate = modeQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / modeQuestions.length;
-        questionsAnswered = modeQuestions.length;
+        // Calculate partial statistics for the current topic
+        score = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
+        correctRate = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / topicQuestions.length;
+        questionsAnswered = topicQuestions.length;
       }
 
-      // Find existing user statistics for the current mode
-      const userStats = await UserStatistics.findOne({ username: newGame.username, mode: mode });
+      // Find existing user statistics for the current topic
+      const userStats = await UserStatistics.findOne({ username: newGame.username, topic: topic });
 
       if (!userStats) {
         // Create a new user statistics entry if it doesn't exist
         const newUserStats = new UserStatistics({
           username: newGame.username,
-          mode: mode,
+          topic: topic,
           totalScore: score,
           correctRate: correctRate,
           totalQuestions: questionsAnswered,
@@ -164,7 +163,7 @@ async function calculateUserStatistics(newGame, questions) {
         const oldCorrectRate = userStats.correctRate;
 
         await UserStatistics.findOneAndUpdate(
-          { username: newGame.username, mode: mode },
+          { username: newGame.username, topic: topic },
           {
             $inc: { totalGamesPlayed: 1, totalQuestions: questionsAnswered },
             $set: {
@@ -197,28 +196,28 @@ app.get('/userstats/user/:username', async (req, res) => {
   }
 });
 
-// Find user statistics for a specific mode
-app.get('/userstats/mode/:mode', async (req, res) => {
+// Find user statistics for a specific topic
+app.get('/userstats/topic/:topic', async (req, res) => {
   try {
-    const mode = req.params.mode;
+    const topic = req.params.topic;
 
-    const userStats = await UserStatistics.find({ mode: mode });
+    const userStats = await UserStatistics.find({ topic: topic });
 
-    res.json({ message: `Fetched statistics for mode: ${mode}`, stats: userStats });
+    res.json({ message: `Fetched statistics for topic: ${topic}`, stats: userStats });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Find user statistics for a specific user and mode
-app.get('/userstats/:username/:mode', async (req, res) => {
+// Find user statistics for a specific user and topic
+app.get('/userstats/:username/:topic', async (req, res) => {
   try {
     const username = req.params.username;
-    const mode = req.params.mode;
+    const topic = req.params.topic;
 
-    const userStats = await UserStatistics.findOne({ username: username, mode: mode });
+    const userStats = await UserStatistics.findOne({ username: username, topic: topic });
 
-    res.json({ message: `Fetched statistics for user ${username} in mode ${mode}`, stats: userStats });
+    res.json({ message: `Fetched statistics for user ${username} in topic ${topic}`, stats: userStats });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

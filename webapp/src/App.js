@@ -4,6 +4,7 @@ import { Container, CssBaseline, Typography, Button, Box, Paper, Grid } from "@m
 import { styled } from "@mui/material/styles"
 import { Outlet, NavLink } from "react-router"
 import { School, Login } from "@mui/icons-material"
+import { useTranslation } from "react-i18next"
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -58,6 +59,7 @@ const StyledNavLink = styled(NavLink)({
 })
 
 function App() {
+  const {t} = useTranslation();
   return (
     <Container maxWidth="sm">
       <CssBaseline />
@@ -78,7 +80,7 @@ function App() {
             WICHAT
           </Typography>
           <Typography variant="h5" color="textSecondary" gutterBottom>
-            Welcome to the 2025 edition of the Software Architecture course
+            {t("welcomeMsg")}
           </Typography>
         </Box>
         
@@ -86,7 +88,7 @@ function App() {
           <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
             <StyledNavLink to="/login">
               <LoginButton variant="contained" startIcon={<Login />}>
-                LOGIN
+                {t("login")}
               </LoginButton>
             </StyledNavLink>
           </Grid>

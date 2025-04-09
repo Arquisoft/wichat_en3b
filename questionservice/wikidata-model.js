@@ -6,7 +6,7 @@ const wikidataObjectSchema = new mongoose.Schema({
     name: String,
     imageUrl: String,
     imageAltText: String,
-    mode: String
+    topic: String
 });
 
 // Export the model
