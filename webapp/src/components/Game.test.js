@@ -49,13 +49,10 @@ describe("Game component", () => {
         <Game />
       </MemoryRouter>
     );
-  
-    // Wait more explicitly for the question prompt to appear
-    await waitFor(() => {
+      await waitFor(() => {
       expect(screen.getByTestId("question-prompt")).toBeInTheDocument();
     }, { timeout: 3000 });
     
-    // Now check the content
     expect(screen.getByTestId("question-prompt")).toHaveTextContent(/What is this city\?/i);
     
     // Check options are present

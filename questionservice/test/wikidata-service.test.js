@@ -22,9 +22,9 @@ describe("Express Service API Endpoints", () => {
                 results: {
                     bindings: [
                         {
-                            city: { value: 'http://www.wikidata.org/entity/Q1' },
+                            city: { value: 'https://www.wikidata.org/entity/Q1' },
                             cityLabel: { value: 'City1' },
-                            image: { value: 'http://example.com/image.jpg' }
+                            image: { value: 'https://example.com/image.jpg' }
                         }
                     ]
                 }
