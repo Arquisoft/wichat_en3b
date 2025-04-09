@@ -17,7 +17,9 @@
     "react-scripts": "5.0.1",
     "react-simple-typewriter": "^5.0.1",
     "recharts": "^2.15.1",
-    "web-vitals": "^4.2.4"
+    "web-vitals": "^4.2.4",
+    "i18next": "^24.2.3", 
+    "react-i18next": "^15.4.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -57,13 +59,15 @@
     "jest-cucumber": "^4.5.0",
     "jest-environment-node": "^29.7.0",
     "mongodb-memory-server": "^10.1.4",
-    "puppeteer": "^24.4.0",
+    "puppeteer": "^24.6.0",
     "serve": "^14.2.4",
     "start-server-and-test": "^2.0.11",
     "util": "^0.12.5"
   },
   "overrides": {
     "nth-check": ">=2.1.1",
-    "postcss": ">=8.4.31"
+    "postcss": ">=8.4.31",
+    "typescript": "5.8.3"
   }
+  
 }

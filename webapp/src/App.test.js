@@ -1,7 +1,9 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
-import App from "./App";
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
+import App from './App';
+import { I18nextProvider } from "react-i18next";
+import i18n from "./utils/i18n";
 
 // Global mock for Material UI icons using a Proxy to return a simple component
 jest.mock("@mui/icons-material", () => {
@@ -10,12 +12,14 @@ jest.mock("@mui/icons-material", () => {
   });
 });
 
-test("renders welcome message", () => {
+test('renders welcome message', () => {
   render(
+    <I18nextProvider i18n={i18n}>
     <MemoryRouter>
       <App />
     </MemoryRouter>
+    </I18nextProvider>
   );
-  const welcomeMessage = screen.getByText(/Welcome to the 2025 edition of the Software Architecture course/i);
+  const welcomeMessage = screen.getByText(i18n.t("welcomeMsg"));
   expect(welcomeMessage).toBeInTheDocument();
 });
