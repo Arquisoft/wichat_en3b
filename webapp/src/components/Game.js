@@ -180,11 +180,11 @@ function Game() {
       setLoading(true)
       setChatKey(chatKey + 1);
 
-      const selectedTopics = JSON.parse(localStorage.getItem('selectedTopics'));
+      const selectedTopics = JSON.parse(sessionStorage.getItem('selectedTopics'));
       let response = ""; 
 
       if (!selectedTopics || !Array.isArray(selectedTopics) || selectedTopics.length === 0) {
-        await navigate("/home", {replace:true}); 
+        navigate("/home", {replace:true}); 
       }
       else {
         response = await axios.get("/getRound", {
@@ -257,7 +257,6 @@ function Game() {
 const endGame = async (questions) => {
     try {
       await axios.post("/addgame", { username: auth.username, questions }).then(res => console.log(res.data));
-      localStorage.setItem('selectedTopics', "");
     } catch (error) {
       console.error("Error saving user stadistics:", error);
     }

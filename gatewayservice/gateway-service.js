@@ -129,15 +129,6 @@ app.post('/askllm', async (req, res) => {
   }
 });
 
-// Add the /loadQuestion endpoint for filling the data base
-app.post('/loadQuestion', async (req, res) => {
-  try {
-    res.json(questionResponse.data);
-  } catch (error) {
-    res.status(error.response?.status || 500).json({ error: 'Error fetching question data' });
-  }
-});
-
 app.get('/getRound', async (req, res) => {
   try {
     const { topics } = req.query;

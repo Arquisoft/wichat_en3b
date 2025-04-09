@@ -20,6 +20,9 @@ const Home = () => {
     const stats = ["points", "accuracy", "gamesPlayed"];
 
     useEffect(() => {
+        // Clear selected topics after finishing the game and navigating back to the home page
+        sessionStorage.removeItem("selectedTopics");
+
         axios.get(`/userstats/${auth.username}/all`)
             .then((res) => {
                 setUserStats(res.data.stats);
