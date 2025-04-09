@@ -99,6 +99,7 @@ app.post('/addgame', async (req, res) => {
       }
     }
 
+    // Calculate game statistics
     const questions = req.body.questions;
     const score = questions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
     const correctRate = questions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / questions.length;
@@ -121,15 +122,25 @@ app.post('/addgame', async (req, res) => {
 //Function only called when a new game is added
 async function calculateUserStatistics(newGame, questions) {
   try {
-    for (const topic of newGame.gameTopic) {
-      // Filter questions for the current topic
-      const topicQuestions = questions.filter(question => question.topic === topic);
-      if (topicQuestions.length === 0) continue; // Skip if no questions for this topic
-
-      // Calculate partial statistics for the current topic
-      const score = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
-      const correctRate = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / topicQuestions.length;
-      const questionsAnswered = topicQuestions.length;
+    for (const topic of [...newGame.gameTopic, "all"]) {
+      let score;
+      let correctRate;
+      let questionsAnswered;
+      // Calculate statistics for the current topic
+      if (topic === "all") {
+        // Get global statistics from the game
+        score = newGame.score;
+        correctRate = newGame.correctRate;
+        questionsAnswered = questions.length;
+      } else {
+        // Filter questions for the current topic
+        const topicQuestions = questions.filter(question => question.topic === topic);
+        
+        // Calculate partial statistics for the current topic
+        score = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
+        correctRate = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / topicQuestions.length;
+        questionsAnswered = topicQuestions.length;
+      }
 
       // Find existing user statistics for the current topic
       const userStats = await UserStatistics.findOne({ username: newGame.username, topic: topic });
@@ -172,6 +183,7 @@ function calculateNewAvg(newRate, totalGamesPlayed, oldAvg) {
   return (totalGamesPlayed * oldAvg + newRate) / (totalGamesPlayed + 1);
 }
 
+// Find user statistics for a specific user
 app.get('/userstats/user/:username', async (req, res) => {
   try {
     const username = req.params.username;
@@ -184,29 +196,12 @@ app.get('/userstats/user/:username', async (req, res) => {
   }
 });
 
+// Find user statistics for a specific topic
 app.get('/userstats/topic/:topic', async (req, res) => {
   try {
     const topic = req.params.topic;
 
-    let userStats;
-    if (topic === "all") {
-      // Aggregate user statistics for all topics
-      userStats = await UserStatistics.aggregate([
-        {
-          $group: {
-            _id: "$username",
-            username: { $first: "$username" },
-            totalScore: { $sum: "$totalScore" },
-            correctRate: { $avg: "$correctRate" },
-            totalQuestions: { $sum: "$totalQuestions" },
-            totalGamesPlayed: { $sum: "$totalGamesPlayed" },
-          }
-        },
-      ]);
-    } else {
-      // Find user statistics for a specific topic
-      userStats = await UserStatistics.find({ topic: topic });
-    }
+    const userStats = await UserStatistics.find({ topic: topic });
 
     res.json({ message: `Fetched statistics for topic: ${topic}`, stats: userStats });
   } catch (error) {
@@ -214,45 +209,13 @@ app.get('/userstats/topic/:topic', async (req, res) => {
   }
 });
 
+// Find user statistics for a specific user and topic
 app.get('/userstats/:username/:topic', async (req, res) => {
   try {
     const username = req.params.username;
     const topic = req.params.topic;
 
-    let userStats;
-    if (topic === "all") {
-      // Fetch all user statistics for the given username
-      const stats = await UserStatistics.find({ username: username });
-
-      if (stats.length === 0) {
-        return res.json({ message: `No statistics found for user: ${username}`, stats: {} });
-      }
-
-      // Calculate weighted average accuracy
-      let totalCorrectAnswers = 0;
-      let totalQuestionsAnswered = 0;
-
-      stats.forEach(stat => {
-        const correctAnswersForTopic = stat.correctRate * stat.totalQuestions;
-        totalCorrectAnswers += correctAnswersForTopic;
-        totalQuestionsAnswered += stat.totalQuestions;
-      });
-
-      const weightedAccuracy = totalQuestionsAnswered > 0
-        ? totalCorrectAnswers / totalQuestionsAnswered
-        : 0;
-
-      userStats = {
-        username: username,
-        totalScore: stats.reduce((sum, stat) => sum + stat.totalScore, 0),
-        correctRate: weightedAccuracy, // Use weighted accuracy
-        totalGamesPlayed: stats.reduce((sum, stat) => sum + stat.totalGamesPlayed, 0),
-        totalQuestions: totalQuestionsAnswered, // Total questions answered
-      };
-    } else {
-      // Find user statistics for a specific topic
-      userStats = await UserStatistics.findOne({ username: username, topic: topic });
-    }
+    const userStats = await UserStatistics.findOne({ username: username, topic: topic });
 
     res.json({ message: `Fetched statistics for user ${username} in topic ${topic}`, stats: userStats });
   } catch (error) {
