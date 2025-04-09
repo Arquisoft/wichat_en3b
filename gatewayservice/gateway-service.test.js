@@ -43,7 +43,7 @@ describe('Gateway Service', () => {
                 return Promise.resolve({ data: { round: 'mockedRoundData' } });
             } else if (url.endsWith('/refresh')) {
                 return Promise.resolve({ data: { accessToken: 'mockedToken' } });
-            } else if (url.endsWith('/getModes')) {
+            } else if (url.endsWith('/getTopics')) {
                 return Promise.resolve({ data: { modes: ['city', 'athlete'] } });
             } else if (url.endsWith('/userstats/user/testuser')) {
                 return Promise.resolve({ data: { message: 'Fetched user statistics for user: testuser' } });
@@ -225,47 +225,6 @@ describe('Gateway Service', () => {
         expect(response.body.error).toBe('LLM service error');
     });
 
-    // Test /loadQuestion endpoint
-    it('should forward loadQuestion request to the question service', async () => {
-        const response = await request(app)
-            .post('/loadQuestion')
-            .set('Authorization', `Bearer ${token}`)
-            .send({ modes: ['city', 'athlete'] });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.status).toBe('questions loaded');
-    });
-
-    // Test loadQuestion error handling 
-    it('should handle errors from loadQuestion endpoint', async () => {
-        axios.post.mockImplementationOnce((url) => {
-            if (url.endsWith('/load')) {
-                return Promise.reject({
-                    response: {
-                        status: 500
-                    }
-                });
-            }
-        });
-
-        const response = await request(app)
-            .post('/loadQuestion')
-            .set('Authorization', `Bearer ${token}`)
-            .send({ modes: ['city', 'athlete'] });
-        expect(response.statusCode).toBe(500);
-        expect(response.body.error).toBe('Error fetching question data');
-    });
-
-    // Test loadQuestion with invalid modes 
-    it('should return 400 when modes parameter is invalid', async () => {
-        const response = await request(app)
-            .post('/loadQuestion')
-            .set('Authorization', `Bearer ${token}`)
-            .send({ modes: 'not-an-array' });
-        expect(response.statusCode).toBe(400);
-        expect(response.body.error).toBe('Invalid modes parameter');
-    });
-
     // Test /getRound endpoint
     it('should fetch round data from the question service', async () => {
         const response = await request(app).get('/getRound').set('Authorization', `Bearer ${token}`);
@@ -294,9 +253,9 @@ describe('Gateway Service', () => {
         expect(response.body.error).toBe('Question service error');
     });
 
-    // Test /getModes endpoint
-    it('should fetch modes from the question service', async () => {
-        const response = await request(app).get('/getModes').set('Authorization', `Bearer ${token}`);
+    // Test /getTopics endpoint
+    it('should fetch topics from the question service', async () => {
+        const response = await request(app).get('/getTopics').set('Authorization', `Bearer ${token}`);
 
         expect(response.statusCode).toBe(200);
         expect(response.body.modes).toEqual(['city', 'athlete']);

@@ -405,17 +405,17 @@ paths:
                     type: string
                     description: Error information.
                     example: Invalid token
-  /getModes:
+  /getTopics:
     get:
       summary: Get available game modes.
-      operationId: getModes
+      operationId: getTopics
       tags:
         - Game
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Game modes retrieved successfully.
+          description: Game topics retrieved successfully.
           content:
             application/json:
               schema:
@@ -423,7 +423,7 @@ paths:
                 properties:
                   modes:
                     type: array
-                    description: List of available game modes.
+                    description: List of available game topics.
                     items:
                       type: string
                     example: ["city", "flag", "athlete", "singer"]
