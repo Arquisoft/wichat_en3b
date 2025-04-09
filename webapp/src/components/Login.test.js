@@ -5,6 +5,8 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Login from './Login';
 import useAuth from '../hooks/useAuth';
+import { I18nextProvider } from "react-i18next";
+import i18n from "../i18n";
 
 const mockAxios = new MockAdapter(axios);
 
@@ -28,14 +30,16 @@ describe('Login component', () => {
 
   it('should log in successfully', async () => {
     render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+      </I18nextProvider>
     );
 
-    const usernameInput = screen.getByLabelText(/Username/i);
-    const passwordInput = screen.getByLabelText(/Password/i);
-    const loginButton = screen.getByRole('button', { name: /Login/i });
+    const usernameInput = screen.getByLabelText(i18n.t("username"));
+    const passwordInput = screen.getByLabelText(i18n.t("password"));
+    const loginButton = screen.getByTestId('login-submit');
 
     mockAxios.onPost('/login').reply(200, { accessToken: 'fakeAccessToken' });
 
@@ -52,14 +56,18 @@ describe('Login component', () => {
 
   it('should handle error when logging in', async () => {
     render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+      </I18nextProvider>
     );
   
-    const usernameInput = screen.getByLabelText(/Username/i);
-    const passwordInput = screen.getByLabelText(/Password/i);
-    const loginButton = screen.getByRole('button', { name: /Login/i });
+    const usernameInput = screen.getByLabelText(i18n.t("username"));
+    const passwordInput = screen.getByLabelText(i18n.t("password"));
+    const loginButton = screen.getByTestId('login-submit');
+
+
   
     mockAxios.onPost('/login').replyOnce(401, { error: 'Unauthorized' });
   
