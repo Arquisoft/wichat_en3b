@@ -122,18 +122,7 @@ app.post('/addgame', async (req, res) => {
 //Function only called when a new game is added
 async function calculateUserStatistics(newGame, questions) {
   try {
-<<<<<<< HEAD
-    for (const topic of newGame.gameTopic) {
-      // Filter questions for the current topic
-      const topicQuestions = questions.filter(question => question.topic === topic);
-      if (topicQuestions.length === 0) continue; // Skip if no questions for this topic
 
-      // Calculate partial statistics for the current topic
-      const score = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
-      const correctRate = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / topicQuestions.length;
-      const questionsAnswered = topicQuestions.length;
-
-=======
     for (const topic of [...newGame.gameTopic, "all"]) {
       let score;
       let correctRate;
@@ -154,7 +143,7 @@ async function calculateUserStatistics(newGame, questions) {
         questionsAnswered = topicQuestions.length;
       }
 
->>>>>>> master
+
       // Find existing user statistics for the current topic
       const userStats = await UserStatistics.findOne({ username: newGame.username, topic: topic });
 
@@ -209,37 +198,13 @@ app.get('/userstats/user/:username', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-=======
+
 // Find user statistics for a specific topic
->>>>>>> master
 app.get('/userstats/topic/:topic', async (req, res) => {
   try {
     const topic = req.params.topic;
 
-<<<<<<< HEAD
-    let userStats;
-    if (topic === "all") {
-      // Aggregate user statistics for all topics
-      userStats = await UserStatistics.aggregate([
-        {
-          $group: {
-            _id: "$username",
-            username: { $first: "$username" },
-            totalScore: { $sum: "$totalScore" },
-            correctRate: { $avg: "$correctRate" },
-            totalQuestions: { $sum: "$totalQuestions" },
-            totalGamesPlayed: { $sum: "$totalGamesPlayed" },
-          }
-        },
-      ]);
-    } else {
-      // Find user statistics for a specific topic
-      userStats = await UserStatistics.find({ topic: topic });
-    }
-=======
     const userStats = await UserStatistics.find({ topic: topic });
->>>>>>> master
 
     res.json({ message: `Fetched statistics for topic: ${topic}`, stats: userStats });
   } catch (error) {
@@ -247,55 +212,16 @@ app.get('/userstats/topic/:topic', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-=======
+
+
 // Find user statistics for a specific user and topic
->>>>>>> master
 app.get('/userstats/:username/:topic', async (req, res) => {
   try {
     const username = req.params.username;
     const topic = req.params.topic;
 
-<<<<<<< HEAD
-    let userStats;
-    if (topic === "all") {
-      // Fetch all user statistics for the given username
-      const stats = await UserStatistics.find({ username: username });
-
-      if (stats.length === 0) {
-        return res.json({ message: `No statistics found for user: ${username}`, stats: {} });
-      }
-
-      // Calculate weighted average accuracy
-      let totalCorrectAnswers = 0;
-      let totalQuestionsAnswered = 0;
-
-      stats.forEach(stat => {
-        const correctAnswersFortopic = stat.correctRate * stat.totalQuestions;
-        totalCorrectAnswers += correctAnswersFortopic;
-        totalQuestionsAnswered += stat.totalQuestions;
-      });
-
-      const weightedAccuracy = totalQuestionsAnswered > 0
-        ? totalCorrectAnswers / totalQuestionsAnswered
-        : 0;
-
-      userStats = {
-        username: username,
-        totalScore: stats.reduce((sum, stat) => sum + stat.totalScore, 0),
-        correctRate: weightedAccuracy, // Use weighted accuracy
-        totalGamesPlayed: stats.reduce((sum, stat) => sum + stat.totalGamesPlayed, 0),
-        totalQuestions: totalQuestionsAnswered, // Total questions answered
-      };
-    } else {
-      // Find user statistics for a specific topic
-      userStats = await UserStatistics.findOne({ username: username, topic: topic });
-    }
-
-=======
     const userStats = await UserStatistics.findOne({ username: username, topic: topic });
 
->>>>>>> master
     res.json({ message: `Fetched statistics for user ${username} in topic ${topic}`, stats: userStats });
   } catch (error) {
     res.status(500).json({ error: error.message });
