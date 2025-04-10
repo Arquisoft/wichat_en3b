@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, Icon, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
-import { AutoAwesome, BarChart, ChevronRight, FilterAlt, People, SportsEsports, TrackChanges } from "@mui/icons-material";
+import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
+import { AutoAwesome, BarChart, ChevronRight, FilterAlt, LocationCity, MusicNote, OutlinedFlag, People, SportsBasketball, SportsEsports, TrackChanges } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
-import { common } from "@mui/material/colors";
 
 const Home = () => {
     const axios = useAxios();
@@ -72,6 +71,18 @@ const Home = () => {
             case "points":
                 return user.totalScore + " pts";
         }
+    }
+
+    const getIconForTopics = (topics) => {
+        const icons = {
+            "all": <AutoAwesome sx={{ p: 0.5, color: "secondary.main", bgcolor: "rgba(169, 64, 255, 0.2)", borderRadius: "100%" }} />,
+            "flag": <OutlinedFlag sx={{ p: 0.5, color: "greenyellow", bgcolor: "rgba(173, 255, 47, 0.2)", borderRadius: "100%" }} />,
+            "city": <LocationCity sx={{ p: 0.5, color: "green", bgcolor: "rgba(0, 128, 0, 0.2)", borderRadius: "100%" }} />,
+            "athlete": <SportsBasketball sx={{ p: 0.5, color: "orange", bgcolor: "rgba(255, 165, 0, 0.2)", borderRadius: "100%" }} />,
+            "singer": <MusicNote sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+        }
+
+        return topics.length > 1 ? icons["all"] : icons[topics[0]];
     }
 
     return (
@@ -147,7 +158,7 @@ const Home = () => {
 
                     {/* Recent games */}
                     <CardHeader title="Recent Games" subheader={`Your last ${games.length} games`} sx={{ p: 0, my: 2 }} />
-                    <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "rgba(255, 255, 255, 0.8)", borderRadius: 2, maxHeight: "40vh", overflowY: "auto" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "rgba(255, 255, 255, 0.8)", borderRadius: 2, maxHeight: "25vh", overflowY: "auto" }}>
                         {games.length > 0 ? games.map((game, index) => (
                             <>
                                 <Box key={index} sx={{
@@ -160,7 +171,7 @@ const Home = () => {
                                     alignItems: "center",
                                 }}>
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                        <AutoAwesome sx={{ p: 0.5, color: "secondary.main", bgcolor: "rgba(169, 64, 255, 0.5)", borderRadius: "100%" }} />
+                                        {getIconForTopics(game.gameTopic)}
                                         <Box>
                                             <Typography variant="body1" fontWeight="bold">
                                                 GAMEMODE - Topics: {game.gameTopic.join(", ")}
