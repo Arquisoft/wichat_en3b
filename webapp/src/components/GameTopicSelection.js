@@ -4,24 +4,7 @@ import { useState } from "react"
 import { Container, Typography, Radio, RadioGroup, FormControlLabel, FormControl, Button, Paper, Box, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { useNavigate } from "react-router"
-import { 
-  LocationCity, 
-  Flag, 
-  SportsBasketball, 
-  MusicNote,
-  Public,
-  Sports,
-  Map,
-  Event,
-  PushPin,
-  Piano,
-  Female,
-  SportsSoccer,
-  Language,
-  SportsMotorsports,
-  People,
-  Landscape
-} from "@mui/icons-material"
+import { LocationCity, Flag, SportsBasketball, MusicNote, Public, Sports, Map, Event, PushPin, Piano, Female, SportsSoccer, Language, SportsMotorsports, People, Landscape} from "@mui/icons-material"
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(4),
