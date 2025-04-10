@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
-import { BarChart, ChevronRight, FilterAlt, People } from "@mui/icons-material";
+import { AutoAwesome, BarChart, ChevronRight, FilterAlt, People, SportsEsports, TrackChanges } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
+import { common } from "@mui/material/colors";
 
 const Home = () => {
     const axios = useAxios();
@@ -108,14 +109,17 @@ const Home = () => {
                     <CardHeader title="Your Statistics" sx={{ p: 0, mb: 2 }} />
                     {userStats?.username ? (
                         <Grid2 container spacing={2}>
-                            <Grid2>
-                                <Typography variant="body1">Total score: {getStatLabel(userStats, "points")}</Typography>
+                            <Grid2 size={4} sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
+                                <SportsEsports fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <Typography variant="h6">Total score: {getStatLabel(userStats, "points")}</Typography>
                             </Grid2>
-                            <Grid2>
-                                <Typography variant="body1">Accuracy rate: {getStatLabel(userStats, "accuracy")}</Typography>
+                            <Grid2 size={4} sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
+                                <TrackChanges fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <Typography variant="h6">Accuracy rate: {getStatLabel(userStats, "accuracy")}</Typography>
                             </Grid2>
-                            <Grid2>
-                                <Typography variant="body1">Games played: {getStatLabel(userStats, "gamesPlayed")}</Typography>
+                            <Grid2 size={4} sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
+                                <AutoAwesome fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <Typography variant="h6">Games played: {getStatLabel(userStats, "gamesPlayed")}</Typography>
                             </Grid2>
                         </Grid2>
                     ) : (
