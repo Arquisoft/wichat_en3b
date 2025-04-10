@@ -125,6 +125,32 @@ const GameTopicSelection = () => {
     "asturianCouncil"
   ];
 
+  const TOPIC_DATA = [
+    { key: "city", label: "CITIES", icon: <LocationCity /> },
+    { key: "flag", label: "FLAGS", icon: <Flag /> },
+    { key: "athlete", label: "ATHLETES", icon: <SportsBasketball /> },
+    { key: "singer", label: "SINGERS", icon: <MusicNote /> },
+    { key: "country", label: "COUNTRIES", icon: <Public /> },
+    { key: "sport", label: "SPORTS", icon: <Sports /> },
+    { key: "spanishProvince", label: "SPANISH PROVINCES", icon: <Map /> },
+    { key: "spanishCommunityFlag", label: "SPANISH COMMUNITIES FLAGS", icon: <Flag /> },
+    { key: "historicalEvent", label: "HISTORICAL EVENTS", icon: <Event /> },
+    { key: "famousPlace", label: "FAMOUS PLACES", icon: <PushPin /> },
+    { key: "spanishCity", label: "SPANISH CITIES", icon: <LocationCity /> },
+    { key: "musicalInstrument", label: "MUSICAL INSTRUMENTS", icon: <Piano /> },
+    { key: "historicalWoman", label: "HISTORICAL WOMEN", icon: <Female /> },
+    { key: "sportingGijonPlayer", label: "SPORTING GIJON PLAYERS", icon: <SportsSoccer /> },
+    { key: "oviedoPlayer", label: "OVIEDO PLAYERS", icon: <SportsSoccer /> },
+    { key: "realMadridPlayer", label: "REAL MADRID PLAYERS", icon: <SportsSoccer /> },
+    { key: "barcelonaPlayer", label: "BARCELONA PLAYERS", icon: <SportsSoccer /> },
+    { key: "atleticoMadridPlayer", label: "ATLETICO MADRID PLAYERS", icon: <SportsSoccer /> },
+    { key: "language", label: "LANGUAGES", icon: <Language /> },
+    { key: "f1Driver", label: "F1 DRIVERS", icon: <SportsMotorsports /> },
+    { key: "racingCircuit", label: "RACING CIRCUITS", icon: <SportsMotorsports /> },
+    { key: "asturianFamous", label: "ASTURIAN FAMOUS", icon: <People /> },
+    { key: "asturianCouncil", label: "ASTURIAN COUNCILS", icon: <Landscape /> },
+  ]  
+
   const [selectedTopics, setSelectedTopics] = useState([])
   const [isWild, setIsWild] = useState(false)
 
@@ -203,282 +229,20 @@ const GameTopicSelection = () => {
                 }}
               >
                 <Grid container spacing={2} justifyContent="center">
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<LocationCity />}
-                      onClick={() => handleTopicChange("city")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("city")}
-                    >
-                      CITIES
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Flag />}
-                      onClick={() => handleTopicChange("flag")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("flag")}
-                    >
-                      FLAGS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<SportsBasketball />}
-                      onClick={() => handleTopicChange("athlete")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("athlete")}
-                    >
-                      ATHLETES
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<MusicNote />}
-                      onClick={() => handleTopicChange("singer")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("singer")}
-                    >
-                      SINGERS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Public />}
-                      onClick={() => handleTopicChange("country")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("country")}
-                    >
-                      COUNTRIES
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Sports />}
-                      onClick={() => handleTopicChange("sport")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("sport")}
-                    >
-                      SPORTS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Map />}
-                      onClick={() => handleTopicChange("spanishProvince")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("spanishProvince")}
-                    >
-                      SPANISH PROVINCES
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Flag />}
-                      onClick={() => handleTopicChange("spanishCommunityFlag")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("spanishCommunityFlag")}
-                    >
-                      SPANISH COMMUNITIES FLAGS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Event />}
-                      onClick={() => handleTopicChange("historicalEvent")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("historicalEvent")}
-                    >
-                      HISTORICAL EVENTS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<PushPin />}
-                      onClick={() => handleTopicChange("famousPlace")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("famousPlace")}
-                    >
-                      FAMOUS PLACES
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<LocationCity />}
-                      onClick={() => handleTopicChange("spanishCity")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("spanishCity")}
-                    >
-                      SPANISH CITIES
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Piano />}
-                      onClick={() => handleTopicChange("musicalInstrument")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("musicalInstrument")}
-                    >
-                      MUSICAL INSTRUMENTS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Female />}
-                      onClick={() => handleTopicChange("historicalWoman")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("historicalWoman")}
-                    >
-                      HISTORICAL WOMEN
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<SportsSoccer />}
-                      onClick={() => handleTopicChange("sportingGijonPlayer")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("sportingGijonPlayer")}
-                    >
-                      SPORTING GIJON PLAYERS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<SportsSoccer />}
-                      onClick={() => handleTopicChange("oviedoPlayer")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("oviedoPlayer")}
-                    >
-                      OVIEDO PLAYERS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<SportsSoccer />}
-                      onClick={() => handleTopicChange("realMadridPlayer")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("realMadridPlayer")}
-                    >
-                      REAL MADRID PLAYERS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<SportsSoccer />}
-                      onClick={() => handleTopicChange("barcelonaPlayer")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("barcelonaPlayer")}
-                    >
-                      BARCELONA PLAYERS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<SportsSoccer />}
-                      onClick={() => handleTopicChange("atleticoMadridPlayer")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("atleticoMadridPlayer")}
-                    >
-                      ATLETICO MADRID PLAYERS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Language />}
-                      onClick={() => handleTopicChange("language")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("language")}
-                    >
-                      LANGUAGES
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<SportsMotorsports />}
-                      onClick={() => handleTopicChange("f1Driver")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("f1Driver")}
-                    >
-                      F1 DRIVERS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<SportsMotorsports />}
-                      onClick={() => handleTopicChange("racingCircuit")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("racingCircuit")}
-                    >
-                      RACING CIRCUITS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<People />}
-                      onClick={() => handleTopicChange("asturianFamous")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("asturianFamous")}
-                    >
-                      ASTURIAN FAMOUS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Landscape />}
-                      onClick={() => handleTopicChange("asturianCouncil")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("asturianCouncil")}
-                    >
-                      ASTURIAN COUNCILS
-                    </TopicButton>
-                  </Grid>
+                  {TOPIC_DATA.map(({ key, label, icon }) => (
+                    <Grid item xs={12} sm={3} key={key}>
+                      <TopicButton
+                        fullWidth
+                        variant="outlined"
+                        startIcon={icon}
+                        onClick={() => handleTopicChange(key)}
+                        disabled={isWild}
+                        isSelected={selectedTopics.includes(key)}
+                      >
+                        {label}
+                      </TopicButton>
+                    </Grid>
+                  ))}
                 </Grid>
               </Box>
             </Box>
