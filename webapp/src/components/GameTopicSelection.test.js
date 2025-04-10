@@ -43,8 +43,8 @@ describe("GameTopicSelection Component", () => {
         <GameTopicSelection />
       </MemoryRouter>
     );
-    const cityButton = screen.getByText(/cities/i);
-    fireEvent.click(cityButton);
+    const button = screen.getByText(/f1 drivers/i);
+    fireEvent.click(button);
     expect(screen.getByText(/next/i)).toBeEnabled();
   });
 
@@ -54,9 +54,9 @@ describe("GameTopicSelection Component", () => {
         <GameTopicSelection />
       </MemoryRouter>
     );
-    const cityButton = screen.getByText(/cities/i);
-    fireEvent.click(cityButton);
-    fireEvent.click(cityButton);
+    const button = screen.getByText(/f1 drivers/i);
+    fireEvent.click(button);
+    fireEvent.click(button);
     expect(screen.getByText(/next/i)).toBeDisabled();
   });
 
@@ -77,9 +77,9 @@ describe("GameTopicSelection Component", () => {
         <GameTopicSelection />
       </MemoryRouter>
     );
-    const cityButton = screen.getByText(/cities/i);
-    fireEvent.click(cityButton);
-    expect(cityButton).toHaveStyle("background: linear-gradient(to right, #2196f3, #9c27b0)");
+    const button = screen.getByText(/f1 drivers/i);
+    fireEvent.click(button);
+    expect(button).toHaveStyle("background: linear-gradient(to right, #2196f3, #9c27b0)");
   });
 
   test("Topic buttons are disabled when 'Wild' mode is selected", () => {
@@ -91,8 +91,8 @@ describe("GameTopicSelection Component", () => {
     const wildOption = screen.getByText(/wild - everything all at once!/i);
     fireEvent.click(wildOption);
 
-    const cityButton = screen.getByText(/cities/i);
-    expect(cityButton).toBeDisabled();
+    const button = screen.getByText(/f1 drivers/i);
+    expect(button).toBeDisabled();
   });
 
   test("handleCustomSelection resets wild mode and clears selected topics", () => {

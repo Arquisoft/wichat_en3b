@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Container, Typography, Radio, RadioGroup, FormControlLabel, FormControl, Button, Paper, Box, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { useNavigate } from "react-router"
-import { LocationCity, Flag, SportsBasketball, MusicNote } from "@mui/icons-material"
+import { LocationCity, Flag, SportsBasketball, MusicNote, Public, Sports, Map, Event, PushPin, Piano, Female, SportsSoccer, Language, SportsMotorsports, People, Landscape} from "@mui/icons-material"
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -97,6 +97,43 @@ const TopicButton = styled(Button, {
 const GameTopicSelection = () => {
   const navigate = useNavigate();
 
+  // Define all available topics in a constant
+  const ALL_TOPICS = [
+    "city", "flag", "athlete", "singer", "country", "sport", 
+    "spanishProvince", "spanishCommunityFlag", "historicalEvent", 
+    "famousPlace", "spanishCity", "musicalInstrument", 
+    "historicalWoman", "sportingGijonPlayer", "oviedoPlayer", 
+    "realMadridPlayer", "barcelonaPlayer", "atleticoMadridPlayer", 
+    "language", "f1Driver", "racingCircuit", "asturianFamous", 
+    "asturianCouncil"
+  ];
+
+  const TOPIC_DATA = [
+    { key: "city", label: "CITIES", icon: <LocationCity /> },
+    { key: "flag", label: "FLAGS", icon: <Flag /> },
+    { key: "athlete", label: "ATHLETES", icon: <SportsBasketball /> },
+    { key: "singer", label: "SINGERS", icon: <MusicNote /> },
+    { key: "country", label: "COUNTRIES", icon: <Public /> },
+    { key: "sport", label: "SPORTS", icon: <Sports /> },
+    { key: "spanishProvince", label: "SPANISH PROVINCES", icon: <Map /> },
+    { key: "spanishCommunityFlag", label: "SPANISH COMMUNITIES FLAGS", icon: <Flag /> },
+    { key: "historicalEvent", label: "HISTORICAL EVENTS", icon: <Event /> },
+    { key: "famousPlace", label: "FAMOUS PLACES", icon: <PushPin /> },
+    { key: "spanishCity", label: "SPANISH CITIES", icon: <LocationCity /> },
+    { key: "musicalInstrument", label: "MUSICAL INSTRUMENTS", icon: <Piano /> },
+    { key: "historicalWoman", label: "HISTORICAL WOMEN", icon: <Female /> },
+    { key: "sportingGijonPlayer", label: "SPORTING GIJON PLAYERS", icon: <SportsSoccer /> },
+    { key: "oviedoPlayer", label: "OVIEDO PLAYERS", icon: <SportsSoccer /> },
+    { key: "realMadridPlayer", label: "REAL MADRID PLAYERS", icon: <SportsSoccer /> },
+    { key: "barcelonaPlayer", label: "BARCELONA PLAYERS", icon: <SportsSoccer /> },
+    { key: "atleticoMadridPlayer", label: "ATLETICO MADRID PLAYERS", icon: <SportsSoccer /> },
+    { key: "language", label: "LANGUAGES", icon: <Language /> },
+    { key: "f1Driver", label: "F1 DRIVERS", icon: <SportsMotorsports /> },
+    { key: "racingCircuit", label: "RACING CIRCUITS", icon: <SportsMotorsports /> },
+    { key: "asturianFamous", label: "ASTURIAN FAMOUS", icon: <People /> },
+    { key: "asturianCouncil", label: "ASTURIAN COUNCILS", icon: <Landscape /> },
+  ]  
+
   const [selectedTopics, setSelectedTopics] = useState([])
   const [isWild, setIsWild] = useState(false)
 
@@ -114,7 +151,8 @@ const GameTopicSelection = () => {
 
   const handleWildSelection = () => {
     setIsWild(true)
-    setSelectedTopics(["city", "flag", "athlete", "singer"])
+    // Select all available topics instead of just the initial four
+    setSelectedTopics([...ALL_TOPICS])
   }
 
   const handleCustomSelection = () => {
@@ -174,54 +212,20 @@ const GameTopicSelection = () => {
                 }}
               >
                 <Grid container spacing={2} justifyContent="center">
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<LocationCity />}
-                      onClick={() => handleTopicChange("city")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("city")}
-                    >
-                      CITIES
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<Flag />}
-                      onClick={() => handleTopicChange("flag")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("flag")}
-                    >
-                      FLAGS
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<SportsBasketball />}
-                      onClick={() => handleTopicChange("athlete")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("athlete")}
-                    >
-                      ATHLETES
-                    </TopicButton>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TopicButton
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<MusicNote />}
-                      onClick={() => handleTopicChange("singer")}
-                      disabled={isWild}
-                      isSelected={selectedTopics.includes("singer")}
-                    >
-                      SINGERS
-                    </TopicButton>
-                  </Grid>
+                  {TOPIC_DATA.map(({ key, label, icon }) => (
+                    <Grid item xs={12} sm={3} key={key}>
+                      <TopicButton
+                        fullWidth
+                        variant="outlined"
+                        startIcon={icon}
+                        onClick={() => handleTopicChange(key)}
+                        disabled={isWild}
+                        isSelected={selectedTopics.includes(key)}
+                      >
+                        {label}
+                      </TopicButton>
+                    </Grid>
+                  ))}
                 </Grid>
               </Box>
             </Box>
@@ -241,6 +245,13 @@ const GameTopicSelection = () => {
       {!isWild && selectedTopics.length > 0 && (
         <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", textAlign: "center" }}>
           {selectedTopics.length} topic{selectedTopics.length > 1 ? "s" : ""} selected
+        </Typography>
+      )}
+
+      {/* Show all topics selected when in wild mode */}
+      {isWild && (
+        <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", textAlign: "center" }}>
+          All {ALL_TOPICS.length} topics selected
         </Typography>
       )}
 
