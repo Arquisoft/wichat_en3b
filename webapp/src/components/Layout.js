@@ -2,7 +2,9 @@ import { alpha, AppBar, Box, Button, Container, MenuItem, Select } from "@mui/ma
 import HomeIcon from '@mui/icons-material/Home';
 import { Outlet, NavLink } from 'react-router';
 import useAuth from "../hooks/useAuth";
-import axios from "../api/axios";
+import axios from "../utils/axios";
+import { useTranslation } from "react-i18next";
+import LanguageSelect from "./LanguageSelect";
 import useTheme from "../hooks/useTheme";
 
 const StyledNavlink = ({ theme, to, label, icon }) => {
@@ -33,6 +35,8 @@ const Layout = () => {
         }
     }
 
+    const  { t } = useTranslation();
+
     return (
         <Container component="main" disableGutters sx={{
             minWidth: "100vw",
@@ -46,9 +50,10 @@ const Layout = () => {
                 padding: "0.5rem",
                 background: theme.palette.gradient.main.right,
             }}>
-                <StyledNavlink to="/home" label="Home" icon={<HomeIcon />} theme={theme} />
+                <StyledNavlink to="/home" label={t("home")} icon={<HomeIcon />} theme={theme} />
+                <LanguageSelect />
                 <Box sx={{ ml: "auto" }}>
-                    <>
+                <>
                         <Select
                             onChange={(e) => selectTheme(e.target.value)}
                             sx={{ color: "primary.contrastText", "& .MuiSelect-icon": { color: "primary.contrastText" } }}
@@ -61,17 +66,29 @@ const Layout = () => {
                                 </MenuItem>
                             ))}
                         </Select>
-                        {auth.username
-                            ? <Button onClick={handleLogout} sx={{
+                {auth.username ? (
+                <Button
+                    onClick={handleLogout}
+                    sx={{
+                   
                                 color: "primary.contrastText",
-                                gap: "0.5rem",
+                               
+                    gap: "0.5rem",
+                   
                                 "&:hover": { backgroundColor: alpha(theme.palette.primary.contrastText, 0.1) }
-                            }}>
-                                Log Out
-                            </Button>
-                            : <StyledNavlink to="/login" label="Login" theme={theme} />}
-                    </>
-                </Box>
+                           ,
+                    }}
+                >
+                    {t("logout")}
+                </Button>
+                ) : (
+                <>
+                    <StyledNavlink to="/login" label={t("login")} theme={theme} />
+                    <StyledNavlink to="/signup" label={t("signUp")} /> 
+                </>
+                )}
+            </>
+            </Box>
             </AppBar>
 
             <Outlet />
