@@ -4,7 +4,24 @@ import { useState } from "react"
 import { Container, Typography, Radio, RadioGroup, FormControlLabel, FormControl, Button, Paper, Box, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { useNavigate } from "react-router"
-import { LocationCity, Flag, SportsBasketball, MusicNote } from "@mui/icons-material"
+import { 
+  LocationCity, 
+  Flag, 
+  SportsBasketball, 
+  MusicNote,
+  Public,
+  Sports,
+  Map,
+  Event,
+  PushPin,
+  Piano,
+  Female,
+  SportsSoccer,
+  Language,
+  SportsMotorsports,
+  People,
+  Landscape
+} from "@mui/icons-material"
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -238,7 +255,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<Public />}
                       onClick={() => handleTopicChange("country")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("country")}
@@ -250,7 +267,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<Sports />}
                       onClick={() => handleTopicChange("sport")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("sport")}
@@ -262,7 +279,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<Map />}
                       onClick={() => handleTopicChange("spanishProvince")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("spanishProvince")}
@@ -274,7 +291,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<Flag />}
                       onClick={() => handleTopicChange("spanishCommunityFlag")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("spanishCommunityFlag")}
@@ -286,7 +303,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<Event />}
                       onClick={() => handleTopicChange("historicalEvent")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("historicalEvent")}
@@ -298,7 +315,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<PushPin />}
                       onClick={() => handleTopicChange("famousPlace")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("famousPlace")}
@@ -310,7 +327,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<LocationCity />}
                       onClick={() => handleTopicChange("spanishCity")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("spanishCity")}
@@ -322,7 +339,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<Piano />}
                       onClick={() => handleTopicChange("musicalInstrument")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("musicalInstrument")}
@@ -334,7 +351,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<Female />}
                       onClick={() => handleTopicChange("historicalWoman")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("historicalWoman")}
@@ -346,7 +363,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<SportsSoccer />}
                       onClick={() => handleTopicChange("sportingGijonPlayer")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("sportingGijonPlayer")}
@@ -358,7 +375,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<SportsSoccer />}
                       onClick={() => handleTopicChange("oviedoPlayer")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("oviedoPlayer")}
@@ -370,7 +387,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<SportsSoccer />}
                       onClick={() => handleTopicChange("realMadridPlayer")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("realMadridPlayer")}
@@ -382,7 +399,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<SportsSoccer />}
                       onClick={() => handleTopicChange("barcelonaPlayer")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("barcelonaPlayer")}
@@ -394,7 +411,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<SportsSoccer />}
                       onClick={() => handleTopicChange("atleticoMadridPlayer")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("atleticoMadridPlayer")}
@@ -406,7 +423,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<Language />}
                       onClick={() => handleTopicChange("language")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("language")}
@@ -418,7 +435,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<SportsMotorsports />}
                       onClick={() => handleTopicChange("f1Driver")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("f1Driver")}
@@ -430,7 +447,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<SportsMotorsports />}
                       onClick={() => handleTopicChange("racingCircuit")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("racingCircuit")}
@@ -442,7 +459,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<People />}
                       onClick={() => handleTopicChange("asturianFamous")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("asturianFamous")}
@@ -454,7 +471,7 @@ const GameTopicSelection = () => {
                     <TopicButton
                       fullWidth
                       variant="outlined"
-                      startIcon={<MusicNote />}
+                      startIcon={<Landscape />}
                       onClick={() => handleTopicChange("asturianCouncil")}
                       disabled={isWild}
                       isSelected={selectedTopics.includes("asturianCouncil")}
