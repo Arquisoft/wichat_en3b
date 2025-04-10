@@ -122,6 +122,7 @@ app.post('/addgame', async (req, res) => {
 //Function only called when a new game is added
 async function calculateUserStatistics(newGame, questions) {
   try {
+
     for (const topic of [...newGame.gameTopic, "all"]) {
       let score;
       let correctRate;
@@ -141,6 +142,7 @@ async function calculateUserStatistics(newGame, questions) {
         correctRate = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / topicQuestions.length;
         questionsAnswered = topicQuestions.length;
       }
+
 
       // Find existing user statistics for the current topic
       const userStats = await UserStatistics.findOne({ username: newGame.username, topic: topic });
@@ -196,6 +198,7 @@ app.get('/userstats/user/:username', async (req, res) => {
   }
 });
 
+
 // Find user statistics for a specific topic
 app.get('/userstats/topic/:topic', async (req, res) => {
   try {
@@ -208,6 +211,8 @@ app.get('/userstats/topic/:topic', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
 
 // Find user statistics for a specific user and topic
 app.get('/userstats/:username/:topic', async (req, res) => {

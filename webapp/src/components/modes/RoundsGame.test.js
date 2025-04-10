@@ -3,8 +3,8 @@ import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import Game from "./Game";
-import useAxios from "../hooks/useAxios";
+import RoundsGame from "./RoundsGame";
+import useAxios from "../../hooks/useAxios";
 
 // Global mock for Material UI icons
 jest.mock("@mui/icons-material", () => {
@@ -17,7 +17,7 @@ jest.mock("@mui/icons-material", () => {
   };
 });
 
-jest.mock("../hooks/useAxios", () => jest.fn());
+jest.mock("../../hooks/useAxios", () => jest.fn());
 const mockAxios = new MockAdapter(axios);
 
 describe("Game component", () => {
@@ -46,7 +46,7 @@ describe("Game component", () => {
   
     render(
       <MemoryRouter>
-        <Game />
+        <RoundsGame />
       </MemoryRouter>
     );
       await waitFor(() => {
@@ -78,7 +78,7 @@ describe("Game component", () => {
   
     render(
       <MemoryRouter>
-        <Game />
+        <RoundsGame />
       </MemoryRouter>
     );
   
@@ -109,7 +109,7 @@ describe("Game component", () => {
   
     render(
       <MemoryRouter>
-        <Game />
+        <RoundsGame />
       </MemoryRouter>
     );
   

@@ -53,7 +53,6 @@ const Home = () => {
             });
     }, [stat, gametopic]);
 
-
     const getStatLabel = (user, stat) => {
         switch (stat) {
             case "accuracy":
