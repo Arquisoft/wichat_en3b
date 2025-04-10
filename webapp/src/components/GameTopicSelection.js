@@ -222,6 +222,234 @@ const GameTopicSelection = () => {
                       SINGERS
                     </TopicButton>
                   </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("country")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("country")}
+                    >
+                      COUNTRIES
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("sport")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("sport")}
+                    >
+                      SPORTS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("spanishProvince")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("spanishProvince")}
+                    >
+                      SPANISH PROVINCES
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("spanishCommunityFlag")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("spanishCommunityFlag")}
+                    >
+                      SPANISH COMMUNITIES FLAGS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("historicalEvent")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("historicalEvent")}
+                    >
+                      HISTORICAL EVENTS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("famousPlace")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("famousPlace")}
+                    >
+                      FAMOUS PLACES
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("spanishCity")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("spanishCity")}
+                    >
+                      SPANISH CITIES
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("musicalInstrument")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("musicalInstrument")}
+                    >
+                      MUSICAL INSTRUMENTS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("historicalWoman")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("historicalWoman")}
+                    >
+                      HISTORICAL WOMEN
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("sportingGijonPlayer")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("sportingGijonPlayer")}
+                    >
+                      SPORTING GIJON PLAYERS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("oviedoPlayer")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("oviedoPlayer")}
+                    >
+                      OVIEDO PLAYERS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("realMadridPlayer")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("realMadridPlayer")}
+                    >
+                      REAL MADRID PLAYERS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("barcelonaPlayer")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("barcelonaPlayer")}
+                    >
+                      BARCELONA PLAYERS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("atleticoMadridPlayer")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("atleticoMadridPlayer")}
+                    >
+                      ATLETICO MADRID PLAYERS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("language")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("language")}
+                    >
+                      LANGUAGES
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("f1Driver")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("f1Driver")}
+                    >
+                      F1 DRIVERS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("racingCircuit")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("racingCircuit")}
+                    >
+                      RACING CIRCUITS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("asturianFamous")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("asturianFamous")}
+                    >
+                      ASTURIAN FAMOUS
+                    </TopicButton>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TopicButton
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<MusicNote />}
+                      onClick={() => handleTopicChange("asturianCouncil")}
+                      disabled={isWild}
+                      isSelected={selectedTopics.includes("asturianCouncil")}
+                    >
+                      ASTURIAN COUNCILS
+                    </TopicButton>
+                  </Grid>
                 </Grid>
               </Box>
             </Box>
