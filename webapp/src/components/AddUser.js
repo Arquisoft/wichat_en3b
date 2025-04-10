@@ -43,16 +43,22 @@ const AddUser = () => {
         navigate('/login');
       }, 500);
     } catch (error) {
-      const errorMsg = error.response?.data?.error || error.message || 'Unknown error';
-      setError(errorMsg);
+      
+      const errorMsg = error.response && error.response.data && error.response.data.error
+      ? error.response.data.error
+      : error.message || 'Unknown error';
 
-      if (errorMsg.includes('Username already taken')) {
-        setUsernameError(t("usernameTaken"));
-      } else if (errorMsg.toLowerCase().includes('username')) {
-        setUsernameError(errorMsg);
-      } else if (errorMsg.toLowerCase().includes('password')) {
-        setPasswordError(errorMsg);
-      }
+    setError(errorMsg);
+
+    if (errorMsg.includes('Username already taken')) {
+      setUsernameError('Username already taken');
+    } else if (errorMsg.toLowerCase().includes('username')) {
+      setUsernameError(errorMsg);
+    } else if (errorMsg.toLowerCase().includes('password')) {
+      setPasswordError(errorMsg);
+    }
+
+
     }
   };
 
@@ -77,7 +83,7 @@ const AddUser = () => {
               setUsername(e.target.value);
               setUsernameError('');
             }}
-            error={usernameError}
+            error={!!usernameError}
             helperText={usernameError}
           />
           <CustomTextField
@@ -88,7 +94,7 @@ const AddUser = () => {
               setPassword(e.target.value);
               setPasswordError('');
             }}
-            error={passwordError}
+            error={!!passwordError}
             helperText={passwordError}
             type="password"
           />
