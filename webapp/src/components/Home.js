@@ -51,7 +51,7 @@ const Home = () => {
             }).catch((err) => {
                 console.error("Error fetching user stats:", err);
             });
-    }, [stat, gamemode]);
+    }, [stat, gametopic]);
 
     const getStatLabel = (user, stat) => {
         switch (stat) {
