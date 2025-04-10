@@ -1,4 +1,4 @@
-import axios from "../api/axios";
+import axios from "../utils/axios";
 import useAuth from "./useAuth";
 
 /**

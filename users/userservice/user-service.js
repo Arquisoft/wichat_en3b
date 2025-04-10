@@ -15,9 +15,10 @@ app.use(express.json());
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
 mongoose.connect(mongoUri);
 
+const checkInput = (input) => {
+  return  String(input).replace(/[^a-zA-Z0-9_]/g, '');
+};
 
-
-// Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
   for (const field of requiredFields) {
     if (!(field in req.body)) {
@@ -26,10 +27,41 @@ function validateRequiredFields(req, requiredFields) {
   }
 }
 
+// Function to validate required fields in the request body
+function validateUser(req) {
+  validateRequiredFields(req, ['username', 'password']);
+
+  const passwordRegExp = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  const usernameRegExp = /^\w+$/;
+
+  if (!usernameRegExp.test(req.body.username)) {
+    throw new Error(`The username is not valid.`);
+  }
+
+  if (!passwordRegExp.test(req.body.password)) {
+    throw new Error(`Password must have at least one capital letter, one digit and one special character.`);
+  }
+
+  if(!req.body.password || req.body.password.length < 8)
+    throw new Error(`The length of the password must be of 8 characters or more. `); 
+  
+  if (req.body.username.length < 3) {
+    throw new Error(`The length of the username is not valid.`);
+  }
+}
+
 app.post('/adduser', async (req, res) => {
   try {
     // Check if required fields are present in the request body
-    validateRequiredFields(req, ['username', 'password']);
+    validateUser(req);
+
+    // Sanitize username to prevent MongoDB injection attacks
+    const checkedUsername  = checkInput(req.body.username);
+
+    const existingUsers = await User.find({ username: checkedUsername }).lean();
+    if (existingUsers.length > 0) {
+        return res.status(400).json({ error: 'Username already taken' });
+    }
 
     // Encrypt the password before saving it
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -42,7 +74,11 @@ app.post('/adduser', async (req, res) => {
     await newUser.save();
     res.json(newUser);
   } catch (error) {
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.username) {
+      res.status(400).json({ error: "Username already taken" });
+    } 
     res.status(400).json({ error: error.message });
+
   }
 });
 
@@ -63,6 +99,7 @@ app.post('/addgame', async (req, res) => {
       }
     }
 
+    // Calculate game statistics
     const questions = req.body.questions;
     const score = questions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
     const correctRate = questions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / questions.length;
@@ -85,6 +122,7 @@ app.post('/addgame', async (req, res) => {
 //Function only called when a new game is added
 async function calculateUserStatistics(newGame, questions) {
   try {
+<<<<<<< HEAD
     for (const topic of newGame.gameTopic) {
       // Filter questions for the current topic
       const topicQuestions = questions.filter(question => question.topic === topic);
@@ -95,6 +133,28 @@ async function calculateUserStatistics(newGame, questions) {
       const correctRate = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / topicQuestions.length;
       const questionsAnswered = topicQuestions.length;
 
+=======
+    for (const topic of [...newGame.gameTopic, "all"]) {
+      let score;
+      let correctRate;
+      let questionsAnswered;
+      // Calculate statistics for the current topic
+      if (topic === "all") {
+        // Get global statistics from the game
+        score = newGame.score;
+        correctRate = newGame.correctRate;
+        questionsAnswered = questions.length;
+      } else {
+        // Filter questions for the current topic
+        const topicQuestions = questions.filter(question => question.topic === topic);
+        
+        // Calculate partial statistics for the current topic
+        score = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
+        correctRate = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / topicQuestions.length;
+        questionsAnswered = topicQuestions.length;
+      }
+
+>>>>>>> master
       // Find existing user statistics for the current topic
       const userStats = await UserStatistics.findOne({ username: newGame.username, topic: topic });
 
@@ -136,6 +196,7 @@ function calculateNewAvg(newRate, totalGamesPlayed, oldAvg) {
   return (totalGamesPlayed * oldAvg + newRate) / (totalGamesPlayed + 1);
 }
 
+// Find user statistics for a specific user
 app.get('/userstats/user/:username', async (req, res) => {
   try {
     const username = req.params.username;
@@ -148,10 +209,15 @@ app.get('/userstats/user/:username', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+// Find user statistics for a specific topic
+>>>>>>> master
 app.get('/userstats/topic/:topic', async (req, res) => {
   try {
     const topic = req.params.topic;
 
+<<<<<<< HEAD
     let userStats;
     if (topic === "all") {
       // Aggregate user statistics for all topics
@@ -171,6 +237,9 @@ app.get('/userstats/topic/:topic', async (req, res) => {
       // Find user statistics for a specific topic
       userStats = await UserStatistics.find({ topic: topic });
     }
+=======
+    const userStats = await UserStatistics.find({ topic: topic });
+>>>>>>> master
 
     res.json({ message: `Fetched statistics for topic: ${topic}`, stats: userStats });
   } catch (error) {
@@ -178,11 +247,16 @@ app.get('/userstats/topic/:topic', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+// Find user statistics for a specific user and topic
+>>>>>>> master
 app.get('/userstats/:username/:topic', async (req, res) => {
   try {
     const username = req.params.username;
     const topic = req.params.topic;
 
+<<<<<<< HEAD
     let userStats;
     if (topic === "all") {
       // Fetch all user statistics for the given username
@@ -218,6 +292,10 @@ app.get('/userstats/:username/:topic', async (req, res) => {
       userStats = await UserStatistics.findOne({ username: username, topic: topic });
     }
 
+=======
+    const userStats = await UserStatistics.findOne({ username: username, topic: topic });
+
+>>>>>>> master
     res.json({ message: `Fetched statistics for user ${username} in topic ${topic}`, stats: userStats });
   } catch (error) {
     res.status(500).json({ error: error.message });

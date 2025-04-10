@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { axiosPrivate } from "../api/axios";
+import { axiosPrivate } from "../utils/axios";
 import useRefreshToken from "./useRefreshToken";
 import useAuth from "./useAuth";
 
@@ -41,7 +41,7 @@ const useAxios = () => {
             axiosPrivate.interceptors.request.eject(requestIntercept);
             axiosPrivate.interceptors.response.eject(responseIntercept);
         }
-    }, [auth, refresh]);
+    }, [auth, refresh, setAuth]);
 
     return axiosPrivate;
 }

@@ -2,6 +2,7 @@ const axios = require("axios");
 const mongoose = require("mongoose");
 const express = require("express");
 const WikidataObject = require("./wikidata-model");
+const crypto = require('crypto');
 const app = express();
 
 app.use(express.json());
@@ -15,9 +16,12 @@ const mongoDB = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongo-db-w
 // SPARQL endpoint for WikiData
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
 
+<<<<<<< HEAD
 // Global variable to store the selected game topics
 let selectedTopics = [];
 
+=======
+>>>>>>> master
 // Define the SPARQL queries to fetch data from Wikidata
 const QUERIES = {
     city: `SELECT ?city ?cityLabel ?image WHERE {
@@ -137,9 +141,10 @@ async function fetchAndStoreData() {
     }
 }
 
-// Endpoint to fetch data from Wikidata and store it in the database
-app.post("/load", async (req, res) => {
+// Function to get random items from MongoDB
+async function getRandomItems(topics) {
     try {
+<<<<<<< HEAD
         const { topics } = req.body;
         if (!topics || !Array.isArray(topics)) {
             return res.status(400).json({ error: "Invalid topics parameter" });
@@ -158,12 +163,19 @@ app.post("/load", async (req, res) => {
 async function getRandomItems() {
     try {
         const randomTopic = selectedTopics[Math.floor(Math.random() * selectedTopics.length)]; // Choose a random topic from the selected ones
+=======
+        if (!topics || !Array.isArray(topics) || topics.length === 0) {
+            throw new Error("No valid topics provided.");
+        }
+
+        const randomTopic = topics[secureRandomInt(topics.length)]; // Choose a random topic from the selected ones
+>>>>>>> master
         const items = await WikidataObject.aggregate([
             { $match: { topic: randomTopic } }, // Filter by the chosen topic
             { $sample: { size: 4 } } // Retrieve 4 random items
         ]);
 
-        const randomItem = items[Math.floor(Math.random() * items.length)]; // Choose one random item
+        const randomItem = items[secureRandomInt(items.length)]; // Choose one random item
         return {
             topic: randomTopic,
             items: items.map(item => ({ name: item.name })), // Return only names
@@ -175,14 +187,35 @@ async function getRandomItems() {
     }
 }
 
+function secureRandomInt(max) {
+    if (max <= 0 || !Number.isInteger(max)) throw new Error("Invalid max value");
+
+    const byteSize = 256;
+    const randomByte = () => crypto.randomBytes(1)[0];
+    let rand;
+    do {
+        rand = randomByte();
+    } while (rand >= byteSize - (byteSize % max)); // Evita sesgo
+    return rand % max;
+}
+
 // Endpoint to get a game round with random items
 app.get("/getRound", async (req, res) => {
     try {
+<<<<<<< HEAD
         if (selectedTopics.length === 0) {
             return res.status(400).json({ error: "No topics available. Load data first." });
         }
 
         const data = await getRandomItems(); // Use stored topics instead of receiving them in the request
+=======
+        const { topics } = req.query; // Get the topics from the query parameters
+        if (!topics || !Array.isArray(topics) || topics.length === 0) {
+            return res.status(400).json({ error: "Missing or invalid topics" });
+        }
+
+        const data = await getRandomItems(topics);
+>>>>>>> master
         res.json(data);
     } catch (error) {
         console.error("Error in /getRound endpoint:", error);

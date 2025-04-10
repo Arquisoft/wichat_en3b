@@ -20,6 +20,9 @@ const Home = () => {
     const stats = ["points", "accuracy", "gamesPlayed"];
 
     useEffect(() => {
+        // Clear selected topics after finishing the game and navigating back to the home page
+        sessionStorage.removeItem("selectedTopics");
+
         axios.get(`/userstats/${auth.username}/all`)
             .then((res) => {
                 setUserStats(res.data.stats);
@@ -38,11 +41,17 @@ const Home = () => {
     useEffect(() => {
         axios.get(`/userstats/topic/${gametopic}`)
             .then((res) => {
-                setRanking(res.data.stats);
+                // sort the ranking based on the selected stat
+                const sortedRanking = res.data.stats.sort((a, b) => {
+                    if (stat === "points") return b.totalScore - a.totalScore;
+                    if (stat === "accuracy") return b.correctRate - a.correctRate;
+                    if (stat === "gamesPlayed") return b.totalGamesPlayed - a.totalGamesPlayed;
+                });
+                setRanking(sortedRanking);
             }).catch((err) => {
                 console.error("Error fetching user stats:", err);
             });
-    }, [gametopic]);
+    }, [stat, gamemode]);
 
     const getStatLabel = (user, stat) => {
         switch (stat) {

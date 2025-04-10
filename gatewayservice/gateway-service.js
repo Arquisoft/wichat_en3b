@@ -128,36 +128,23 @@ app.post('/askllm', async (req, res) => {
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
-
-// Add the /loadQuestion endpoint for filling the data base
-app.post('/loadQuestion', async (req, res) => {
-  try {
-    const { topics } = req.body;
-
-    if (!topics || !Array.isArray(topics)) {
-      return res.status(400).json({ error: "Invalid topics parameter" });
-    }
-
-    const questionResponse = await axios.post(questionServiceUrl + '/load', { topics });
-
-    res.json(questionResponse.data);
-  } catch (error) {
-    res.status(error.response?.status || 500).json({ error: 'Error fetching question data' });
-  }
-});
-
 app.get('/getRound', async (req, res) => {
   try {
-    const roundResponse = await axios.get(questionServiceUrl + '/getRound');
+    const { topics } = req.query;
+
+    const roundResponse = await axios.get(questionServiceUrl + '/getRound', {
+      params:{topics: topics}
+    });
+
     res.json(roundResponse.data);
   } catch (error) {
-    res.status(error.response.status).json({ error: error.response.data.error });
+    res.status(error.response?.status).json({ error: error.response.data.error });
   }
 });
 
 app.get('/getTopics', async (req, res) => {
   try {
-    const topicsResponse = await axios.get(questionServiceUrl + '/getTopics'); 
+    const topicsResponse = await axios.get(questionServiceUrl + '/getTopics');
     res.json(topicsResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
@@ -192,15 +179,6 @@ app.get('/userstats/topic/:topic', async (req, res) => {
 });
 
 app.get('/userstats/:username/:topic', async (req, res) => {
-  try {
-    const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username + '/' + req.params.topic);
-    res.json(statsResponse.data);
-  } catch (error) {
-    res.status(error.response.status).json({ error: error.response.data.error });
-  }
-});
-
-app.post('/setModes', async (req, res) => {
   try {
     const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username + '/' + req.params.topic);
     res.json(statsResponse.data);

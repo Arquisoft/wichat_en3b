@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Container, Typography, Radio, RadioGroup, FormControlLabel, FormControl, Button, Paper, Box, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { NavLink } from "react-router"
+import { useNavigate } from "react-router"
 import { LocationCity, Flag, SportsBasketball, MusicNote } from "@mui/icons-material"
 import useAxios from "../../hooks/useAxios"
 
@@ -96,7 +96,7 @@ const TopicButton = styled(Button, {
 }))
 
 const GameTopicSelection = () => {
-  const axios = useAxios();
+  const navigate = useNavigate();
 
   const [selectedTopics, setSelectedTopics] = useState([])
   const [isWild, setIsWild] = useState(false)
@@ -127,9 +127,15 @@ const GameTopicSelection = () => {
 
   const startGame = async () => {
     try {
-      await axios.post("/loadQuestion", { topics: selectedTopics });
+      // Saving the topics in session storage
+      if (!selectedTopics || !Array.isArray(selectedTopics) || selectedTopics.length === 0) {
+          throw new Error('Invalid topics parameter'); 
+      }
+
+      sessionStorage.setItem('selectedTopics', JSON.stringify(selectedTopics));
+      navigate("/gamemode");
     } catch (error) {
-      console.error("Error fetching game data:", error);
+      console.error("Error selecting topics:", error);
     }
   };
 
@@ -239,17 +245,15 @@ const GameTopicSelection = () => {
         </Typography>
       )}
 
-      <NavLink to="/gamemode" style={{ width: "100%", textDecoration: "none" }}>
-        <StyledButton
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={startGame}
-          disabled={isNextDisabled}
-          fullWidth>
-          NEXT
-        </StyledButton>
-      </NavLink>
+      <StyledButton
+        variant="contained"
+        color="primary"
+        size="large"
+        onClick={startGame}
+        disabled={isNextDisabled}
+        fullWidth>
+        NEXT
+      </StyledButton>
     </StyledContainer>
   )
 }

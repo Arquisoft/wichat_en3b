@@ -16,7 +16,7 @@ import CallFriend from "../lifelines/CallFriend"
 import PhoneDialog from "../phone/PhoneDialog";
 
 import useAuth from "../../hooks/useAuth"
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 
 // Custom styled components
 const GameContainer = styled(Container)(({ theme }) => ({
@@ -171,14 +171,27 @@ function Game() {
   const [showStatistics, setShowStatistics] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
+  const navigate = useNavigate();
   
   // Function to load the data for each round.
   const loadRound = async () => {
     try {
+      
       setLoading(true)
       setChatKey(chatKey + 1);
 
-      const response = await axios.get("/getRound")
+      const selectedTopics = JSON.parse(sessionStorage.getItem('selectedTopics'));
+      let response = ""; 
+
+      if (!selectedTopics || !Array.isArray(selectedTopics) || selectedTopics.length === 0) {
+        navigate("/home", {replace:true}); 
+      }
+      else {
+        response = await axios.get("/getRound", {
+          params: { topics: selectedTopics }
+        });
+      }
+      
       setHiddenOptions([])
       return response.data
     } catch (error) {
@@ -507,7 +520,7 @@ function Game() {
                       />
                     </ImageContainer>
                     <Container sx={{ textAlign: "center", mb: 2 }}>
-                      <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
+                      <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
                     </Container>
                     <Grid container spacing={2}>
                       {roundData.items.map((item, index) => (
