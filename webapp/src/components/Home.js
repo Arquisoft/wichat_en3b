@@ -17,6 +17,7 @@ const Home = () => {
     const [stat, setStat] = useState("points");
     const [ranking, setRanking] = useState([]);
     const [userStats, setUserStats] = useState(null);
+    const [games, setGames] = useState([]);
 
     const stats = ["points", "accuracy", "gamesPlayed"];
 
@@ -36,6 +37,14 @@ const Home = () => {
                 setGameTopics(["all", ...res.data.topics]);
             }).catch((err) => {
                 console.error("Error fetching gametopics:", err);
+            });
+
+        axios.get(`/games/${auth.username}`)
+            .then((res) => {
+                console.log("Games:", res.data.games);
+                setGames(res.data.games);
+            }).catch((err) => {
+                console.error("Error fetching games:", err);
             });
     }, []);
 
@@ -105,25 +114,54 @@ const Home = () => {
                 </Tabs>
 
                 {/* Statistics tab */}
-                <Box hidden={activeTab !== 0} my={4}>
-                    <CardHeader title="Your Statistics" sx={{ p: 0, mb: 2 }} />
+                <Box hidden={activeTab !== 0} mb={4}>
+                    {/* User statistics */}
+                    <CardHeader title="Your Statistics" sx={{ p: 0, my: 2 }} />
                     {userStats?.username ? (
                         <Grid2 container spacing={2}>
                             <Grid2 size={4} sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
-                                <SportsEsports fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <SportsEsports fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%", border: 2, borderColor: "primary.main" }} />
                                 <Typography variant="h6">Total score: {getStatLabel(userStats, "points")}</Typography>
                             </Grid2>
                             <Grid2 size={4} sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
-                                <TrackChanges fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <TrackChanges fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%", border: 2, borderColor: "primary.main" }} />
                                 <Typography variant="h6">Accuracy rate: {getStatLabel(userStats, "accuracy")}</Typography>
                             </Grid2>
                             <Grid2 size={4} sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
-                                <AutoAwesome fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <AutoAwesome fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%", border: 2, borderColor: "primary.main" }} />
                                 <Typography variant="h6">Games played: {getStatLabel(userStats, "gamesPlayed")}</Typography>
                             </Grid2>
                         </Grid2>
                     ) : (
                         <Typography variant="body1" color="text.secondary">No statistics found.</Typography>
+                    )}
+
+                    {/* Recent games */}
+                    <CardHeader title="Recent Games" sx={{ p: 0, my: 2 }} />
+                    {games.length > 0 ? ranking.map((game, index) => (
+                        <>
+                            <Box key={index} sx={{
+                                p: 2,
+                                borderRadius: 2,
+                                bgcolor: "background.default",
+                                borderColor: "primary.main",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                            }}>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                    <Typography variant="body1" fontWeight="bold">
+                                        {game.gameTopic}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {game.score}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                            {index < games.length - 1 && <Divider />}
+                        </>
+                    )) : (
+                        <Typography variant="body1" color="text.secondary">No recent games found.</Typography>
                     )}
                 </Box>
 

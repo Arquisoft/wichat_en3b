@@ -223,6 +223,19 @@ app.get('/userstats/:username/:topic', async (req, res) => {
   }
 });
 
+// Find games for a specific user
+app.get('/games/:username', async (req, res) => {
+  try {
+    const username = req.params.username;
+
+    const games = await Game.find({ username: username });
+
+    res.json({ message: `Fetched games for user: ${username}`, games: games });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
 });

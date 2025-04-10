@@ -188,6 +188,15 @@ app.get('/userstats/:username/:topic', async (req, res) => {
   }
 });
 
+app.get('/games/:username', async (req, res) => {
+  try {
+    const gamesResponse = await axios.get(userServiceUrl + '/games/' + req.params.username);
+    res.json(gamesResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
 // Start the gateway service
 const server = app.listen(port, () => {
   console.log(`Gateway Service listening at http://localhost:${port}`);
