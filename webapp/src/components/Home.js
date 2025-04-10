@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
+import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, Icon, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
 import { AutoAwesome, BarChart, ChevronRight, FilterAlt, People, SportsEsports, TrackChanges } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
@@ -42,7 +42,7 @@ const Home = () => {
         axios.get(`/games/${auth.username}`)
             .then((res) => {
                 console.log("Games:", res.data.games);
-                setGames(res.data.games);
+                setGames(res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
             }).catch((err) => {
                 console.error("Error fetching games:", err);
             });
@@ -119,17 +119,26 @@ const Home = () => {
                     <CardHeader title="Your Statistics" sx={{ p: 0, my: 2 }} />
                     {userStats?.username ? (
                         <Grid2 container spacing={2}>
-                            <Grid2 size={4} sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
-                                <SportsEsports fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%", border: 2, borderColor: "primary.main" }} />
-                                <Typography variant="h6">Total score: {getStatLabel(userStats, "points")}</Typography>
+                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
+                                <SportsEsports fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <Box>
+                                    <Typography variant="body2" color="text.secondary">Total score</Typography>
+                                    <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "points")}</Typography>
+                                </Box>
                             </Grid2>
-                            <Grid2 size={4} sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
-                                <TrackChanges fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%", border: 2, borderColor: "primary.main" }} />
-                                <Typography variant="h6">Accuracy rate: {getStatLabel(userStats, "accuracy")}</Typography>
+                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
+                                <TrackChanges fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <Box>
+                                    <Typography variant="body2" color="text.secondary">Accuracy rate</Typography>
+                                    <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "accuracy")}</Typography>
+                                </Box>
                             </Grid2>
-                            <Grid2 size={4} sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
-                                <AutoAwesome fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%", border: 2, borderColor: "primary.main" }} />
-                                <Typography variant="h6">Games played: {getStatLabel(userStats, "gamesPlayed")}</Typography>
+                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
+                                <AutoAwesome fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <Box>
+                                    <Typography variant="body2" color="text.secondary">Games played</Typography>
+                                    <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "gamesPlayed")}</Typography>
+                                </Box>
                             </Grid2>
                         </Grid2>
                     ) : (
@@ -137,32 +146,45 @@ const Home = () => {
                     )}
 
                     {/* Recent games */}
-                    <CardHeader title="Recent Games" sx={{ p: 0, my: 2 }} />
-                    {games.length > 0 ? ranking.map((game, index) => (
-                        <>
-                            <Box key={index} sx={{
-                                p: 2,
-                                borderRadius: 2,
-                                bgcolor: "background.default",
-                                borderColor: "primary.main",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                            }}>
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                    <Typography variant="body1" fontWeight="bold">
-                                        {game.gameTopic}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {game.score}
-                                    </Typography>
+                    <CardHeader title="Recent Games" subheader={`Your last ${games.length} games`} sx={{ p: 0, my: 2 }} />
+                    <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "rgba(255, 255, 255, 0.8)", borderRadius: 2, maxHeight: "40vh", overflowY: "auto" }}>
+                        {games.length > 0 ? games.map((game, index) => (
+                            <>
+                                <Box key={index} sx={{
+                                    p: 2,
+                                    borderRadius: 2,
+                                    bgcolor: "transparent",
+                                    borderColor: "primary.main",
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                        <AutoAwesome sx={{ p: 0.5, color: "secondary.main", bgcolor: "rgba(169, 64, 255, 0.5)", borderRadius: "100%" }} />
+                                        <Box>
+                                            <Typography variant="body1" fontWeight="bold">
+                                                GAMEMODE - Topics: {game.gameTopic.join(", ")}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Played on {new Date(game.createdAt).toLocaleDateString("es")}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {game.score} pts
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {game.correctRate * 100}% accuracy
+                                        </Typography>
+                                    </Box>
                                 </Box>
-                            </Box>
-                            {index < games.length - 1 && <Divider />}
-                        </>
-                    )) : (
-                        <Typography variant="body1" color="text.secondary">No recent games found.</Typography>
-                    )}
+                                {index < games.length - 1 && <Divider />}
+                            </>
+                        )) : (
+                            <Typography variant="body1" color="text.secondary">No recent games found.</Typography>
+                        )}
+                    </Box>
                 </Box>
 
                 {/* Rankings tab */}
@@ -259,7 +281,7 @@ const Home = () => {
                     Play A Game Now
                 </Button>
             </Paper>
-        </Container>
+        </Container >
     );
 }
 
