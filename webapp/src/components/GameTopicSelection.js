@@ -97,6 +97,17 @@ const TopicButton = styled(Button, {
 const GameTopicSelection = () => {
   const navigate = useNavigate();
 
+  // Define all available topics in a constant
+  const ALL_TOPICS = [
+    "city", "flag", "athlete", "singer", "country", "sport", 
+    "spanishProvince", "spanishCommunityFlag", "historicalEvent", 
+    "famousPlace", "spanishCity", "musicalInstrument", 
+    "historicalWoman", "sportingGijonPlayer", "oviedoPlayer", 
+    "realMadridPlayer", "barcelonaPlayer", "atleticoMadridPlayer", 
+    "language", "f1Driver", "racingCircuit", "asturianFamous", 
+    "asturianCouncil"
+  ];
+
   const [selectedTopics, setSelectedTopics] = useState([])
   const [isWild, setIsWild] = useState(false)
 
@@ -114,7 +125,8 @@ const GameTopicSelection = () => {
 
   const handleWildSelection = () => {
     setIsWild(true)
-    setSelectedTopics(["city", "flag", "athlete", "singer"])
+    // Select all available topics instead of just the initial four
+    setSelectedTopics([...ALL_TOPICS])
   }
 
   const handleCustomSelection = () => {
@@ -469,6 +481,13 @@ const GameTopicSelection = () => {
       {!isWild && selectedTopics.length > 0 && (
         <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", textAlign: "center" }}>
           {selectedTopics.length} topic{selectedTopics.length > 1 ? "s" : ""} selected
+        </Typography>
+      )}
+
+      {/* Show all topics selected when in wild mode */}
+      {isWild && (
+        <Typography variant="subtitle1" color="primary" sx={{ fontWeight: "bold", textAlign: "center" }}>
+          All {ALL_TOPICS.length} topics selected
         </Typography>
       )}
 

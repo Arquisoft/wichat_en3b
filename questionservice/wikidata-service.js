@@ -104,9 +104,9 @@ ORDER BY DESC(?sitelinks)
 LIMIT 100
 `,
   
-    spanishCommunityFlag: `SELECT DISTINCT ?spanishCommunityFlag ?spanishCommunityFlagLabel ?flag WHERE {
+    spanishCommunityFlag: `SELECT DISTINCT ?spanishCommunityFlag ?spanishCommunityFlagLabel ?image WHERE {
   ?spanishCommunityFlag wdt:P31/wdt:P279* wd:Q10742;  # Instance of (or subclass of) autonomous community
-          wdt:P41 ?flag;
+          wdt:P41 ?image;  # Flag of the community
           wikibase:sitelinks ?sitelinks.
 
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
@@ -115,8 +115,8 @@ ORDER BY DESC(?sitelinks)
 LIMIT 20  # Just 17 communities
 `,
   
-    historicalEvent: `SELECT ?event ?eventLabel ?image WHERE {
-  ?event wdt:P31 wd:Q1190554;    # Instance of occurence
+    historicalEvent: `SELECT ?historicalEvent ?historicalEventLabel ?image WHERE {
+  ?historicalEvent wdt:P31 wd:Q1190554;    # Instance of occurence
   wikibase:sitelinks ?sitelinks;  # Number of Wikipedia links
   wdt:P18 ?image.                 # Image of the event (required)
   
@@ -180,13 +180,13 @@ ORDER BY DESC(?sitelinks)  # Sort by popularity
 LIMIT 200
 `,
       
-    historicalWoman: `SELECT ?woman ?womanLabel ?image WHERE {
+    historicalWoman: `SELECT ?historicalWoman ?historicalWomanLabel ?image WHERE {
   # Start with a smaller set of entities (those with many sitelinks)
-  ?woman wikibase:sitelinks ?sitelinks.
+  ?historicalWoman wikibase:sitelinks ?sitelinks.
   FILTER(?sitelinks > 100)        # Higher threshold for faster results
   
   # Then apply the more expensive filters
-  ?woman wdt:P31 wd:Q5;           # Instance of human
+  ?historicalWoman wdt:P31 wd:Q5;           # Instance of human
   wdt:P21 wd:Q6581072;            # Female gender
   wdt:P18 ?image.                 # Image (required)
   
@@ -284,11 +284,11 @@ ORDER BY DESC(?sitelinks)              # Sorted from most popular to least
 LIMIT 200
 `,
   
-    racingCircuit: `SELECT ?circuit ?circuitLabel ?layout WHERE {
+    racingCircuit: `SELECT ?racingCircuit ?racingCircuitLabel ?image WHERE {
   # Select entities that are race tracks (using Q2338524)
-  ?circuit wdt:P31/wdt:P279* wd:Q2338524;
+  ?racingCircuit wdt:P31/wdt:P279* wd:Q2338524;
            wikibase:sitelinks ?sitelinks;
-           wdt:P3311 ?layout.
+           wdt:P3311 ?image.
   
   SERVICE wikibase:label { 
     bd:serviceParam wikibase:language "en". 
