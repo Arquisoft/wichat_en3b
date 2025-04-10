@@ -5,8 +5,8 @@ import { NavLink, useLocation, useNavigate } from 'react-router';
 import logInPic from '../photos/logInPic.png';
 
 import useAuth from "../../hooks/useAuth";
-import axios from "../../api/axios";
-import CustomTextField from './CustomTextField'; // Import the external CustomTextField
+import axios from "../../hooks/useAxios";
+import CustomTextField from '../CustomTextField'; // Import the external CustomTextField
 
 const Login = () => {
   const { setAuth, persist, setPersist } = useAuth();
