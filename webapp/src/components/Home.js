@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
+import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
 import { BarChart, ChevronRight, FilterAlt, People } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
@@ -52,7 +52,6 @@ const Home = () => {
                 console.error("Error fetching user stats:", err);
             });
     }, [stat, gametopic]);
-
 
     const getStatLabel = (user, stat) => {
         switch (stat) {
@@ -108,11 +107,17 @@ const Home = () => {
                 <Box hidden={activeTab !== 0} my={4}>
                     <CardHeader title="Your Statistics" sx={{ p: 0, mb: 2 }} />
                     {userStats?.username ? (
-                        <Box>
-                            <Typography variant="body1">Total score: {getStatLabel(userStats, "points")}</Typography>
-                            <Typography variant="body1">Accuracy rate: {getStatLabel(userStats, "accuracy")}</Typography>
-                            <Typography variant="body1">Games played: {getStatLabel(userStats, "gamesPlayed")}</Typography>
-                        </Box>
+                        <Grid2 container spacing={2}>
+                            <Grid2>
+                                <Typography variant="body1">Total score: {getStatLabel(userStats, "points")}</Typography>
+                            </Grid2>
+                            <Grid2>
+                                <Typography variant="body1">Accuracy rate: {getStatLabel(userStats, "accuracy")}</Typography>
+                            </Grid2>
+                            <Grid2>
+                                <Typography variant="body1">Games played: {getStatLabel(userStats, "gamesPlayed")}</Typography>
+                            </Grid2>
+                        </Grid2>
                     ) : (
                         <Typography variant="body1" color="text.secondary">No statistics found.</Typography>
                     )}

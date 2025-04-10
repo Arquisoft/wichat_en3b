@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
-
+import './index.css'; // Global css to fix margin
 
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
@@ -17,7 +17,6 @@ import Home from './components/Home';
 import Layout from './components/Layout';
 import GameTopicSelection from './components/GameTopicSelection';
 import PersistentLogin from './components/PersistentLogin';
-
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
