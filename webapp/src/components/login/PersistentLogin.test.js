@@ -5,8 +5,8 @@ import useRefreshToken from "../../hooks/useRefreshToken";
 import { Outlet } from "react-router";
 import { Typography } from "@mui/material";
 
-jest.mock("../hooks/useAuth");
-jest.mock("../hooks/useRefreshToken");
+jest.mock("../../hooks/useAuth");
+jest.mock("../../hooks/useRefreshToken");
 jest.mock("react-router", () => ({
     Outlet: () => <div>Protected Content</div>,
 }));

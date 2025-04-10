@@ -17,7 +17,7 @@ jest.mock("@mui/icons-material", () => {
   };
 });
 
-jest.mock("../hooks/useAxios", () => jest.fn());
+jest.mock("../../hooks/useAxios", () => jest.fn());
 const mockAxios = new MockAdapter(axios);
 
 describe("Game component", () => {

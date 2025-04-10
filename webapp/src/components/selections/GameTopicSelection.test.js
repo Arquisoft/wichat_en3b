@@ -5,7 +5,7 @@ import GameTopicSelection from "./GameTopicSelection";
 import useAxios from "../../hooks/useAxios";
 
 // Mock the useAxios hook
-jest.mock("../hooks/useAxios", () => () => ({ post: jest.fn() }));
+jest.mock("../../hooks/useAxios", () => () => ({ post: jest.fn() }));
 
 // Global mock for Material UI icons
 jest.mock("@mui/icons-material", () => {
