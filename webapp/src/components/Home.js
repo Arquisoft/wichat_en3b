@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
-import { BarChart, ChevronRight, FilterAlt, People } from "@mui/icons-material";
+import { Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
+import { AutoAwesome, BarChart, ChevronRight, FilterAlt, LocationCity, MusicNote, OutlinedFlag, People, SportsBasketball, SportsEsports, TrackChanges } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
@@ -16,6 +16,7 @@ const Home = () => {
     const [stat, setStat] = useState("points");
     const [ranking, setRanking] = useState([]);
     const [userStats, setUserStats] = useState(null);
+    const [games, setGames] = useState([]);
 
     const stats = ["points", "accuracy", "gamesPlayed"];
 
@@ -36,6 +37,14 @@ const Home = () => {
             }).catch((err) => {
                 console.error("Error fetching gametopics:", err);
             });
+
+        axios.get(`/games/${auth.username}`)
+            .then((res) => {
+                console.log("Games:", res.data.games);
+                setGames(res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+            }).catch((err) => {
+                console.error("Error fetching games:", err);
+            });
     }, []);
 
     useEffect(() => {
@@ -53,7 +62,6 @@ const Home = () => {
             });
     }, [stat, gametopic]);
 
-
     const getStatLabel = (user, stat) => {
         switch (stat) {
             case "accuracy":
@@ -63,6 +71,18 @@ const Home = () => {
             case "points":
                 return user.totalScore + " pts";
         }
+    }
+
+    const getIconForTopics = (topics) => {
+        const icons = {
+            "all": <AutoAwesome sx={{ p: 0.5, color: "secondary.main", bgcolor: "rgba(169, 64, 255, 0.2)", borderRadius: "100%" }} />,
+            "flag": <OutlinedFlag sx={{ p: 0.5, color: "greenyellow", bgcolor: "rgba(173, 255, 47, 0.2)", borderRadius: "100%" }} />,
+            "city": <LocationCity sx={{ p: 0.5, color: "green", bgcolor: "rgba(0, 128, 0, 0.2)", borderRadius: "100%" }} />,
+            "athlete": <SportsBasketball sx={{ p: 0.5, color: "orange", bgcolor: "rgba(255, 165, 0, 0.2)", borderRadius: "100%" }} />,
+            "singer": <MusicNote sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+        }
+
+        return topics.length > 1 ? icons["all"] : icons[topics[0]];
     }
 
     return (
@@ -105,17 +125,77 @@ const Home = () => {
                 </Tabs>
 
                 {/* Statistics tab */}
-                <Box hidden={activeTab !== 0} my={4}>
-                    <CardHeader title="Your Statistics" sx={{ p: 0, mb: 2 }} />
+                <Box hidden={activeTab !== 0} mb={4}>
+                    {/* User statistics */}
+                    <CardHeader title="Your Statistics" sx={{ p: 0, my: 2 }} />
                     {userStats?.username ? (
-                        <Box>
-                            <Typography variant="body1">Total score: {getStatLabel(userStats, "points")}</Typography>
-                            <Typography variant="body1">Accuracy rate: {getStatLabel(userStats, "accuracy")}</Typography>
-                            <Typography variant="body1">Games played: {getStatLabel(userStats, "gamesPlayed")}</Typography>
-                        </Box>
+                        <Grid2 container spacing={2}>
+                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
+                                <SportsEsports fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <Box>
+                                    <Typography variant="body2" color="text.secondary">Total score</Typography>
+                                    <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "points")}</Typography>
+                                </Box>
+                            </Grid2>
+                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
+                                <TrackChanges fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <Box>
+                                    <Typography variant="body2" color="text.secondary">Accuracy rate</Typography>
+                                    <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "accuracy")}</Typography>
+                                </Box>
+                            </Grid2>
+                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
+                                <AutoAwesome fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                                <Box>
+                                    <Typography variant="body2" color="text.secondary">Games played</Typography>
+                                    <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "gamesPlayed")}</Typography>
+                                </Box>
+                            </Grid2>
+                        </Grid2>
                     ) : (
                         <Typography variant="body1" color="text.secondary">No statistics found.</Typography>
                     )}
+
+                    {/* Recent games */}
+                    <CardHeader title="Recent Games" subheader={`Your last ${games.length} games`} sx={{ p: 0, my: 2 }} />
+                    <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "rgba(255, 255, 255, 0.8)", borderRadius: 2, maxHeight: "25vh", overflowY: "auto" }}>
+                        {games.length > 0 ? games.map((game, index) => (
+                            <>
+                                <Box key={index} sx={{
+                                    p: 2,
+                                    borderRadius: 2,
+                                    bgcolor: "transparent",
+                                    borderColor: "primary.main",
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                        {getIconForTopics(game.gameTopic)}
+                                        <Box>
+                                            <Typography variant="body1" fontWeight="bold">
+                                                GAMEMODE - Topics: {game.gameTopic.join(", ")}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Played on {new Date(game.createdAt).toLocaleDateString("es")}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {game.score} pts
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {game.correctRate * 100}% accuracy
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                                {index < games.length - 1 && <Divider />}
+                            </>
+                        )) : (
+                            <Typography variant="body1" color="text.secondary">No recent games found.</Typography>
+                        )}
+                    </Box>
                 </Box>
 
                 {/* Rankings tab */}
@@ -212,7 +292,7 @@ const Home = () => {
                     Play A Game Now
                 </Button>
             </Paper>
-        </Container>
+        </Container >
     );
 }
 
