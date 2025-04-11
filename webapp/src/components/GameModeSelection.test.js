@@ -3,6 +3,7 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import '@testing-library/jest-dom';
 import GameModeSelection from './GameModeSelection';
+import { ThemeProvider } from "../context/ThemeContext";
 
 describe('GameModeSelection Component', () => {
   beforeEach(() => {
@@ -11,9 +12,11 @@ describe('GameModeSelection Component', () => {
 
   it('renders the component correctly', () => {
     render(
-      <MemoryRouter>
-        <GameModeSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameModeSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     expect(screen.getByText(/TRIVIA GAME/i)).toBeInTheDocument();
@@ -26,9 +29,11 @@ describe('GameModeSelection Component', () => {
 
   it('enables the NEXT button when a mode is selected', () => {
     render(
-      <MemoryRouter>
-        <GameModeSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameModeSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     const roundsCheckbox = screen.getByLabelText(/ROUNDS/i);
@@ -39,9 +44,11 @@ describe('GameModeSelection Component', () => {
 
   it('disables the NEXT button when the selected mode is deselected', () => {
     render(
-      <MemoryRouter>
-        <GameModeSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameModeSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     const roundsCheckbox = screen.getByLabelText(/ROUNDS/i);
@@ -54,9 +61,11 @@ describe('GameModeSelection Component', () => {
 
   it('allows switching between different modes', () => {
     render(
-      <MemoryRouter>
-        <GameModeSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameModeSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     const roundsCheckbox = screen.getByLabelText(/ROUNDS/i);
@@ -73,9 +82,11 @@ describe('GameModeSelection Component', () => {
 
   it('navigates to the game page when NEXT is clicked', () => {
     render(
-      <MemoryRouter>
-        <GameModeSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameModeSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     const roundsCheckbox = screen.getByLabelText(/ROUNDS/i);
