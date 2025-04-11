@@ -3,18 +3,16 @@
 import { Container, Typography, Button, Box, Paper, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { Outlet, NavLink } from "react-router"
-import { School, Login } from "@mui/icons-material"
 import { useTranslation } from "react-i18next"
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import logInPic from "./components/photos/homeLogo.png";
-import useTheme from "./hooks/useTheme";
 
 //animation to fadeIn
 const ZoomInPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   marginTop: theme.spacing(4),
   marginBottom: theme.spacing(4),
-  background: "linear-gradient(to bottom right, #f5f7fa, #e4e8f0)",
+  background: "background.paper",
   borderRadius: theme.shape.borderRadius,
   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
   position: "relative",
@@ -28,7 +26,7 @@ const ZoomInPaper = styled(Paper)(({ theme }) => ({
     left: 0,
     width: "100%",
     height: "5px",
-    background: "linear-gradient(to right, #3f51b5, #7e57c2)",
+    background: theme.palette.gradient.main.right,
   },
 
   "@keyframes zoomInFromFar": {
@@ -41,24 +39,7 @@ const ZoomInPaper = styled(Paper)(({ theme }) => ({
       transform: "scale(1) translateY(0)",
     },
   },
-}))
-
-//animation for the graduation cap 
-const BouncingSchoolIcon = styled(School)(({ theme }) => ({
-  fontSize: 60,
-  color: "#3f51b5",
-  marginBottom: theme.spacing(2),
-  animation: "bounce 2s infinite ease-in-out",
-
-  "@keyframes bounce": {
-    "0%, 100%": {
-      transform: "translateY(0)",
-    },
-    "50%": {
-      transform: "translateY(-12px)",
-    },
-  },
-}))
+}));
 
 const BouncingImage = styled("img")(({ theme }) => ({
   width: 120,
@@ -75,24 +56,6 @@ const BouncingImage = styled("img")(({ theme }) => ({
     },
   },
 }));
-
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(4),
-  marginTop: theme.spacing(4),
-  marginBottom: theme.spacing(4),
-  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-  position: "relative",
-  overflow: "hidden",
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "5px",
-    background: theme.palette.gradient.main.right,
-  },
-}))
 
 const ActionButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(1.5, 3),
@@ -128,7 +91,7 @@ const StyledNavLink = styled(NavLink)({
 
 const SpeechBubble = styled(Box)(({ theme }) => ({
   position: "relative",
-  background: "#4a3c8c",
+  background: theme.palette.primary.main,
   borderRadius: "15px",
   padding: theme.spacing(2.5),
   color: "#ffffff",
@@ -144,14 +107,14 @@ const SpeechBubble = styled(Box)(({ theme }) => ({
     transform: "translateX(-50%)",
     borderWidth: "25px", 
     borderStyle: "solid",
-    borderColor: "#4a3c8c transparent transparent transparent",
+    borderColor: `${theme.palette.primary.main} transparent transparent transparent`,
   },
 
 }));
 
 const TitleTypography = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
-  background: "linear-gradient(to right, #3f51b5, #7e57c2)",
+  background: theme.palette.gradient.main.right,
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
   marginBottom: theme.spacing(3),
@@ -159,7 +122,6 @@ const TitleTypography = styled(Typography)(({ theme }) => ({
 
 function App() {
   const {t} = useTranslation();
-  const { theme } = useTheme();
 
   return (
     <Container maxWidth="sm">
@@ -172,8 +134,6 @@ function App() {
             {t("welcomeMsg")}
           </SpeechBubble>
           <BouncingImage src={logInPic} alt="Bouncing Icon" />
-          {/* <BouncingSchoolIcon sx={{ fontSize: 60, color: "#3f51b5", mb: 2 }} /> */}
-          
         </Box>
         
         <Grid container sx={{ mt: 2 }}>
