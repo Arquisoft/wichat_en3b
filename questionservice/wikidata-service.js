@@ -364,7 +364,7 @@ async function fetchAndStoreData() {
                 name: item[`${topic}Label`]?.value || "No Name",
                 imageUrl: item.image?.value || "",
                 topic
-            }));
+            })).filter(item => !/^Q\d+$/.test(item.name));
 
             const bulkOps = items.map(item => ({
                 updateOne: {
@@ -422,7 +422,7 @@ function secureRandomInt(max) {
     let rand;
     do {
         rand = randomByte();
-    } while (rand >= byteSize - (byteSize % max)); // Evita sesgo
+    } while (rand >= byteSize - (byteSize % max));
     return rand % max;
 }
 
