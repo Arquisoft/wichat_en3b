@@ -35,7 +35,7 @@ const Layout = () => {
         }
     }
 
-    const  { t } = useTranslation();
+    const { t } = useTranslation();
 
     return (
         <Container component="main" disableGutters sx={{
@@ -53,7 +53,7 @@ const Layout = () => {
                 <StyledNavlink to="/home" label={t("home")} icon={<HomeIcon />} theme={theme} />
                 <LanguageSelect />
                 <Box sx={{ ml: "auto" }}>
-                <>
+                    <>
                         <Select
                             onChange={(e) => selectTheme(e.target.value)}
                             sx={{ color: "primary.contrastText", "& .MuiSelect-icon": { color: "primary.contrastText" } }}
@@ -66,29 +66,27 @@ const Layout = () => {
                                 </MenuItem>
                             ))}
                         </Select>
-                {auth.username ? (
-                <Button
-                    onClick={handleLogout}
-                    sx={{
-                   
-                                color: "primary.contrastText",
-                               
-                    gap: "0.5rem",
-                   
-                                "&:hover": { backgroundColor: alpha(theme.palette.primary.contrastText, 0.1) }
-                           ,
-                    }}
-                >
-                    {t("logout")}
-                </Button>
-                ) : (
-                <>
-                    <StyledNavlink to="/login" label={t("login")} theme={theme} />
-                    <StyledNavlink to="/signup" label={t("signUp")} /> 
-                </>
-                )}
-            </>
-            </Box>
+                        {auth.username ? (
+                            <Button
+                                onClick={handleLogout}
+                                sx={{
+                                    color: "primary.contrastText",
+                                    gap: "0.5rem",
+                                    "&:hover": {
+                                        backgroundColor: alpha(theme.palette.primary.contrastText, 0.1)
+                                    }
+                                }}
+                            >
+                                {t("logout")}
+                            </Button>
+                        ) : (
+                            <>
+                                <StyledNavlink to="/login" label={t("login")} theme={theme} />
+                                <StyledNavlink to="/signup" label={t("signUp")} theme={theme} />
+                            </>
+                        )}
+                    </>
+                </Box>
             </AppBar>
 
             <Outlet />

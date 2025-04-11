@@ -42,7 +42,6 @@ const Home = () => {
 
         axios.get(`/games/${auth.username}`)
             .then((res) => {
-                console.log("Games:", res.data.games);
                 setGames(res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
             }).catch((err) => {
                 console.error("Error fetching games:", err);
@@ -132,22 +131,22 @@ const Home = () => {
                     <CardHeader title="Your Statistics" sx={{ p: 0, my: 2 }} />
                     {userStats?.username ? (
                         <Grid2 container spacing={2}>
-                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
-                                <SportsEsports fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.paper", border: 1, borderColor: "divider" }}>
+                                <SportsEsports fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: alpha(theme.palette.primary.main, 0.2), borderRadius: "100%" }} />
                                 <Box>
                                     <Typography variant="body2" color="text.secondary">Total score</Typography>
                                     <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "points")}</Typography>
                                 </Box>
                             </Grid2>
-                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
-                                <TrackChanges fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.paper", border: 1, borderColor: "divider" }}>
+                                <TrackChanges fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: alpha(theme.palette.primary.main, 0.2), borderRadius: "100%" }} />
                                 <Box>
                                     <Typography variant="body2" color="text.secondary">Accuracy rate</Typography>
                                     <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "accuracy")}</Typography>
                                 </Box>
                             </Grid2>
-                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.default", border: 1, borderColor: "divider" }}>
-                                <AutoAwesome fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: "rgba(64, 128, 255, 0.5)", borderRadius: "100%" }} />
+                            <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.paper", border: 1, borderColor: "divider" }}>
+                                <AutoAwesome fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: alpha(theme.palette.primary.main, 0.2), borderRadius: "100%" }} />
                                 <Box>
                                     <Typography variant="body2" color="text.secondary">Games played</Typography>
                                     <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "gamesPlayed")}</Typography>
@@ -160,7 +159,7 @@ const Home = () => {
 
                     {/* Recent games */}
                     <CardHeader title="Recent Games" subheader={`Your last ${games.length} games`} sx={{ p: 0, my: 2 }} />
-                    <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "rgba(255, 255, 255, 0.8)", borderRadius: 2, maxHeight: "25vh", overflowY: "auto" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "background.paper", borderRadius: 2, maxHeight: "25vh", overflowY: "auto" }}>
                         {games.length > 0 ? games.map((game, index) => (
                             <>
                                 <Box key={index} sx={{
@@ -213,7 +212,7 @@ const Home = () => {
                                 onChange={(_, val) => setStat(val)}
                                 variant="scrollable"
                                 scrollButtons="auto"
-                                sx={{ bgcolor: "background.default", borderRadius: 2, gap: 1 }}
+                                sx={{ bgcolor: "background.paper", borderRadius: 2, gap: 1 }}
                             >
                                 {stats.map((stat) => <Tab key={stat} value={stat} label={stat} />)}
                             </Tabs>
@@ -234,13 +233,13 @@ const Home = () => {
                             </Select>
                         </FormControl>
                     </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "background.translucent", borderRadius: 2, maxHeight: "40vh", overflowY: "auto" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "background.paper", borderRadius: 2, maxHeight: "40vh", overflowY: "auto" }}>
                         {ranking.map((user, index) => (
                             <>
                                 <Box key={user._id} sx={{
                                     p: 2,
                                     borderRadius: 2,
-                                    bgcolor: auth.username === user.username ? theme.palette.primary.transparent : "transparent",
+                                    bgcolor: auth.username === user.username ? alpha(theme.palette.primary.main, 0.1) : "transparent",
                                     border: auth.username === user.username ? 1 : 0,
                                     borderColor: "primary.main",
                                     display: "flex",
