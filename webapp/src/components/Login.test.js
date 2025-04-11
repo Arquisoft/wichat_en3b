@@ -6,7 +6,7 @@ import MockAdapter from 'axios-mock-adapter';
 import Login from './Login';
 import { I18nextProvider } from "react-i18next";
 import i18n from "../utils/i18n";
-
+import { ThemeProvider } from "../context/ThemeContext";
 
 const mockAxios = new MockAdapter(axios);
 
@@ -22,11 +22,13 @@ jest.mock('../hooks/useAuth', () => ({
 describe('Login component', () => {
   const renderLayout = () => {
     render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <Login />
-        </MemoryRouter>
-      </I18nextProvider>
+      <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
+          <MemoryRouter>
+            <Login />
+          </MemoryRouter>
+        </I18nextProvider>
+      </ThemeProvider>
     );
   };
   const getInputsAndButton = () => {
