@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Container, Typography, Button, Paper, Box, Grid, TextField, Collapse, Divider } from "@mui/material"
+import { Container, Typography, Button, Paper, Box, Grid, TextField, Collapse, Divider, FormControlLabel } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { useNavigate } from "react-router"
 import {
@@ -86,7 +86,6 @@ const TopicButton = styled(Button, {
   boxShadow: isSelected ? theme.shadows[3] : "none",
   textTransform: "none",
   transition: theme.transitions.create(["background", "transform", "box-shadow"], {
-  transition: theme.transitions.create(["transform", "box-shadow"], {
     duration: theme.transitions.duration.short,
   }),
   width: "100%",
