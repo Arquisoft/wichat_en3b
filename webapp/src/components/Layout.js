@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { alpha, AppBar, Box, Button, Container, MenuItem, Select } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import { Outlet, NavLink } from 'react-router';
@@ -5,7 +6,10 @@ import useAuth from "../hooks/useAuth";
 import axios from "../utils/axios";
 import { useTranslation } from "react-i18next";
 import LanguageSelect from "./LanguageSelect";
+import SettingsDialog from "./SettingsDialog";
 import useTheme from "../hooks/useTheme";
+import SettingsIcon from "@mui/icons-material/Settings";
+import IconButton from "@mui/material/IconButton";
 
 const StyledNavlink = ({ theme, to, label, icon }) => {
     return (
@@ -24,6 +28,7 @@ const StyledNavlink = ({ theme, to, label, icon }) => {
 const Layout = () => {
     const { auth, setAuth } = useAuth();
     const { theme, themes, selectTheme } = useTheme();
+    const [settingsOpen, setSettingsOpen] = useState(false);
 
     const handleLogout = async () => {
         try {
@@ -51,7 +56,14 @@ const Layout = () => {
                 background: theme.palette.gradient.main.right,
             }}>
                 <StyledNavlink to="/home" label={t("home")} icon={<HomeIcon />} theme={theme} />
-                <LanguageSelect />
+                
+                <IconButton
+                    onClick={() => setSettingsOpen(true)}
+                    sx={{ color: "primary.contrastText" }}
+                >
+                    <SettingsIcon />
+                </IconButton>
+
                 <Box sx={{ ml: "auto" }}>
                     <>
                         <Select
@@ -90,6 +102,7 @@ const Layout = () => {
             </AppBar>
 
             <Outlet />
+            <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />
         </Container>
     );
 }
