@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Container, Typography, Button, Snackbar, Checkbox, FormControlLabel, Box, Paper } from '@mui/material';
+import { Container, Typography, Button, Snackbar, Checkbox, FormControlLabel, Box, Paper, alpha } from '@mui/material';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 import logInPic from './photos/logInPic.png';
 
 import useAuth from "../hooks/useAuth";
 import axios from "../utils/axios";
 import CustomTextField from './CustomTextField'; // Import the external CustomTextField
+import { grey } from '@mui/material/colors';
 
 const Login = () => {
   const { setAuth, persist, setPersist } = useAuth();
@@ -95,9 +96,10 @@ const Login = () => {
             sx={{
               mt: 1,
               fontWeight: 'bold',
-              backgroundColor: '#5254bc',
+              backgroundColor: 'primary.main',
+              color: 'primary.contrastText',
               '&:hover': {
-                backgroundColor: '#3f47a3',
+                backgroundColor: 'primary.dark', 
               },
             }}
           >
@@ -115,8 +117,7 @@ const Login = () => {
         <Box
           sx={{
             width: '50%',
-            backgroundColor: '#5254bc',
-            color: '#fff',
+            backgroundColor: 'primary.main',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -141,7 +142,8 @@ const Login = () => {
           {/* Speech bubble */}
           <Box
             sx={{
-              backgroundColor: '#29293d',
+              color: "primary.contrastText",
+              backgroundColor: alpha(grey[900], 0.5),
               borderRadius: 2,
               px: 3,
               py: 2,
