@@ -357,10 +357,11 @@ const endGame = async (questions) => {
     setIsCallFriendOpen(true);
   };
 
-  const handlePhoneOut = () => {
+  const handlePhoneOut = (roundData) => {
     if (phoneOut || !roundData) return;
     setPhoneOut(true);
   };
+  
 
   const handlePhoneOutClose = () => {
     setPhoneOut(false);
@@ -458,7 +459,7 @@ const endGame = async (questions) => {
               </LifelineButton>
               <LifelineButton
                 variant="contained"
-                onClick={handlePhoneOut}
+                onClick={() => handlePhoneOut(roundData)} 
                 colorVariant="purple"
               >
                 Phone Out

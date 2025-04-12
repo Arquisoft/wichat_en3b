@@ -8,21 +8,24 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import PhoneIcon from "@mui/icons-material/Phone";
-import ChatIcon from "@mui/icons-material/Chat";
-import Contacts from "./Contacts"; // Importa el componente Contacts
-import Chat from "../LLMChat"
+import Contacts from "./Contacts";
+import Chat from "../LLMChat";
 
 const PhoneDialog = ({ open, onClose, chatKey, roundData }) => {
-  const [view, setView] = useState("main"); // "main", "call", "chat", "contacts"
-  const [phoneStatus, setPhoneStatus] = useState("");
+  const [view, setView] = useState("contacts");
+  const [selectedContact, setSelectedContact] = useState(null); // Store the selected contact
+  const [calling, setCalling] = useState(false); // Track the calling state
+  const [callingContact, setCallingContact] = useState(null); // Store the contact name being called
 
-  const handleCall = () => {
-    setView("contacts"); // Cambia a la vista de contactos en lugar de "call"
-  };
-
-  const handleChat = () => {
-    setPhoneStatus("💬 Chat Started");
+  const handleContactClick = (contact) => {
+    setSelectedContact(contact);
+    setCalling(true); // Set calling state to true
+    setCallingContact(contact.name); // Store the contact name
+    // Simulate a delay for the "calling" effect, then switch to chat
+    setTimeout(() => {
+      setCalling(false);
+      setView("chat");
+    }, 2000); // Delay for 2 seconds before showing the chat
   };
 
   return (
@@ -47,101 +50,30 @@ const PhoneDialog = ({ open, onClose, chatKey, roundData }) => {
           borderBottom: "1px solid #ddd",
         }}
       >
-        📱 Phone Interface
+        📱 Phone
       </DialogTitle>
 
       <DialogContent sx={{ p: 3, height: "100%", overflowY: "auto" }}>
-        {view === "main" && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "80%",
-              gap: 4,
-            }}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleCall}
-              sx={{
-                width: 100,
-                height: 100,
-                borderRadius: 2,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                fontWeight: "bold",
-                fontSize: "0.9rem",
-              }}
-            >
-              <PhoneIcon sx={{ fontSize: 36, mb: 1 }} />
-              Call
-            </Button>
-
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                handleChat();
-                setView("chat");
-              }}
-              sx={{
-                width: 100,
-                height: 100,
-                borderRadius: 2,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                fontWeight: "bold",
-                fontSize: "0.9rem",
-              }}
-            >
-              <ChatIcon sx={{ fontSize: 36, mb: 1 }} />
-              Chat
-            </Button>
+        {view === "contacts" && (
+          <Box sx={{ height: "100%" }}>
+            <Contacts
+              roundData={roundData} 
+              onBack={() => setView("contacts")}
+              onContactClick={handleContactClick} // Pass the function to handle contact click
+            />
           </Box>
         )}
 
-        {view === "call" && (
+        {view === "chat" && !calling && (
           <Box sx={{ textAlign: "center", mt: 4 }}>
-            <Typography variant="h6" color="textSecondary">
-              {phoneStatus}
-            </Typography>
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ fontWeight: "bold", mt: 4 }}
-              onClick={() => {
-                setView("main");
-                setPhoneStatus("");
-              }}
-            >
-              End Call
-            </Button>
-          </Box>
-        )}
-
-        {view === "chat" && (
-          <Box sx={{ textAlign: "center", mt: 4 }}>
-            {/* <Typography variant="h6" color="textSecondary">
-              {phoneStatus}
-            </Typography>
-            <Typography variant="body1" color="textPrimary" sx={{ mt: 2 }}>
-              📝 This is the chat interface.
-            </Typography> */}
             <Chat key={chatKey} roundData={roundData} />
             <Button
               variant="contained"
               color="secondary"
               sx={{ fontWeight: "bold", mt: 4 }}
               onClick={() => {
-                setView("main");
-                setPhoneStatus("");
+                setView("contacts");
+                setSelectedContact(null); // Clear the selected contact when leaving chat
               }}
             >
               End Chat
@@ -149,15 +81,9 @@ const PhoneDialog = ({ open, onClose, chatKey, roundData }) => {
           </Box>
         )}
 
-        {view === "contacts" && (
-          <Box sx={{ height: "100%" }}>
-            <Contacts
-              onBack={() => setView("main")}
-              onCall={() => {
-                setPhoneStatus("📞 Calling...");
-                setView("call");
-              }}
-            />
+        {calling && (
+          <Box sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="h6">Calling {callingContact}...</Typography>
           </Box>
         )}
       </DialogContent>
