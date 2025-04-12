@@ -170,6 +170,26 @@ app.get('/userstats/user/:username', async (req, res) => {
   }
 });
 
+
+app.get('/usercoins/:username', async (req, res) => {
+  try {
+    const coinsResponse = await axios.get(userServiceUrl + '/usercoins/' + req.params.username);
+    res.json(coinsResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+
+app.post('/updatecoins', async (req, res) => {
+  try {
+    const updateResponse = await axios.post(userServiceUrl + '/updatecoins', req.body);
+    res.json(updateResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
 app.get('/userstats/topic/:topic', async (req, res) => {
   try {
     const usersResponse = await axios.get(userServiceUrl + '/userstats/topic/' + req.params.topic);
