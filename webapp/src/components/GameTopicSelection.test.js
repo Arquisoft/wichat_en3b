@@ -76,7 +76,7 @@ describe("GameTopicSelection Component", () => {
         </MemoryRouter>
       </ThemeProvider>
     );
-    const wildOption = screen.getByText(/wild mode/i); // Cambiado
+    const wildOption = screen.getByText(/wild mode/i);
     fireEvent.click(wildOption);
     expect(screen.getByText(/next/i)).toBeEnabled();
   });
@@ -102,21 +102,17 @@ describe("GameTopicSelection Component", () => {
         </MemoryRouter>
       </ThemeProvider>
     );
-    const wildOption = screen.getByText(/wild mode/i); // Cambiado
+    const wildOption = screen.getByText(/wild mode/i); 
     fireEvent.click(wildOption);
     
-    // Verificar que los botones no están habilitados para interacción
-    // aunque visualmente no estén deshabilitados
     const button = screen.getByText(/f1 drivers/i);
     
-    // También necesitas añadir esta lógica en tu componente
     const topicButtons = screen.getAllByRole('button').filter(btn => 
       btn.textContent.includes('F1 DRIVERS') || 
       btn.textContent.includes('CITIES') || 
       btn.textContent.includes('COUNTRIES')
     );
     
-    // Verificar que al hacer clic en un botón en modo Wild, no cambia la selección
     const initialSelectedCount = screen.getByText(/all \d+ topics selected/i).textContent;
     fireEvent.click(button);
     const afterClickSelectedCount = screen.getByText(/all \d+ topics selected/i).textContent;
