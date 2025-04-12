@@ -28,7 +28,7 @@ const GameContainer = styled(Container)(({ theme }) => ({
 }))
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  background: "linear-gradient(to left, #3f51b5, #7e57c2)",
+  background: theme.palette.gradient.main.left,
   boxShadow: theme.shadows[3],
 }))
 
@@ -43,7 +43,7 @@ const LogoButton = styled(Button)(({ theme }) => ({
 
 const ScoreChip = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1, 2),
-  backgroundColor: "#7860d2",
+  backgroundColor: theme.palette.secondary.main,
   color: theme.palette.common.white,
   borderRadius: 20,
   display: "inline-flex",
@@ -560,6 +560,8 @@ const endGame = async (questions) => {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Game Over Dialog */}
       <Dialog open={showStatistics} onClose={() => setShowStatistics(false)}>
         <DialogTitle sx={{ fontWeight: "bold", color: "primary.main" }}>Game Over</DialogTitle>
         <DialogContent>

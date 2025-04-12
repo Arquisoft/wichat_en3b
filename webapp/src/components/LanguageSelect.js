@@ -51,11 +51,14 @@ const LanguageSelect = () => {
   };
 
   return (
+
     <StyledFormControl variant="outlined" size="small">
+      <InputLabel id="language-select-label" color='primary.contrastText'>Language</InputLabel>
       <Select
         value={i18n.language}
         onChange={handleChange}
         displayEmpty
+        label="Language"
         input={
           <OutlinedInput
             notched={false}
@@ -66,6 +69,7 @@ const LanguageSelect = () => {
             }
           />
         }
+        sx={{ color: "primary.contrastText", "& .MuiSelect-icon": { color: "primary.contrastText" } }}
       >
         <MenuItem value="en">English</MenuItem>
         <MenuItem value="es">Español</MenuItem>

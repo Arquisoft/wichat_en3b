@@ -5,13 +5,14 @@ import '@testing-library/jest-dom';
 import axios from 'axios';
 import { MemoryRouter } from 'react-router';
 import Welcome from './Welcome';
+import { ThemeProvider } from '../context/ThemeContext';
 
 // Mock axios to prevent real API calls
 jest.mock('axios', () => {
   const mockAxios = {
     create: jest.fn(() => mockAxios),
     post: jest.fn(),
-    interceptors: { 
+    interceptors: {
       request: { use: jest.fn(), eject: jest.fn() },
       response: { use: jest.fn(), eject: jest.fn() }
     },
@@ -30,7 +31,7 @@ jest.mock('../hooks/useAuth', () => ({
 }));
 
 beforeAll(() => {
-  jest.spyOn(console, 'error').mockImplementation(() => {});
+  jest.spyOn(console, 'error').mockImplementation(() => { });
 });
 
 afterAll(() => {
@@ -51,9 +52,11 @@ describe('Welcome Component', () => {
 
     // Render the component inside a MemoryRouter to handle <NavLink>
     render(
-      <MemoryRouter>
-        <Welcome />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <Welcome />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     // Wait for the generated message to appear in the document
@@ -75,9 +78,11 @@ describe('Welcome Component', () => {
 
     // Render the component
     render(
-      <MemoryRouter>
-        <Welcome />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <Welcome />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     // Ensure that no welcome message is displayed if the API call fails
