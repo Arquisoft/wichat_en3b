@@ -20,11 +20,13 @@ const LLMChat = (roundData) => {
         let newMessage = { sender: "user", text: question };
         setMessages(previous => [...previous, newMessage]);
         setQuestion("");
+
+        const model = localStorage.getItem("llmModel") || "mistral";
         
         try {
             // create the history of messages (the memory of the llm) and send it through the gateway
             const history = [...messages, newMessage].map(message => `${message.sender}: ${message.text}`).join("\n");
-            const response = await axios.post("/askllm", { question: history, prompt });
+            const response = await axios.post("/askllm", { question: history, model, prompt });
             
             setMessages(previous => [...previous, { sender: "llm", text: response.data.answer }]);
         } catch (error) {

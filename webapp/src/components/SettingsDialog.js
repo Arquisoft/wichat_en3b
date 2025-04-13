@@ -5,7 +5,7 @@ import LanguageSelect from './LanguageSelect';
 import useTheme from '../hooks/useTheme';
 
 const SettingsDialog = ({ open, onClose }) => {
-  const [llmModel, setLlmModel] = useState("mistral");
+  const [llmModel, setLlmModel] = useState(localStorage.getItem('llmModel') || 'mistral');
   const { theme, themes, selectTheme } = useTheme();
 
   const handleSave = () => {
