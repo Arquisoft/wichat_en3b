@@ -175,6 +175,7 @@ function Game() {
   const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
   const navigate = useNavigate();
   
+  
   useEffect(() => {
     const fetchUserCoins = async () => {
       if (auth && auth.username) {
@@ -272,9 +273,9 @@ function Game() {
     try {
       const response = await axios.post("/updatecoins", {
         username: auth.username,
-        coins: amount
+        amount: amount
       });
-      setCoins(response.data.coins);
+      setCoins(response.data.newBalance);
       return true;
     } catch (error) {
       console.error("Error updating user coins:", error);
@@ -289,10 +290,8 @@ const endGame = async (questions) => {
       // Calculate earned coins based on score
       const earnedCoins = score * 0.3;
       
-      // Final coin calculation: starting coins - spent coins + earned coins
-      const finalCoins = coins + earnedCoins; // coins already reflects spending
-
-      await updateUserCoins(finalCoins);
+      
+      await updateUserCoins(earnedCoins);
 
       await axios.post("/addgame", { username: auth.username, questions });
       
@@ -383,7 +382,7 @@ const endGame = async (questions) => {
 
     setCoins(coins - 100);
     setSpentCoins(spentCoins + 100);
-    updateUserCoins(coins - 100);
+    updateUserCoins(-100);
 
 
     // Find the correct answer index
@@ -430,7 +429,7 @@ const endGame = async (questions) => {
 
     setCoins(coins - 150);
     setSpentCoins(spentCoins + 150);
-    updateUserCoins(coins - 150);
+    updateUserCoins(-150);
 
     setAskAudience(true)
     setShowGraph(true); // Make the graph visible when the audience call is used
@@ -446,7 +445,7 @@ const endGame = async (questions) => {
 
     setCoins(coins - 200);
     setSpentCoins(spentCoins + 200);
-    updateUserCoins(coins - 200);
+    updateUserCoins(-200);
 
     alert("Chat is now available to help you!")
     setUseChatUsed(true)

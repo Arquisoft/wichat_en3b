@@ -69,6 +69,7 @@ app.post('/adduser', async (req, res) => {
     const newUser = new User({
       username: req.body.username,
       password: hashedPassword,
+      coins: 1000
     });
 
     await newUser.save();
@@ -113,18 +114,10 @@ app.post('/addgame', async (req, res) => {
 
     await newGame.save();
 
-    // Update user coins based on score
-    const coinsEarned = Math.floor(score * 0.6);
-    await updateUserCoins(req.body.username, coinsEarned);
-
+    
     calculateUserStatistics(newGame, questions);
 
-    const responseData = {
-      ...newGame.toObject(),
-      coinsEarned: coinsEarned
-    };
-
-    res.json(responseData);
+    res.json(newGame);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -171,7 +164,7 @@ app.post('/updatecoins', async (req, res) => {
     validateRequiredFields(req, ['username', 'amount']);
     
     const username = req.body.username;
-    const amount = parseInt(req.body.amount);
+    const amount = parseInt(req.body.coins);
     
     if (isNaN(amount)) {
       return res.status(400).json({ error: 'Amount must be a number' });
