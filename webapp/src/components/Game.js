@@ -155,6 +155,8 @@ function Game() {
   const [roundData, setRoundData] = useState(null);
   const [roundPrompt, setRoundPrompt] = useState("");
   const [score, setScore] = useState(0);
+  const [coins, setCoins] = useState(0);
+  const [spentCoins, setSpentCoins] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false);
   const [callFriendUsed, setCallFriendUsed] = useState(false);
@@ -173,6 +175,21 @@ function Game() {
   const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
   const navigate = useNavigate();
   
+  useEffect(() => {
+    const fetchUserCoins = async () => {
+      if (auth && auth.username) {
+        try {
+          const response = await axios.get(`/usercoins/${auth.username}`);
+          setCoins(response.data.coins);
+        } catch (error) {
+          console.error("Error fetching user coins:", error);
+        }
+      }
+    };
+
+    fetchUserCoins();
+  }, [auth, axios]);
+
   // Function to load the data for each round.
   const loadRound = async () => {
     try {
@@ -251,12 +268,34 @@ function Game() {
     };
   }, [loading]);
 
+  const updateUserCoins = async (amount) => {
+    try {
+      const response = await axios.post("/updatecoins", {
+        username: auth.username,
+        coins: amount
+      });
+      setCoins(response.data.coins);
+      return true;
+    } catch (error) {
+      console.error("Error updating user coins:", error);
+      return false;
+    }
+  };
 
 
   // Add the game statistics to the database and show the statistics dialog
 const endGame = async (questions) => {
     try {
-      await axios.post("/addgame", { username: auth.username, questions }).then(res => console.log(res.data));
+      // Calculate earned coins based on score
+      const earnedCoins = score * 0.3;
+      
+      // Final coin calculation: starting coins - spent coins + earned coins
+      const finalCoins = coins + earnedCoins; // coins already reflects spending
+
+      await updateUserCoins(finalCoins);
+
+      await axios.post("/addgame", { username: auth.username, questions });
+      
     } catch (error) {
       console.error("Error saving user stadistics:", error);
     }
@@ -337,6 +376,16 @@ const endGame = async (questions) => {
   const handleFiftyFifty = () => {
     if (fiftyFiftyUsed || !roundData) return
 
+    if (coins < 100) {
+      alert("You dont have enough coins to use this lifeline!");
+      return;
+    }
+
+    setCoins(coins - 100);
+    setSpentCoins(spentCoins + 100);
+    updateUserCoins(coins - 100);
+
+
     // Find the correct answer index
     const correctIndex = roundData.items.findIndex((item) => item.name === roundData.itemWithImage.name)
 
@@ -373,6 +422,16 @@ const endGame = async (questions) => {
 
   const handleAudienceCall = () => {
     if (askAudience || !roundData) return
+
+    if (coins < 150) {
+      alert("You dont have enough coins to use this lifeline!");
+      return;
+    }
+
+    setCoins(coins - 150);
+    setSpentCoins(spentCoins + 150);
+    updateUserCoins(coins - 150);
+
     setAskAudience(true)
     setShowGraph(true); // Make the graph visible when the audience call is used
   }
@@ -380,6 +439,15 @@ const endGame = async (questions) => {
   const handleUseChat = () => {
     if (useChatUsed || !roundData) return
     // Implement logic to use the chat
+    if (coins < 200) {
+      alert("You dont have enough coins to use this lifeline!");
+      return;
+    }
+
+    setCoins(coins - 200);
+    setSpentCoins(spentCoins + 200);
+    updateUserCoins(coins - 200);
+
     alert("Chat is now available to help you!")
     setUseChatUsed(true)
   }
@@ -396,7 +464,7 @@ const endGame = async (questions) => {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: "flex", gap: 2 }}>
             <CoinsChip variant="contained" startIcon={<MonetizationOnIcon />}>
-              Coins
+            {coins} 🪙
             </CoinsChip>
             <ScoreChip elevation={0}>
               <EmojiEventsIcon sx={{ mr: 1 }} />
@@ -419,7 +487,7 @@ const endGame = async (questions) => {
                 variant="contained"
                 startIcon={<HelpOutlineIcon />}
                 onClick={handleFiftyFifty}
-                disabled={fiftyFiftyUsed}
+                disabled={fiftyFiftyUsed || coins < 100}
                 isUsed={fiftyFiftyUsed}
                 colorVariant="blue"
               >
@@ -440,7 +508,7 @@ const endGame = async (questions) => {
                 variant="contained"
                 startIcon={<InterpreterModeIcon />}
                 onClick={handleAudienceCall}
-                disabled={askAudience}
+                disabled={askAudience || coins < 150}
                 isUsed={askAudience}
                 colorVariant="red"
               >
@@ -450,7 +518,7 @@ const endGame = async (questions) => {
                 variant="contained"
                 startIcon={<ChatIcon />}
                 onClick={handleUseChat}
-                disabled={useChatUsed}
+                disabled={useChatUsed || coins < 200}
                 isUsed={useChatUsed}
                 colorVariant="purple"
               >
@@ -568,6 +636,9 @@ const endGame = async (questions) => {
           <Typography variant="body1"><b>Final Score:</b> {score}</Typography>
           <Typography variant="body1"><b>Correct Answers:</b> {correctAnswers} / {totalRounds}</Typography>
           <Typography variant="body1"><b>Accuracy Rate:</b> {((correctAnswers / totalRounds) * 100).toFixed(2)}%</Typography>
+          <Typography variant="body1" colorVariant= "red"><b>Spent on lifelines:</b> {spentCoins} 🪙</Typography>
+          <Typography variant="body1"><b>Earned from correct answers:</b> {score * 0.3} 🪙</Typography>     
+          
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
           <Button variant="contained" color="primary" onClick={handleNewGame}>
