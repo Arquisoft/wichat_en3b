@@ -11,15 +11,13 @@ const LanguageSelect = () => {
   };
 
   return (
-    <FormControl variant="outlined" size="small" style={{ minWidth: 120, margin: 0, padding: 0 }}>
-      <InputLabel id="language-select-label">Language</InputLabel>
+    <FormControl fullWidth variant="outlined" size="small" style={{ minWidth: 120, margin: 0, padding: 0 }}>
       <Select
         labelId="language-select-label"
         id="language-select"
         value={i18n.language} // Current language
         onChange={handleChange}
-        label="Language"
-        sx={{ color: "text.primary", "& .MuiSelect-icon": { color: "text.primary" } }}
+        sx={{ color: "text.primary", "& .MuiSelect-icon": { color: "text.primary" }, backgroundColor: "background.default" }}
       >
         <MenuItem value="en">English</MenuItem>
         <MenuItem value="es">Español</MenuItem>
