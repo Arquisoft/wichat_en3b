@@ -17,8 +17,8 @@ const SettingsDialog = ({ open, onClose }) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6">Settings</Typography>
-        <IconButton onClick={onClose} size="small">
+        Settings
+        <IconButton onClick={onClose} size="small" aria-label="Close">
           <Close />
         </IconButton>
       </DialogTitle>
@@ -52,12 +52,13 @@ const SettingsDialog = ({ open, onClose }) => {
                 >
                   <Button
                     onClick={() => selectTheme(themeOption)}
+                    aria-label={`Select ${themeOption} theme`}
                     sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '20%',
+                      minWidth: 64,
+                      maxWidth: 64,
+                      height: 64,
+                      borderRadius: 3,
                       background: themeGradient,
-                      color: 'white',
                       border: theme.name === themeOption ? `2px solid ${primaryColor}` : 'none',
                       boxShadow: theme.name === themeOption ? `0 0 10px ${primaryColor}` : 'none',
                       '&:hover': {

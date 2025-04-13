@@ -18,7 +18,10 @@ describe('SettingsDialog', () => {
   beforeEach(() => {
     useTheme.mockReturnValue({
       theme: { name: 'light' },
-      themes: { light: {}, dark: {}, blue: {} },
+      themes: {
+        light: { palette: { primary: { main: "#fff", contrastText: "#000" }, gradient: { main: { right: "#fff" } } } },
+        dark: { palette: { primary: { main: "#000", contrastText: "#000" }, gradient: { main: { right: "#000" } } } }
+      },
       selectTheme: mockSelectTheme,
     });
   });
@@ -29,10 +32,16 @@ describe('SettingsDialog', () => {
     return { onClose };
   };
 
+  const openAdvancedSettings = async () => {
+    const advancedSettingsButton = screen.getByRole('button', { name: /advanced settings/i });
+    fireEvent.click(advancedSettingsButton);
+    await screen.findByText(/LLM Model/i);
+  };
+
   test('renders the dialog with title and all sections', () => {
     setup();
 
-    expect(screen.getByText(/Settings/i)).toBeInTheDocument();
+    expect(screen.getByText("Settings")).toBeInTheDocument();
     expect(screen.getByTestId('language-select')).toBeInTheDocument();
     expect(screen.getByText(/Theme/i)).toBeInTheDocument();
     expect(screen.getByText(/Advanced Settings/i)).toBeInTheDocument();
@@ -56,25 +65,25 @@ describe('SettingsDialog', () => {
   test('allows selecting a theme', () => {
     setup();
 
-    const themeSelect = screen.getByRole('button', { name: /light/i });
-    fireEvent.mouseDown(themeSelect);
-
-    const darkOption = screen.getByRole('option', { name: /dark/i });
-    fireEvent.click(darkOption);
+    const themeButton = screen.getByRole('button', { name: /select dark theme/i });
+    fireEvent.click(themeButton);
 
     expect(mockSelectTheme).toHaveBeenCalledWith('dark');
   });
 
-  test('allows selecting a LLM model', () => {
+  test('allows selecting a LLM model', async () => {
     setup();
 
-    const modelSelect = screen.getByRole('button', { name: /model 1/i });
+    await openAdvancedSettings();
+
+    const modelSelect = screen.getByRole('combobox');
+    expect(modelSelect).toHaveTextContent(/mistral/i);
     fireEvent.mouseDown(modelSelect);
 
-    const model2Option = screen.getByRole('option', { name: /model 2/i });
+    const model2Option = screen.getByRole('option', { name: /qwen/i });
     fireEvent.click(model2Option);
 
-    expect(screen.getByRole('button', { name: /model 2/i })).toBeInTheDocument();
+    expect(modelSelect).toHaveTextContent(/qwen/i);
   });
 
   test('calls onClose when close icon is clicked', () => {
