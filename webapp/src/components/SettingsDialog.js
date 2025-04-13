@@ -1,29 +1,16 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  IconButton,
-  Typography,
-  Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Box
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Dialog, DialogTitle, Container, DialogActions, Button, IconButton, Typography, Divider, FormControl, MenuItem, Select, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Close, ExpandMore } from '@mui/icons-material';
 import LanguageSelect from './LanguageSelect';
 import useTheme from '../hooks/useTheme';
 
 const SettingsDialog = ({ open, onClose }) => {
-  const [llmModel, setLlmModel] = useState("model1");
+  const [llmModel, setLlmModel] = useState("mistral");
   const { theme, themes, selectTheme } = useTheme();
 
   const handleSave = () => {
-    // Save logic here (e.g., save selected LLM model, theme, etc.)
+    localStorage.setItem('llmModel', llmModel);
+
     onClose();
   };
 
@@ -32,26 +19,28 @@ const SettingsDialog = ({ open, onClose }) => {
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6">Settings</Typography>
         <IconButton onClick={onClose} size="small">
-          <CloseIcon />
+          <Close />
         </IconButton>
       </DialogTitle>
 
       <Divider />
 
-      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
-        {/* Language */}
-        <Box>
-          <Typography variant="subtitle1" sx={{ mb: 1 }}>🌐 Language</Typography>
-          <LanguageSelect />
-        </Box>
+      <Box>
+        <Container sx={{ py: 3, display: "flex", flexDirection: "column", gap: 3 }}>
+          {/* Language */}
+          <Box>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>🌐 Language</Typography>
+            <LanguageSelect />
+          </Box>
 
-        {/* Theme */}
-        <Box>
-          <Typography variant="subtitle1" sx={{ mb: 1 }}>🎨 Theme</Typography>
-          <FormControl fullWidth size="small">
+          {/* Theme */}
+          <Box>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>🎨 Theme</Typography>
             <Select
-              value={theme.name}
+              value={theme.name || "classic"}
               onChange={(e) => selectTheme(e.target.value)}
+              size='small'
+              fullWidth
             >
               {Object.keys(themes).map((themeKey) => (
                 <MenuItem key={themeKey} value={themeKey}>
@@ -59,30 +48,34 @@ const SettingsDialog = ({ open, onClose }) => {
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
-        </Box>
+          </Box>
+        </Container>
 
         {/* Advanced Settings divider */}
-        <Typography variant="subtitle1" sx={{ mt: 2 }}>⚙️ Advanced Settings</Typography>
-        <Divider />
-        
-        {/* LLM Model */}
-        <Box>
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>🧠 LLM Model</Typography>
-          <FormControl fullWidth size="small">
-            <Select
-              value={llmModel}
-              onChange={(e) => setLlmModel(e.target.value)}
-            >
-              <MenuItem value="model1">Model 1</MenuItem>
-              <MenuItem value="model2">Model 2</MenuItem>
-              <MenuItem value="model3">Model 3</MenuItem>
-              <MenuItem value="model4">Model 4</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </DialogContent>
+        <Accordion disableGutters elevation={0} sx={{ backgroundColor: 'transparent' }}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <Typography variant="subtitle1">⚙️ Advanced Settings</Typography>
+          </AccordionSummary>
+          <Divider />
+          <AccordionDetails>
+            {/* LLM Model */}
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>🧠 LLM Model</Typography>
+              <FormControl fullWidth size="small">
+                <Select
+                  value={llmModel}
+                  onChange={(e) => setLlmModel(e.target.value)}
+                >
+                  <MenuItem value="mistral">Mistral</MenuItem>
+                  <MenuItem value="qwen">Qwen</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </AccordionDetails>
+        </Accordion>
+      </Box>
 
+      <Divider />
       <DialogActions>
         <Button onClick={onClose} color="secondary">
           Cancel

@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { alpha, AppBar, Box, Button, Container, MenuItem, Select } from "@mui/material";
+import { alpha, AppBar, Box, Button, Container } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import { Outlet, NavLink } from 'react-router';
 import useAuth from "../hooks/useAuth";
 import axios from "../utils/axios";
 import { useTranslation } from "react-i18next";
-import LanguageSelect from "./LanguageSelect";
 import SettingsDialog from "./SettingsDialog";
 import useTheme from "../hooks/useTheme";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -27,7 +26,7 @@ const StyledNavlink = ({ theme, to, label, icon }) => {
 
 const Layout = () => {
     const { auth, setAuth } = useAuth();
-    const { theme, themes, selectTheme } = useTheme();
+    const { theme } = useTheme();
     const [settingsOpen, setSettingsOpen] = useState(false);
 
     const handleLogout = async () => {
@@ -56,7 +55,7 @@ const Layout = () => {
                 background: theme.palette.gradient.main.right,
             }}>
                 <StyledNavlink to="/home" label={t("home")} icon={<HomeIcon />} theme={theme} />
-                
+
                 <IconButton
                     onClick={() => setSettingsOpen(true)}
                     sx={{ color: "primary.contrastText" }}
@@ -65,39 +64,25 @@ const Layout = () => {
                 </IconButton>
 
                 <Box sx={{ ml: "auto" }}>
-                    <>
-                        <Select
-                            onChange={(e) => selectTheme(e.target.value)}
-                            sx={{ color: "primary.contrastText", "& .MuiSelect-icon": { color: "primary.contrastText" } }}
-                            variant="outlined"
-                            size="small"
+                    {auth.username ? (
+                        <Button
+                            onClick={handleLogout}
+                            sx={{
+                                color: "primary.contrastText",
+                                gap: "0.5rem",
+                                "&:hover": {
+                                    backgroundColor: alpha(theme.palette.primary.contrastText, 0.1)
+                                }
+                            }}
                         >
-                            {Object.keys(themes).map((themeKey) => (
-                                <MenuItem key={themeKey} value={themeKey}>
-                                    {themeKey.charAt(0).toUpperCase() + themeKey.slice(1)} {/* Capitalize theme names */}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                        {auth.username ? (
-                            <Button
-                                onClick={handleLogout}
-                                sx={{
-                                    color: "primary.contrastText",
-                                    gap: "0.5rem",
-                                    "&:hover": {
-                                        backgroundColor: alpha(theme.palette.primary.contrastText, 0.1)
-                                    }
-                                }}
-                            >
-                                {t("logout")}
-                            </Button>
-                        ) : (
-                            <>
-                                <StyledNavlink to="/login" label={t("login")} theme={theme} />
-                                <StyledNavlink to="/signup" label={t("signUp")} theme={theme} />
-                            </>
-                        )}
-                    </>
+                            {t("logout")}
+                        </Button>
+                    ) : (
+                        <>
+                            <StyledNavlink to="/login" label={t("login")} theme={theme} />
+                            <StyledNavlink to="/signup" label={t("signUp")} theme={theme} />
+                        </>
+                    )}
                 </Box>
             </AppBar>
 
