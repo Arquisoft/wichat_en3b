@@ -6,7 +6,6 @@ const server = require("./llm-service");
 jest.mock("axios");
 
 describe('LLM Service', () => {
-  
   const originalEnv = process.env;
 
     beforeEach(() => {
@@ -28,59 +27,22 @@ describe('LLM Service', () => {
         process.env = originalEnv;
         console.error.mockRestore();
     });
-
-    /*
-    // Test the /ask endpoint with valid data
-    it("should return answer when valid question and prompt are provided", async () => {
-        // Mock successful response from LLM API
-        axios.post.mockResolvedValue({
-            data: {
-                choices: [
-                    {
-                        message: {
-                            content: "This is the answer from the LLM"
-                        }
-                    }
-                ]
-            }
-        });
-
-        const response = await request(server)
-            .post("/ask")
-            .send({ 
-                question: "What is the capital of France?", 
-                prompt: "You are a helpful assistant" 
-            });
-
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty("answer", "This is the answer from the LLM");
-        expect(axios.post).toHaveBeenCalledTimes(1);
-        
-        // Verify the correct request was made to the LLM API
-        const axiosCallArg = axios.post.mock.calls[0];
-        expect(axiosCallArg[0]).toBe("https://empathyai.prod.empathy.co/v1/chat/completions");
-        expect(axiosCallArg[1]).toEqual({
-            model: "qwen/Qwen2.5-Coder-7B-Instruct",
-            messages: [
-                { role: "system", content: "You are a helpful assistant" },
-                { role: "user", content: "What is the capital of France?" }
-            ]
-        });
-        expect(axiosCallArg[2].headers).toEqual({
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer test-api-key'
-        });
-    });
-    */
-
+    
     // Test missing required fields in request
     it("should return 500 when required fields are missing", async () => {
-      const response = await request(server)
+      let response = await request(server)
           .post("/ask")
-          .send({ question: "What is the capital of France?" });
+          .send({ question: "What is the capital of France?", model: "mistral" });
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty("error", "Missing required field: prompt");
+
+      response = await request(server)
+          .post("/ask")
+          .send({ question: "What is the capital of France?", prompt: "You are a helpful assistant" });
+
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty("error", "Missing required field: model");
   });
 
   // Test missing API key
@@ -91,7 +53,8 @@ describe('LLM Service', () => {
         .post("/ask")
         .send({ 
             question: "What is the capital of France?", 
-            prompt: "You are a helpful assistant" 
+            prompt: "You are a helpful assistant",
+            model: "mistral" 
         });
 
     expect(response.status).toBe(500);
@@ -112,7 +75,8 @@ it("should handle LLM API errors properly", async () => {
       .post("/ask")
       .send({ 
           question: "What is the capital of France?", 
-          prompt: "You are a helpful assistant" 
+          prompt: "You are a helpful assistant",
+          model: "mistral"
       });
 
   expect(response.status).toBe(403);
@@ -127,7 +91,8 @@ it("should handle non-standard LLM API errors", async () => {
       .post("/ask")
       .send({ 
           question: "What is the capital of France?", 
-          prompt: "You are a helpful assistant" 
+          prompt: "You are a helpful assistant",
+          model: "mistral"
       });
 
   expect(response.status).toBe(500);
@@ -154,13 +119,11 @@ it("should handle malformed LLM API responses", async () => {
       .post("/ask")
       .send({ 
           question: "What is the capital of France?", 
-          prompt: "You are a helpful assistant" 
+          prompt: "You are a helpful assistant",
+          model: "mistral"
       });
 
   expect(response.status).toBe(500); 
   expect(response.body).toHaveProperty("error");
 });
-
 });
-
-  
