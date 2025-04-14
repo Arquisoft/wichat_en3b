@@ -41,25 +41,30 @@ const LogoButton = styled(Button)(({ theme }) => ({
   },
 }))
 
-const ScoreChip = styled(Paper)(({ theme }) => ({
+const CommonChip = styled("div")(({ theme }) => ({
   padding: theme.spacing(1, 2),
-  backgroundColor: theme.palette.secondary.main,
-  color: theme.palette.common.white,
-  borderRadius: 20,
+  borderRadius: 9,
   display: "inline-flex",
   alignItems: "center",
   fontWeight: "bold",
-}))
+  fontSize: "1rem",
+  letterSpacing: "0.5px",
+  transition: "background-color 0.3s ease, transform 0.2s ease",
+}));
 
-const CoinsChip = styled(Button)(({ theme }) => ({
+const ScoreChip = styled(CommonChip)(({ theme }) => ({
+  backgroundColor: theme.palette.secondary.main,
+  color: theme.palette.common.white,
+}));
+
+const CoinsChip = styled(CommonChip)(({ theme }) => ({
   backgroundColor: "#ffc107",
   color: "#333",
-  borderRadius: 20,
-  fontWeight: "bold",
-  "&:hover": {
-    backgroundColor: "#ffb300",
-  },
-}))
+  textTransform: "none",
+  cursor: "pointer",
+  boxShadow: "none",
+  
+}));
 
 const LifelineButton = styled(Button, {
   shouldForwardProp: (prop) => prop !== "isUsed" && prop !== "colorVariant",
@@ -95,34 +100,59 @@ const LifelineButton = styled(Button, {
 
 
 const OptionButton = styled(Button, {
-  shouldForwardProp: (prop) => prop !== "isHidden",
+  shouldForwardProp: (prop) => prop !== "isHidden" && prop !== "isCorrect" && prop !== "isSelected" && prop !== "hasSelectedAnswer",
 })(({ theme, isHidden, hasSelectedAnswer, isSelected, isCorrect }) => ({
   padding: theme.spacing(2),
   fontSize: "1.5rem",
   fontWeight: "bold",
   visibility: isHidden ? "hidden" : "visible",
   backgroundColor:
-    isCorrect && hasSelectedAnswer // If it's the correct answer, always green
+    isCorrect && hasSelectedAnswer
       ? theme.palette.success.main
-      : isSelected // If it's the selected answer
-        ? theme.palette.error.main // Incorrect selection turns red
-        : theme.palette.primary.main, // Default color
-
+      : isSelected
+        ? theme.palette.error.main
+        : theme.palette.primary.main,
   color: theme.palette.common.white,
-  "&:hover": {
-    backgroundColor:
-      isCorrect && hasSelectedAnswer
-        ? theme.palette.success.dark
-        : isSelected
-          ? theme.palette.error.dark
-          : theme.palette.primary.dark,
-    transform: "scale(1.03)",
-    boxShadow: theme.shadows[4],
+  border: `2px solid ${isCorrect && hasSelectedAnswer 
+    ? theme.palette.success.light 
+    : isSelected 
+      ? theme.palette.error.light 
+      : "transparent"}`,
+  boxShadow: isCorrect && hasSelectedAnswer
+    ? `0 0 15px ${theme.palette.success.light}`
+    : isSelected
+      ? `0 0 15px ${theme.palette.error.light}`
+      : "none",
+  transform: isCorrect && hasSelectedAnswer
+    ? "scale(1.05)"
+    : isSelected
+      ? "rotate(-2deg)"
+      : "none",
+  animation: hasSelectedAnswer 
+    ? isCorrect
+      ? "correctBounce 0.5s ease"
+      : isSelected
+        ? "incorrectShake 0.5s ease"
+        : "none"
+    : "none",
+  transition: theme.transitions.create(
+    ["background-color", "transform", "box-shadow", "border"],
+    { duration: theme.transitions.duration.short }
+  ),
+  "@keyframes correctBounce": {
+    "0%": { transform: "scale(1)" },
+    "50%": { transform: "scale(1.1)" },
+    "100%": { transform: "scale(1.05)" },
   },
-  transition: theme.transitions.create(["background-color", "transform", "box-shadow"], {
-    duration: theme.transitions.duration.short,
-  }),
-}))
+  "@keyframes incorrectShake": {
+    "0%": { transform: "translateX(0)" },
+    "25%": { transform: "translateX(-5px)" },
+    "50%": { transform: "translateX(5px)" },
+    "75%": { transform: "translateX(-5px)" },
+    "100%": { transform: "translateX(0)" },
+  }
+}));
+
 
 const ImageContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -386,26 +416,7 @@ const endGame = async (questions) => {
 
 
   return (
-    <GameContainer maxWidth="100%" height="100%">
-      {/* Top Bar */}
-      <StyledAppBar position="static">
-        <Toolbar>
-          <LogoButton color="inherit" disableRipple>
-            TRIVIA
-          </LogoButton>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <CoinsChip variant="contained" startIcon={<MonetizationOnIcon />}>
-              Coins
-            </CoinsChip>
-            <ScoreChip elevation={0}>
-              <EmojiEventsIcon sx={{ mr: 1 }} />
-              Score: {score}
-            </ScoreChip>
-          </Box>
-        </Toolbar>
-      </StyledAppBar>
-
+    <GameContainer maxWidth="100%" height="100%"sx={{ mt: 0 }}>
       {/* Main Content */}
       <Grid container spacing={3} sx={{ flex: 1, mt: 2 }}>
         {/* Left Side (Lifelines) */}
@@ -553,8 +564,28 @@ const endGame = async (questions) => {
 
         {/* Right Side (Chat) */}
         <Grid item xs={12} md={3}>
-          <Card elevation={3} sx={{ height: "100%" }}>
-            <CardContent>
+          <Card elevation={3} sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+            <Toolbar sx={{ justifyContent: "center", mt: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+                {/* Label */}
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: "bold" }}>
+                  Your Score:
+                </Typography>
+
+                {/* Chips */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <CoinsChip elevation={0}>
+                    XXXX <MonetizationOnIcon />
+                  </CoinsChip>
+
+                  <ScoreChip elevation={0}>
+                    {score} pts. <EmojiEventsIcon />
+                  </ScoreChip>
+                </Box>
+              </Box>
+            </Toolbar>
+
+            <CardContent sx={{ flexGrow: 1 }}>
               {roundData && <Chat key={chatKey} roundData={roundData} />}
             </CardContent>
           </Card>
