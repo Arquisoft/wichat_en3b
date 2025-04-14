@@ -315,4 +315,90 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.message).toBe('Fetched statistics for user testuser in mode flag');
     });
+
+    // Test /usercoins/:username endpoint
+    it('should fetch user coins for a specific user from the user service', async () => {
+        // Mock the axios response for this specific endpoint
+        axios.get.mockImplementationOnce((url) => {
+            if (url.endsWith('/usercoins/testuser')) {
+                return Promise.resolve({ data: { coins: 500 } });
+            }
+        });
+
+        const response = await request(app)
+            .get('/usercoins/testuser')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.coins).toBe(500);
+    });
+
+    // Test usercoins error handling
+    it('should handle errors from usercoins endpoint', async () => {
+        axios.get.mockImplementationOnce((url) => {
+            if (url.endsWith('/usercoins/testuser')) {
+                return Promise.reject({
+                    response: {
+                        status: 404,
+                        data: { error: 'User not found' }
+                    }
+                });
+            }
+        });
+
+        const response = await request(app)
+            .get('/usercoins/testuser')
+            .set('Authorization', `Bearer ${token}`);
+            
+        expect(response.statusCode).toBe(404);
+        expect(response.body.error).toBe('User not found');
+    });
+
+    // Test /updatecoins endpoint
+    it('should forward updatecoins request to the user service', async () => {
+        // Mock the axios response for this specific endpoint
+        axios.post.mockImplementationOnce((url, data) => {
+            if (url.endsWith('/updatecoins')) {
+                return Promise.resolve({ 
+                    data: { 
+                        username: data.username, 
+                        coins: data.coins,
+                        message: 'Coins updated successfully' 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/updatecoins')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'testuser', coins: 100, operation: 'add' });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.message).toBe('Coins updated successfully');
+        expect(response.body.username).toBe('testuser');
+        expect(response.body.coins).toBe(100);
+    });
+
+    // Test updatecoins error handling
+    it('should handle errors from updatecoins endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/updatecoins')) {
+                return Promise.reject({
+                    response: {
+                        status: 400,
+                        data: { error: 'Invalid operation' }
+                    }
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/updatecoins')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'testuser', coins: -50, operation: 'invalid' });
+            
+        expect(response.statusCode).toBe(400);
+        expect(response.body.error).toBe('Invalid operation');
+    });
 });
