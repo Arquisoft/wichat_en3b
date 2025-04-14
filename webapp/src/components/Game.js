@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { AppBar, Toolbar, Typography, Button, Card, CardContent, Grid, Box, Container, Paper, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline"
@@ -14,9 +14,13 @@ import useAxios from "../hooks/useAxios"
 import GraphComponent from './GraphComponent';
 import CallFriend from "./CallFriend"
 import PhoneDialog from "./phone/PhoneDialog";
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
 import useAuth from "../hooks/useAuth"
 import { NavLink , useNavigate} from "react-router";
+
+
 
 // Custom styled components
 const GameContainer = styled(Container)(({ theme }) => ({
@@ -33,8 +37,7 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
 }))
 
 const LogoButton = styled(Button)(({ theme }) => ({
-  fontSize: "1.5rem",
-  fontWeight: "bold",
+  fontSize: "1.1rem",
   color: theme.palette.common.white,
   "&:hover": {
     backgroundColor: "rgba(255, 255, 255, 0.1)",
@@ -176,6 +179,10 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
   minHeight: 300,
 }))
 
+const Sound = ({ src, volume, audioRef }) => {
+  return <audio ref={audioRef} src={src} preload="auto" />;
+};
+
 function Game() {
   const axios = useAxios();
   const { auth } = useAuth();
@@ -292,6 +299,8 @@ const endGame = async (questions) => {
     }
 
     setShowStatistics(true);
+    if(!isMuted)
+      endSoundRef.current?.play();
   };
 
   const handleNewGame = async () => {
@@ -321,6 +330,11 @@ const endGame = async (questions) => {
       setScore(score + pointsIncrement);
       setCorrectAnswers(correctAnswers + 1);
       setShowGraph(false);
+      if(!isMuted)
+        correctSoundRef.current?.play();
+    }else{
+      if(!isMuted)
+        wrongSoundRef.current?.play();
     }
 
     let updatedQuestions = [];
@@ -414,14 +428,47 @@ const endGame = async (questions) => {
     setUseChatUsed(true)
   }
 
+  const audioRef = useRef(null); 
+  const correctSoundRef = useRef(null); //right answer
+  const wrongSoundRef = useRef(null); //wrong answer
+  const endSoundRef = useRef(null); //wrong answer
+  const [isMuted, setIsMuted] = useState(false); 
+  const [audioReady, setAudioReady] = useState(false); 
+
+  // Función para reproducir el audio
+  const handlePlay = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.play().then(() => {
+        setAudioReady(true); // Marcar que el audio está listo para jugar
+      }).catch((error) => {
+        console.error("Error al intentar reproducir el audio:", error);
+      });
+    }
+  };
+
+  // Función para mutear/desmutear el audio
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+    if (audioRef.current) {
+      audioRef.current.muted = !audioRef.current.muted;
+    }
+  };
+
 
   return (
-    <GameContainer maxWidth="100%" height="100%"sx={{ mt: 0 }}>
+    <GameContainer maxWidth="100%" height="100%" sx={{ mt: 0 }}>
+      {/* Sound Effects */}
+      {/* <Sound src="/sounds/ambient.mp3" volume={0.2} audioRef={audioRef} /> */}
+      <Sound src="/sounds/correct1.mp3" volume={1.0} audioRef={correctSoundRef} />
+      <Sound src="/sounds/failed.mp3" volume={1.0} audioRef={wrongSoundRef} />
+      <Sound src="/sounds/end.mp3" volume={1.0} audioRef={endSoundRef} />
       {/* Main Content */}
       <Grid container spacing={3} sx={{ flex: 1, mt: 2 }}>
+        
         {/* Left Side (Lifelines) */}
         <Grid item xs={12} md={3}>
-          <Card elevation={3} >
+          <Card elevation={3}>
             <CardContent>
               <Typography variant="h4" component="h2" gutterBottom color="primary" sx={{ fontWeight: "bold", textDecoration: "underline" }}>
                 Lifelines
@@ -446,7 +493,7 @@ const endGame = async (questions) => {
               >
                 Call a Friend {callFriendUsed && "(Used)"}
               </LifelineButton>
-
+  
               <LifelineButton
                 variant="contained"
                 startIcon={<InterpreterModeIcon />}
@@ -474,39 +521,41 @@ const endGame = async (questions) => {
               >
                 Phone Out
               </LifelineButton>
-              {callFriendUsed && (<CallFriend
-                open={isCallFriendOpen}
-                onClose={handleCloseCallFriend}
-                correctAnswer={roundData.itemWithImage.name}
-                possibleAnswers={roundData.items.map(item => item.name)}
-              />)}
-              {phoneOut && (<PhoneDialog
-                open={phoneOut}
-                onClose={handlePhoneOutClose}
-                key={chatKey} roundData={roundData}
-              />)}
-            </CardContent>{showGraph && (
-            <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
-              <CardContent>
-                <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
-                  The audience says...
-                </Typography>
-                {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name}
-                  distractors={roundData.items
-                    .filter(item => item.name !== roundData.itemWithImage.name)
-                    .map(item => item.name)
-                  }
-                />}
-              </CardContent>
-            </Card>
-          )}
-            <CardContent>
-              
+  
+              {callFriendUsed && (
+                <CallFriend
+                  open={isCallFriendOpen}
+                  onClose={handleCloseCallFriend}
+                  correctAnswer={roundData.itemWithImage.name}
+                  possibleAnswers={roundData.items.map(item => item.name)}
+                />
+              )}
+  
+              {phoneOut && (
+                <PhoneDialog
+                  open={phoneOut}
+                  onClose={handlePhoneOutClose}
+                  key={chatKey} roundData={roundData}
+                />
+              )}
             </CardContent>
+  
+            {/* Audience Graph */}
+            {showGraph && (
+              <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
+                <CardContent>
+                  <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
+                    The audience says...
+                  </Typography>
+                  {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name}
+                    distractors={roundData.items.filter(item => item.name !== roundData.itemWithImage.name).map(item => item.name)}
+                  />}
+                </CardContent>
+              </Card>
+            )}
           </Card>
-          
         </Grid>
-
+  
         {/* Game Area */}
         <Grid item xs={12} md={6}>
           <Card elevation={3} sx={{ height: "100%", minHeight: 400 }}>
@@ -559,9 +608,8 @@ const endGame = async (questions) => {
               )}
             </CardContent>
           </Card>
-          
         </Grid>
-
+  
         {/* Right Side (Chat) */}
         <Grid item xs={12} md={3}>
           <Card elevation={3} sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -571,27 +619,38 @@ const endGame = async (questions) => {
                 <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: "bold" }}>
                   Your Score:
                 </Typography>
-
+  
                 {/* Chips */}
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <CoinsChip elevation={0}>
                     XXXX <MonetizationOnIcon />
                   </CoinsChip>
-
+  
                   <ScoreChip elevation={0}>
                     {score} pts. <EmojiEventsIcon />
                   </ScoreChip>
+  
+                  {/* Sound Controls */}
+                  {audioReady ? (
+                    <Button onClick={toggleMute}>
+                      {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                    </Button>
+                  ) : (
+                    <Button onClick={handlePlay}>
+                      <VolumeUpIcon />
+                    </Button>
+                  )}
                 </Box>
               </Box>
             </Toolbar>
-
+  
             <CardContent sx={{ flexGrow: 1 }}>
               {roundData && <Chat key={chatKey} roundData={roundData} />}
             </CardContent>
           </Card>
         </Grid>
       </Grid>
-
+  
       {/* Game Over Dialog */}
       <Dialog open={showStatistics} onClose={() => setShowStatistics(false)}>
         <DialogTitle sx={{ fontWeight: "bold", color: "primary.main" }}>Game Over</DialogTitle>
@@ -612,7 +671,8 @@ const endGame = async (questions) => {
         </DialogActions>
       </Dialog>
     </GameContainer>
-  )
+  );
+  
 }
 
 export default Game;
