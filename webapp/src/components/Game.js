@@ -177,16 +177,6 @@ function Game() {
   
   
   useEffect(() => {
-    const fetchUserCoins = async () => {
-      if (auth && auth.username) {
-        try {
-          const response = await axios.get(`/usercoins/${auth.username}`);
-          setCoins(response.data.coins);
-        } catch (error) {
-          console.error("Error fetching user coins:", error);
-        }
-      }
-    };
 
     fetchUserCoins();
   }, [auth, axios]);
@@ -217,6 +207,17 @@ function Game() {
       setLoading(false)
     }
   }
+    
+    const fetchUserCoins = async () => {
+      if (auth && auth.username) {
+        try {
+          const response = await axios.get(`/usercoins/${auth.username}`);
+          setCoins(response.data.coins);
+        } catch (error) {
+          console.error("Error fetching user coins:", error);
+        }
+      }
+    };
 
   const gameSetup = async () => {
     try {
@@ -290,7 +291,6 @@ const endGame = async (questions) => {
       // Calculate earned coins based on score
       const earnedCoins = score * 0.3;
       
-      
       await updateUserCoins(earnedCoins);
 
       await axios.post("/addgame", { username: auth.username, questions });
@@ -307,6 +307,9 @@ const endGame = async (questions) => {
     setRoundData(null);
     setRound(1);
     setScore(0);
+    fetchUserCoins(); // Reset coins to the latest value from the server
+    setSpentCoins(0);
+    setCorrectAnswers(0);
     setQuestions([]);
     setFiftyFiftyUsed(false);
     setCallFriendUsed(false);

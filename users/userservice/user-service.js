@@ -164,7 +164,7 @@ app.post('/updatecoins', async (req, res) => {
     validateRequiredFields(req, ['username', 'amount']);
     
     const username = req.body.username;
-    const amount = parseInt(req.body.coins);
+    const amount = parseInt(req.body.amount);
     
     if (isNaN(amount)) {
       return res.status(400).json({ error: 'Amount must be a number' });
