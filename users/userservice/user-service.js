@@ -126,7 +126,9 @@ app.post('/addgame', async (req, res) => {
 // Function to update user coins
 async function updateUserCoins(username, coinsToAdd) {
   try {
-    const user = await User.findOne({ username: username });
+    const sanitizedUsername = checkInput(username);
+
+    const user = await User.findOne({ username: sanitizedUsername });
     if (!user) {
       throw new Error('User not found');
     }
@@ -143,8 +145,9 @@ async function updateUserCoins(username, coinsToAdd) {
 // Endpoint to obtain user coins
 app.get('/usercoins/:username', async (req, res) => {
   try {
-    const username = req.params.username;
-    const user = await User.findOne({ username: username }).select('username coins');
+    const sanitizedUsername = checkInput(req.params.username);
+    
+    const user = await User.findOne({ username: sanitizedUsername }).select('username coins');
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
