@@ -277,5 +277,236 @@ describe('User Service', () => {
       expect(response.body.stats.correctRate).toBeCloseTo(2/3, 5);
       expect(response.body.stats.totalGamesPlayed).toBe(3);
     });
+
+  }); 
+},
+
+// Add these tests to your existing user-service.test.js file
+
+describe('Coin Management', () => {
+  beforeEach(async () => {
+    // Create a test user with known coin balance
+    const testUser = {
+      username: 'CoinUser',
+      password: 'CoinPassword1!'
+    };
+    await request(app).post('/adduser').send(testUser);
   });
-});
+  
+  it('should retrieve user coins on GET /usercoins/:username', async () => {
+    const response = await request(app).get('/usercoins/CoinUser');
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('username', 'CoinUser');
+    expect(response.body).toHaveProperty('coins', 1000); // Default coins value
+  });
+  
+  it('should return 404 when requesting coins for non-existent user', async () => {
+    const response = await request(app).get('/usercoins/NonExistentUser');
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty('error', 'User not found');
+  });
+  
+  it('should update user coins on POST /updatecoins', async () => {
+    const updateData = {
+      username: 'CoinUser',
+      amount: 500
+    };
+    
+    const response = await request(app).post('/updatecoins').send(updateData);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('username', 'CoinUser');
+    expect(response.body).toHaveProperty('coinsAdded', 500);
+    expect(response.body).toHaveProperty('newBalance', 1500);
+    
+    // Verify in database
+    const user = await User.findOne({ username: 'CoinUser' });
+    expect(user.coins).toBe(1500);
+  });
+  
+  it('should subtract user coins on POST /updatecoins with negative amount', async () => {
+    // First ensure we have coins
+    const user = await User.findOne({ username: 'CoinUser' });
+    user.coins = 1000;
+    await user.save();
+    
+    const updateData = {
+      username: 'CoinUser',
+      amount: -300
+    };
+    
+    const response = await request(app).post('/updatecoins').send(updateData);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('username', 'CoinUser');
+    expect(response.body).toHaveProperty('coinsAdded', -300);
+    expect(response.body).toHaveProperty('newBalance', 700);
+  });
+  
+  it('should return error when amount is not a number in /updatecoins', async () => {
+    const updateData = {
+      username: 'CoinUser',
+      amount: 'not-a-number'
+    };
+    
+    const response = await request(app).post('/updatecoins').send(updateData);
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'Amount must be a number');
+  });
+  
+  it('should return error when required fields are missing in /updatecoins', async () => {
+    const response = await request(app).post('/updatecoins').send({ username: 'CoinUser' });
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'Missing required field: amount');
+  });
+  
+  it('should return error when updating coins for non-existent user', async () => {
+    const updateData = {
+      username: 'NonExistentUser',
+      amount: 100
+    };
+    
+    const response = await request(app).post('/updatecoins').send(updateData);
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'User not found');
+  });
+}),
+
+describe('User validation and error handling', () => {
+  it('should sanitize username input with checkInput function', async () => {
+    const newUser = {
+      username: 'TestUser_123',
+      password: 'TestPassword1!'
+    };
+  
+    const response = await request(app).post('/adduser').send(newUser);
+    expect(response.status).toBe(200);
+    
+    // Now check if the user was created successfully
+    const user = await User.findOne({ username: 'TestUser_123' });
+    expect(user).not.toBeNull();
+    expect(user.username).toBe('TestUser_123');
+  });
+  
+  it('should handle duplicate username error with error code', async () => {
+    // Create a user first
+    const user = {
+      username: 'DuplicateUser',
+      password: 'Password1!'
+    };
+    
+    await request(app).post('/adduser').send(user);
+    
+    // Try to create the same user again
+    const duplicateResponse = await request(app).post('/adduser').send(user);
+    expect(duplicateResponse.status).toBe(400);
+    expect(duplicateResponse.body).toHaveProperty('error', 'Username already taken');
+  });
+  
+  it('should check username length and return error if too short', async () => {
+    const shortUser = {
+      username: 'ab',  // Less than 3 characters
+      password: 'ValidPassword1!'
+    };
+    
+    const response = await request(app).post('/adduser').send(shortUser);
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'The length of the username is not valid.');
+  });
+}),
+
+describe('Game Management', () => {
+  beforeEach(async () => {
+    await Game.deleteMany({});
+    
+    // Create a test user
+    const testUser = {
+      username: 'GameTestUser',
+      password: 'GamePassword1!'
+    };
+    await request(app).post('/adduser').send(testUser);
+  });
+  
+  it('should retrieve games for a specific user on GET /games/:username', async () => {
+    // First add some games
+    const gameData = {
+      username: 'GameTestUser',
+      questions: [
+        { topic: 'arcade', isCorrect: true, pointsIncrement: 50 },
+        { topic: 'flag', isCorrect: false, pointsIncrement: 30 }
+      ]
+    };
+    
+    await request(app).post('/addgame').send(gameData);
+    
+    const response = await request(app).get('/games/GameTestUser');
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('games');
+    expect(Array.isArray(response.body.games)).toBe(true);
+    expect(response.body.games.length).toBe(1);
+    expect(response.body.games[0]).toHaveProperty('username', 'GameTestUser');
+    expect(response.body.games[0]).toHaveProperty('score', 50);
+  });
+  
+  it('should return empty array when no games found for user', async () => {
+    const response = await request(app).get('/games/UserWithNoGames');
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('games');
+    expect(Array.isArray(response.body.games)).toBe(true);
+    expect(response.body.games.length).toBe(0);
+  });
+  
+  it('should handle error when adding game with missing required fields', async () => {
+    const invalidGameData = {
+      username: 'GameTestUser'
+      // Missing 'questions' field
+    };
+    
+    const response = await request(app).post('/addgame').send(invalidGameData);
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'Missing required field: questions');
+  });
+  
+  it('should create new user statistics when they do not exist yet', async () => {
+    await User.deleteMany({});
+  await Game.deleteMany({});
+  await UserStatistics.deleteMany({});
+  
+  // Create a test user
+  const newUser = {
+    username: 'StatsTestUser',
+    password: 'StatsTest1!'
+  };
+  
+  await request(app).post('/adduser').send(newUser);
+  
+  // Check the user was created
+  const user = await User.findOne({ username: 'StatsTestUser' });
+  expect(user).not.toBeNull();
+  
+  // Add a game with multiple topics to test statistics creation
+  const gameData = {
+    username: 'StatsTestUser',
+    questions: [
+      { topic: 'newTopic', isCorrect: true, pointsIncrement: 100 }
+    ]
+  };
+  
+  const gameResponse = await request(app).post('/addgame').send(gameData);
+  expect(gameResponse.status).toBe(200);
+  
+  // Give it a small delay to ensure async operations complete
+  await new Promise(resolve => setTimeout(resolve, 100));
+  
+  // Now check if stats were created
+  const stats = await UserStatistics.findOne({ 
+    username: 'StatsTestUser', 
+    topic: 'newTopic' 
+  });
+  
+  expect(stats).not.toBeNull();
+  if (stats) {
+    expect(stats.totalScore).toBe(100);
+    expect(stats.correctRate).toBe(1);
+    expect(stats.totalGamesPlayed).toBe(1);
+  }
+  });
+}));
