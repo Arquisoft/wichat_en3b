@@ -8,23 +8,18 @@ import styles from './index.css';
 
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import PersistentLogin from './components/PersistentLogin';
 import PrivateRoute from './components/PrivateRoute';
 
 import Layout from './components/Layout';
 import App from './App';
 import Home from './components/Home';
-import Login from './components/Login';
 import Login from './components/login/Login';
 import SignUp from './components/AddUser';
-import Game from './components/Game';
 import GameModeSelection from './components/selections/GameModeSelection';
 import RoundsGame from './components/modes/RoundsGame';
 import TimeGame from './components/modes/TimeGame';
-import Home from './components/Home';
-import Layout from './components/Layout';
 import GameTopicSelection from './components/selections/GameTopicSelection';
-import PersistentLogin from './components//loginPersistentLogin';
+import PersistentLogin from './components/login/PersistentLogin';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -43,7 +38,8 @@ root.render(
                 <Route path="/home" element={<Home />} />
                 <Route path="/gamemode" element={<GameModeSelection />} />
                 <Route path="/gametopic" element={<GameTopicSelection />} />
-                <Route path="/game" element={<Game />} />
+                <Route path="/timegame" element={<TimeGame />} />
+                <Route path="/roundsgame" element={<RoundsGame />} />
               </Route>
             </Route>
           </Route>

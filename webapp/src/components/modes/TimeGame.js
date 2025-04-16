@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AppBar, Toolbar, Typography, Button, Card, CardContent, Grid, Box, Container, Paper, LinearProgress, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
-import { styled } from "@mui/material/styles"
+import { Toolbar, Typography, Button, Card, CardContent, Grid, Box, Container, LinearProgress, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline"
 import PhoneIcon from "@mui/icons-material/Phone"
 import ChatIcon from "@mui/icons-material/Chat"
@@ -12,153 +11,28 @@ import InterpreterModeIcon from '@mui/icons-material/InterpreterMode';
 import Chat from "../LLMChat"
 import useAxios from "../../hooks/useAxios"
 import GraphComponent from '../lifelines/GraphComponent';
-import CallFriend from "../lifelines/CallFriend"
-
+import CallFriend from "../lifelines/CallFriend";
+import PhoneDialog from "../phone/PhoneDialog";
 import useAuth from "../../hooks/useAuth"
-import { NavLink } from "react-router";
-
-// Custom styled components
-const GameContainer = styled(Container)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  height: "100%",
-  paddingTop: theme.spacing(4),
-  paddingBottom: theme.spacing(4),
-}))
-
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  background: "linear-gradient(to left, #3f51b5, #7e57c2)",
-  boxShadow: theme.shadows[3],
-}))
-
-const LogoButton = styled(Button)(({ theme }) => ({
-  fontSize: "1.5rem",
-  fontWeight: "bold",
-  color: theme.palette.common.white,
-  "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-  },
-}))
-
-const ScoreChip = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(1, 2),
-  backgroundColor: "#7860d2",
-  color: theme.palette.common.white,
-  borderRadius: 20,
-  display: "inline-flex",
-  alignItems: "center",
-  fontWeight: "bold",
-}))
-
-const CoinsChip = styled(Button)(({ theme }) => ({
-  backgroundColor: "#ffc107",
-  color: "#333",
-  borderRadius: 20,
-  fontWeight: "bold",
-  "&:hover": {
-    backgroundColor: "#ffb300",
-  },
-}))
-
-const LifelineButton = styled(Button, {
-  shouldForwardProp: (prop) => prop !== "isUsed" && prop !== "colorVariant",
-})(({ theme, isUsed, colorVariant }) => ({
-  width: "100%",
-  marginBottom: theme.spacing(2),
-  backgroundColor: isUsed
-    ? theme.palette.grey[300]
-    : colorVariant === "blue"
-      ? theme.palette.primary.main
-      : colorVariant === "green"
-        ? theme.palette.success.main
-        : colorVariant === "red"
-          ? "#d94a2b"
-          : theme.palette.secondary.main,
-  color: isUsed ? theme.palette.text.disabled : theme.palette.common.white,
-  "&:hover": {
-    backgroundColor: isUsed
-      ? theme.palette.grey[300]
-      : colorVariant === "blue"
-        ? theme.palette.primary.dark
-        : colorVariant === "green"
-          ? theme.palette.success.dark
-          : colorVariant === "red"
-            ? "#b14027"
-            : theme.palette.secondary.dark,
-    transform: isUsed ? "none" : "scale(1.03)",
-  },
-  transition: theme.transitions.create(["background-color", "transform"], {
-    duration: theme.transitions.duration.short,
-  }),
-}));
-
-const OptionButton = styled(Button, {
-  shouldForwardProp: (prop) => prop !== "isHidden",
-})(({ theme, isHidden, hasSelectedAnswer, isSelected, isCorrect }) => ({
-  padding: theme.spacing(2),
-  fontSize: "1.5rem",
-  fontWeight: "bold",
-  visibility: isHidden ? "hidden" : "visible",
-  backgroundColor:
-    isCorrect && hasSelectedAnswer // If it's the correct answer, always green
-      ? theme.palette.success.main
-      : isSelected // If it's the selected answer
-        ? theme.palette.error.main // Incorrect selection turns red
-        : theme.palette.primary.main, // Default color
-
-  color: theme.palette.common.white,
-  "&:hover": {
-    backgroundColor:
-      isCorrect && hasSelectedAnswer
-        ? theme.palette.success.dark
-        : isSelected
-          ? theme.palette.error.dark
-          : theme.palette.primary.dark,
-    transform: "scale(1.03)",
-    boxShadow: theme.shadows[4],
-  },
-  transition: theme.transitions.create(["background-color", "transform", "box-shadow"], {
-    duration: theme.transitions.duration.short,
-  }),
-}))
-
-const ImageContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "center",
-  marginBottom: theme.spacing(3),
-  "& img": {
-    maxHeight: 250,
-    objectFit: "cover",
-    borderRadius: theme.shape.borderRadius,
-    boxShadow: theme.shadows[2],
-  },
-}))
-
-const LoadingContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: theme.spacing(6),
-  height: "100%",
-  minHeight: 300,
-}))
+import { NavLink, useNavigate } from "react-router";
+import { GameContainer, StyledAppBar, LogoButton, ScoreChip, CoinsChip, LifelineButton, OptionButton, ImageContainer, LoadingContainer } from "./BaseStyles";
 
 function Game() {
   const axios = useAxios();
   const { auth } = useAuth();
-
-  const [totalRounds, setTotalRounds] = useState(0);
+  const navigate = useNavigate();
   const [roundData, setRoundData] = useState(null);
   const [roundPrompt, setRoundPrompt] = useState("");
   const [score, setScore] = useState(0);
+  const [coins, setCoins] = useState(0);
+  const [spentCoins, setSpentCoins] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false);
   const [callFriendUsed, setCallFriendUsed] = useState(false);
+  const [phoneOut, setPhoneOut] = useState(false);
   const [askAudience, setAskAudience] = useState(false);
   const [useChatUsed, setUseChatUsed] = useState(false);
   const [isCallFriendOpen, setIsCallFriendOpen] = useState(false);
-
   const [hiddenOptions, setHiddenOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chatKey, setChatKey] = useState(0); // resets the chat component every time it is updated
@@ -166,9 +40,16 @@ function Game() {
   const [showStatistics, setShowStatistics] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
+  
   const TIME = 60;
   const [timeLeft, setTimeLeft] = useState(TIME);
   const [gameEnded, setGameEnded] = useState(false);
+  const [totalRounds, setTotalRounds] = useState(0);
+
+  useEffect(() => {
+  
+      fetchUserCoins();
+    }, [auth, axios]);
 
   // Function to load the data for each round.
   const loadRound = async () => {
@@ -176,7 +57,18 @@ function Game() {
       setLoading(true)
       setChatKey(chatKey + 1);
 
-      const response = await axios.get("/getRound")
+      const selectedTopics = JSON.parse(sessionStorage.getItem('selectedTopics'));
+      let response = ""; 
+
+      if (!selectedTopics || !Array.isArray(selectedTopics) || selectedTopics.length === 0) {
+        navigate("/home", {replace:true}); 
+      }
+      else {
+        response = await axios.get("/getRound", {
+          params: { topics: selectedTopics }
+        });
+      }
+
       setHiddenOptions([])
       return response.data
     } catch (error) {
@@ -184,6 +76,17 @@ function Game() {
       setLoading(false)
     }
   }
+
+  const fetchUserCoins = async () => {
+    if (auth && auth.username) {
+      try {
+        const response = await axios.get(`/usercoins/${auth.username}`);
+        setCoins(response.data.coins);
+      } catch (error) {
+        console.error("Error fetching user coins:", error);
+      }
+    }
+  };
 
   const gameSetup = async () => {
     try {
@@ -235,10 +138,27 @@ function Game() {
     };
   }, [loading]);
 
+  const updateUserCoins = async (amount) => {
+    try {
+      const response = await axios.post("/updatecoins", {
+        username: auth.username,
+        amount: amount
+      });
+      setCoins(response.data.newBalance);
+      return true;
+    } catch (error) {
+      console.error("Error updating user coins:", error);
+      return false;
+    }
+  };
+
   // Add the game statistics to the database and show the statistics dialog
   const endGame = async (questions) => {
     try {
-      await axios.post("/addgame", { username: auth.username, questions }).then(res => console.log(res.data));
+      // Calculate earned coins based on score
+      const earnedCoins = score * 0.3;
+      await updateUserCoins(earnedCoins);
+      await axios.post("/addgame", { username: auth.username, questions });
     } catch (error) {
       console.error("Error saving user stadistics:", error);
     }
@@ -252,13 +172,18 @@ function Game() {
     setQuestions([]);
     setFiftyFiftyUsed(false);
     setCallFriendUsed(false);
+    setPhoneOut(false);
     setAskAudience(false);
     setUseChatUsed(false);
     setHiddenOptions([]);
     setSelectedAnswer(null);
+    fetchUserCoins(); // Reset coins to the latest value from the server
+    setSpentCoins(0);
+
     setTotalRounds(0)
     setGameEnded(false);
     setTimeLeft(TIME);
+
     gameSetup();
   };
 
@@ -303,23 +228,6 @@ function Game() {
     }, 1000);
   }
 
-  useEffect(() => {
-    if (!gameEnded) {
-      const interval = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            setGameEnded(true);
-            endGame();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [gameEnded]);
-
   const correctOption = (index) => {
     if (!roundData) return false
     const selectedName = roundData.items[index].name
@@ -329,6 +237,15 @@ function Game() {
 
   const handleFiftyFifty = () => {
     if (fiftyFiftyUsed || !roundData) return
+
+    if (coins < 100) {
+      alert("You dont have enough coins to use this lifeline!");
+      return;
+    }
+
+    setCoins(coins - 100);
+    setSpentCoins(spentCoins + 100);
+    updateUserCoins(-100);
 
     // Find the correct answer index
     const correctIndex = roundData.items.findIndex((item) => item.name === roundData.itemWithImage.name)
@@ -357,16 +274,61 @@ function Game() {
 
   const handleAudienceCall = () => {
     if (askAudience || !roundData) return
+
+    if (coins < 150) {
+      alert("You dont have enough coins to use this lifeline!");
+      return;
+    }
+
+    setCoins(coins - 150);
+    setSpentCoins(spentCoins + 150);
+    updateUserCoins(-150);
+
     setAskAudience(true)
     setShowGraph(true); // Make the graph visible when the audience call is used
   }
 
+  const handlePhoneOut = () => {
+    if (phoneOut || !roundData) return;
+    setPhoneOut(true);
+  };
+
+  const handlePhoneOutClose = () => {
+    setPhoneOut(false);
+  };
+
   const handleUseChat = () => {
     if (useChatUsed || !roundData) return
     // Implement logic to use the chat
+    if (coins < 200) {
+      alert("You dont have enough coins to use this lifeline!");
+      return;
+    }
+
+    setCoins(coins - 200);
+    setSpentCoins(spentCoins + 200);
+    updateUserCoins(-200);
+
     alert("Chat is now available to help you!")
     setUseChatUsed(true)
   }
+
+  useEffect(() => {
+    if (!gameEnded) {
+      const interval = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setGameEnded(true);
+            endGame();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [gameEnded]);
 
   return (
     <GameContainer maxWidth="100%" height="100%">
@@ -379,7 +341,7 @@ function Game() {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: "flex", gap: 2 }}>
             <CoinsChip variant="contained" startIcon={<MonetizationOnIcon />}>
-              Coins
+              {coins} 🪙
             </CoinsChip>
             <ScoreChip elevation={0}>
               <EmojiEventsIcon sx={{ mr: 1 }} />
@@ -402,12 +364,13 @@ function Game() {
                 variant="contained"
                 startIcon={<HelpOutlineIcon />}
                 onClick={handleFiftyFifty}
-                disabled={fiftyFiftyUsed}
+                disabled={fiftyFiftyUsed || coins < 100}
                 isUsed={fiftyFiftyUsed}
                 colorVariant="blue"
               >
                 50/50 - 100 🪙 {fiftyFiftyUsed && "(Used)"}
               </LifelineButton>
+
               <LifelineButton
                 variant="contained"
                 startIcon={<PhoneIcon />}
@@ -423,28 +386,44 @@ function Game() {
                 variant="contained"
                 startIcon={<InterpreterModeIcon />}
                 onClick={handleAudienceCall}
-                disabled={askAudience}
+                disabled={askAudience || coins < 150}
                 isUsed={askAudience}
                 colorVariant="red"
               >
                 Audience Call - 150 🪙 {askAudience && "(Used)"}
               </LifelineButton>
+
               <LifelineButton
                 variant="contained"
                 startIcon={<ChatIcon />}
                 onClick={handleUseChat}
-                disabled={useChatUsed}
+                disabled={useChatUsed || coins < 200}
                 isUsed={useChatUsed}
                 colorVariant="purple"
               >
                 Use the Chat - 200 🪙 {useChatUsed && "(Used)"}
               </LifelineButton>
+
+              <LifelineButton
+                variant="contained"
+                onClick={handlePhoneOut}
+                colorVariant="purple"
+              >
+                Phone Out
+              </LifelineButton>
+
               {callFriendUsed && (<CallFriend
                 open={isCallFriendOpen}
                 onClose={handleCloseCallFriend}
                 correctAnswer={roundData.itemWithImage.name}
                 possibleAnswers={roundData.items.map(item => item.name)}
               />)}
+              {phoneOut && (<PhoneDialog
+                open={phoneOut}
+                onClose={handlePhoneOutClose}
+                key={chatKey} roundData={roundData}
+              />)}
+
             </CardContent>{showGraph && (
             <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
               <CardContent>
@@ -523,7 +502,7 @@ function Game() {
                       />
                     </ImageContainer>
                     <Container sx={{ textAlign: "center", mb: 2 }}>
-                      <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
+                      <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
                     </Container>
                     <Grid container spacing={2}>
                       {roundData.items.map((item, index) => (
@@ -559,7 +538,8 @@ function Game() {
           </Card>
         </Grid>
       </Grid>
-      {/* Game statistics (dialog) */}
+
+      {/* Game statistics */}
       <Dialog 
         open={showStatistics} 
         onClose={(event, reason) => {
@@ -574,6 +554,8 @@ function Game() {
           <Typography variant="body1"><b>Final Score:</b> {score}</Typography>
           <Typography variant="body1"><b>Correct Answers:</b> {correctAnswers} / {totalRounds}</Typography>
           <Typography variant="body1"><b>Accuracy Rate:</b> {((correctAnswers / totalRounds) * 100).toFixed(2)}%</Typography>
+          <Typography variant="body1" colorVariant= "red"><b>Spent on lifelines:</b> {spentCoins} 🪙</Typography>
+          <Typography variant="body1"><b>Earned from correct answers:</b> {score * 0.3} 🪙</Typography>     
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
           <NavLink to="/home">
