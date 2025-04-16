@@ -16,35 +16,31 @@ import PhoneDialog from "../phone/PhoneDialog";
 import useAuth from "../../hooks/useAuth"
 import { NavLink, useNavigate } from "react-router";
 import { GameContainer, StyledAppBar, LogoButton, ScoreChip, CoinsChip, LifelineButton, OptionButton, ImageContainer, LoadingContainer } from "./BaseStyles";
+import useCoinHandler from "../CoinHandler"
+import useLifeLinesHandler from "../lifelines/LifeLinesHandler"
 
-function Game() {
+function TimeGame() {
   const axios = useAxios();
   const { auth } = useAuth();
   const navigate = useNavigate();
   const [roundData, setRoundData] = useState(null);
   const [roundPrompt, setRoundPrompt] = useState("");
   const [score, setScore] = useState(0);
-  const [coins, setCoins] = useState(0);
-  const [spentCoins, setSpentCoins] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false);
-  const [callFriendUsed, setCallFriendUsed] = useState(false);
-  const [phoneOut, setPhoneOut] = useState(false);
-  const [askAudience, setAskAudience] = useState(false);
-  const [useChatUsed, setUseChatUsed] = useState(false);
-  const [isCallFriendOpen, setIsCallFriendOpen] = useState(false);
-  const [hiddenOptions, setHiddenOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chatKey, setChatKey] = useState(0); // resets the chat component every time it is updated
   const [questions, setQuestions] = useState([]);
   const [showStatistics, setShowStatistics] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
-  
+
   const TIME = 60;
   const [timeLeft, setTimeLeft] = useState(TIME);
   const [gameEnded, setGameEnded] = useState(false);
   const [totalRounds, setTotalRounds] = useState(0);
+  
+  const { coins, spentCoins, setSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins } = useCoinHandler(axios, auth);
+  const { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, handlePhoneOut, handlePhoneOutClose, handleUseChat, 
+    hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame } = useLifeLinesHandler(roundData, spendCoins);
 
   useEffect(() => {
   
@@ -76,17 +72,6 @@ function Game() {
       setLoading(false)
     }
   }
-
-  const fetchUserCoins = async () => {
-    if (auth && auth.username) {
-      try {
-        const response = await axios.get(`/usercoins/${auth.username}`);
-        setCoins(response.data.coins);
-      } catch (error) {
-        console.error("Error fetching user coins:", error);
-      }
-    }
-  };
 
   const gameSetup = async () => {
     try {
@@ -138,20 +123,6 @@ function Game() {
     };
   }, [loading]);
 
-  const updateUserCoins = async (amount) => {
-    try {
-      const response = await axios.post("/updatecoins", {
-        username: auth.username,
-        amount: amount
-      });
-      setCoins(response.data.newBalance);
-      return true;
-    } catch (error) {
-      console.error("Error updating user coins:", error);
-      return false;
-    }
-  };
-
   // Add the game statistics to the database and show the statistics dialog
   const endGame = async (questions) => {
     try {
@@ -170,12 +141,7 @@ function Game() {
     setRoundData(null);
     setScore(0);
     setQuestions([]);
-    setFiftyFiftyUsed(false);
-    setCallFriendUsed(false);
-    setPhoneOut(false);
-    setAskAudience(false);
-    setUseChatUsed(false);
-    setHiddenOptions([]);
+    newGame();
     setSelectedAnswer(null);
     fetchUserCoins(); // Reset coins to the latest value from the server
     setSpentCoins(0);
@@ -235,84 +201,6 @@ function Game() {
     return selectedName === correctName
   }
 
-  const handleFiftyFifty = () => {
-    if (fiftyFiftyUsed || !roundData) return
-
-    if (coins < 100) {
-      alert("You dont have enough coins to use this lifeline!");
-      return;
-    }
-
-    setCoins(coins - 100);
-    setSpentCoins(spentCoins + 100);
-    updateUserCoins(-100);
-
-    // Find the correct answer index
-    const correctIndex = roundData.items.findIndex((item) => item.name === roundData.itemWithImage.name)
-
-    // Get two random incorrect indices
-    let incorrectIndices = [0, 1, 2, 3].filter((i) => i !== correctIndex)
-    // Shuffle and take first two
-    incorrectIndices = incorrectIndices.sort(() => 0.5 - Math.random()).slice(0, 2)
-
-    setHiddenOptions(incorrectIndices)
-    setFiftyFiftyUsed(true)
-  }
-
-  const handleCallFriend = () => {
-    if (callFriendUsed || !roundData) return;
-    // Implement logic to simulate calling a friend
-    // alert("Your friend thinks the answer might be: " + roundData.itemWithImage.name);
-    setCallFriendUsed(true);
-    setIsCallFriendOpen(true);
-  };
-
-  const handleCloseCallFriend = () => {
-    setCallFriendUsed(false);
-    setIsCallFriendOpen(false);
-  };
-
-  const handleAudienceCall = () => {
-    if (askAudience || !roundData) return
-
-    if (coins < 150) {
-      alert("You dont have enough coins to use this lifeline!");
-      return;
-    }
-
-    setCoins(coins - 150);
-    setSpentCoins(spentCoins + 150);
-    updateUserCoins(-150);
-
-    setAskAudience(true)
-    setShowGraph(true); // Make the graph visible when the audience call is used
-  }
-
-  const handlePhoneOut = () => {
-    if (phoneOut || !roundData) return;
-    setPhoneOut(true);
-  };
-
-  const handlePhoneOutClose = () => {
-    setPhoneOut(false);
-  };
-
-  const handleUseChat = () => {
-    if (useChatUsed || !roundData) return
-    // Implement logic to use the chat
-    if (coins < 200) {
-      alert("You dont have enough coins to use this lifeline!");
-      return;
-    }
-
-    setCoins(coins - 200);
-    setSpentCoins(spentCoins + 200);
-    updateUserCoins(-200);
-
-    alert("Chat is now available to help you!")
-    setUseChatUsed(true)
-  }
-
   useEffect(() => {
     if (!gameEnded) {
       const interval = setInterval(() => {
@@ -364,44 +252,44 @@ function Game() {
                 variant="contained"
                 startIcon={<HelpOutlineIcon />}
                 onClick={handleFiftyFifty}
-                disabled={fiftyFiftyUsed || coins < 100}
-                isUsed={fiftyFiftyUsed}
+                disabled={isTrue("50") || !canAfford(100)}
+                isUsed={isTrue("50")}
                 colorVariant="blue"
               >
-                50/50 - 100 🪙 {fiftyFiftyUsed && "(Used)"}
+                50/50 - 100 🪙 {isTrue("50") && "(Used)"}
               </LifelineButton>
 
               <LifelineButton
                 variant="contained"
                 startIcon={<PhoneIcon />}
                 onClick={handleCallFriend}
-                disabled={callFriendUsed}
-                isUsed={callFriendUsed}
+                disabled={isTrue("CallFriend")}
+                isUsed={isTrue("CallFriend")}
                 colorVariant="green"
               >
-                Call a Friend {callFriendUsed && "(Used)"}
+                Call a Friend {isTrue("CallFriend") && "(Used)"}
               </LifelineButton>
 
               <LifelineButton
                 variant="contained"
                 startIcon={<InterpreterModeIcon />}
                 onClick={handleAudienceCall}
-                disabled={askAudience || coins < 150}
-                isUsed={askAudience}
+                disabled={isTrue("AskAudience") || !canAfford(150)}
+                isUsed={isTrue("AskAudience")}
                 colorVariant="red"
               >
-                Audience Call - 150 🪙 {askAudience && "(Used)"}
+                Audience Call - 150 🪙 {isTrue("AskAudience") && "(Used)"}
               </LifelineButton>
 
               <LifelineButton
                 variant="contained"
                 startIcon={<ChatIcon />}
                 onClick={handleUseChat}
-                disabled={useChatUsed || coins < 200}
-                isUsed={useChatUsed}
+                disabled={isTrue("UseChat") || !canAfford(200)}
+                isUsed={isTrue("UseChat")}
                 colorVariant="purple"
               >
-                Use the Chat - 200 🪙 {useChatUsed && "(Used)"}
+                Use the Chat - 200 🪙 {isTrue("UseChat") && "(Used)"}
               </LifelineButton>
 
               <LifelineButton
@@ -412,19 +300,19 @@ function Game() {
                 Phone Out
               </LifelineButton>
 
-              {callFriendUsed && (<CallFriend
-                open={isCallFriendOpen}
+              {isTrue("CallFriend") && (<CallFriend
+                open={isTrue("CallFriendOpen")}
                 onClose={handleCloseCallFriend}
                 correctAnswer={roundData.itemWithImage.name}
                 possibleAnswers={roundData.items.map(item => item.name)}
               />)}
-              {phoneOut && (<PhoneDialog
-                open={phoneOut}
+              {isTrue("PhoneOut") && (<PhoneDialog
+                open={isTrue("PhoneOut")}
                 onClose={handlePhoneOutClose}
                 key={chatKey} roundData={roundData}
               />)}
 
-            </CardContent>{showGraph && (
+            </CardContent>{isTrue("ShowGraph") && (
             <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
               <CardContent>
                 <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
@@ -559,4 +447,4 @@ function Game() {
   )
 }
 
-export default Game;
+export default TimeGame;

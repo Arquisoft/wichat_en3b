@@ -34,7 +34,8 @@ function RoundsGame() {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   
   const [round, setRound] = useState(1);
-  const totalRounds = 3;
+  const totalRounds = 10;
+
   const { coins, spentCoins, setSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins } = useCoinHandler(axios, auth);
   const { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, handlePhoneOut, handlePhoneOutClose, handleUseChat, 
     hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame } = useLifeLinesHandler(roundData, spendCoins);
@@ -125,7 +126,6 @@ function RoundsGame() {
     try {
       // Calculate earned coins based on score
       const earnedCoins = Math.round(score * 0.3);
-      console.log(score);
       await updateUserCoins(earnedCoins);
       await axios.post("/addgame", { username: auth.username, questions });
     } catch (error) {
@@ -140,7 +140,6 @@ function RoundsGame() {
     setScore(0);
     setQuestions([]);
     newGame();
-    setHiddenOptions([]);
     setSelectedAnswer(null);
     fetchUserCoins(); // Reset coins to the latest value from the server
     setSpentCoins(0);
@@ -160,7 +159,6 @@ function RoundsGame() {
     const pointsIncrement = 50;
     if (isCorrect) {
       setScore(score + pointsIncrement);
-      console.log(score);
       setCorrectAnswers(correctAnswers + 1);
       setShowGraph(false);
     }

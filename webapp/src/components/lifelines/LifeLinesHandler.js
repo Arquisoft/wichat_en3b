@@ -84,6 +84,7 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
     setPhoneOut(false);
     setAskAudience(false);
     setUseChatUsed(false);
+    setHiddenOptions([]);
   }
 
   return { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, handlePhoneOut, handlePhoneOutClose, handleUseChat, 
