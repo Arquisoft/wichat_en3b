@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import axios from '../utils/axios';
 import { useTranslation } from 'react-i18next';
 
-import { Container, Typography, Button, Snackbar, Box, Paper, Alert, FormHelperText } from '@mui/material';
+
+import { Container, Typography, Button, Snackbar, Box, Paper, Alert, FormHelperText, alpha } from '@mui/material';
 import { NavLink, useNavigate } from 'react-router';
 import logInPic from './photos/logInPic.png';
 import CustomTextField from './CustomTextField'; // Import the external CustomTextField
+import { grey } from '@mui/material/colors';
 
 const AddUser = () => {
   const [username, setUsername] = useState('');
@@ -43,16 +45,22 @@ const AddUser = () => {
         navigate('/login');
       }, 500);
     } catch (error) {
-      const errorMsg = error.response?.data?.error || error.message || 'Unknown error';
-      setError(errorMsg);
+      
+      const errorMsg = error.response && error.response.data && error.response.data.error
+      ? error.response.data.error
+      : error.message || 'Unknown error';
 
-      if (errorMsg.includes('Username already taken')) {
-        setUsernameError(t("usernameTaken"));
-      } else if (errorMsg.toLowerCase().includes('username')) {
-        setUsernameError(errorMsg);
-      } else if (errorMsg.toLowerCase().includes('password')) {
-        setPasswordError(errorMsg);
-      }
+    setError(errorMsg);
+
+    if (errorMsg.includes('Username already taken')) {
+      setUsernameError('Username already taken');
+    } else if (errorMsg.toLowerCase().includes('username')) {
+      setUsernameError(errorMsg);
+    } else if (errorMsg.toLowerCase().includes('password')) {
+      setPasswordError(errorMsg);
+    }
+
+
     }
   };
 
@@ -77,7 +85,7 @@ const AddUser = () => {
               setUsername(e.target.value);
               setUsernameError('');
             }}
-            error={usernameError}
+            error={!!usernameError}
             helperText={usernameError}
           />
           <CustomTextField
@@ -88,7 +96,7 @@ const AddUser = () => {
               setPassword(e.target.value);
               setPasswordError('');
             }}
-            error={passwordError}
+            error={!!passwordError}
             helperText={passwordError}
             type="password"
           />
@@ -105,9 +113,10 @@ const AddUser = () => {
             sx={{
               mt: 1,
               fontWeight: 'bold',
-              backgroundColor: '#5254bc',
+              backgroundColor: 'primary.main',
+              color: 'primary.contrastText',
               '&:hover': {
-                backgroundColor: '#3f47a3',
+                backgroundColor: 'primary.dark',
               },
             }}
           >
@@ -125,7 +134,7 @@ const AddUser = () => {
         <Box
           sx={{
             width: '50%',
-            backgroundColor: '#5254bc',
+            backgroundColor: 'primary.main',
             color: '#fff',
             display: 'flex',
             flexDirection: 'column',
@@ -151,7 +160,8 @@ const AddUser = () => {
           {/* Speech bubble */}
           <Box
             sx={{
-              backgroundColor: '#29293d',
+              color: "primary.contrastText",
+              backgroundColor: alpha(grey[900], 0.5),
               borderRadius: 2,
               px: 3,
               py: 2,

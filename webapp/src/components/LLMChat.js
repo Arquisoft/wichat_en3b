@@ -3,9 +3,11 @@ import { useState, useEffect, useRef } from "react";
 import { Box, Button, Container, Divider, TextField, Typography } from "@mui/material";
 import { Typewriter } from "react-simple-typewriter";
 import useAxios from "../hooks/useAxios";
+import useTheme from "../hooks/useTheme";
 
 const LLMChat = (roundData) => {
     const axios = useAxios();
+    const { theme } = useTheme();
 
     const [messages, setMessages] = useState([]);
     const [question, setQuestion] = useState("");
@@ -18,11 +20,13 @@ const LLMChat = (roundData) => {
         let newMessage = { sender: "user", text: question };
         setMessages(previous => [...previous, newMessage]);
         setQuestion("");
+
+        const model = localStorage.getItem("llmModel") || "mistral";
         
         try {
             // create the history of messages (the memory of the llm) and send it through the gateway
             const history = [...messages, newMessage].map(message => `${message.sender}: ${message.text}`).join("\n");
-            const response = await axios.post("/askllm", { question: history, prompt });
+            const response = await axios.post("/askllm", { question: history, model, prompt });
             
             setMessages(previous => [...previous, { sender: "llm", text: response.data.answer }]);
         } catch (error) {
@@ -63,11 +67,12 @@ const LLMChat = (roundData) => {
             flexDirection: "column",
             gap: 1,
             padding: 1,
-            border: "5px solid #ccc",
+            border: `5px solid ${theme.palette.primary.main}`,
             borderRadius: 5,
+            background: theme.palette.background.transparent,
             height: "100%"
         }}>
-            <Container fullWidth sx={{padding: 1, color: "black", borderRadius: 1}}>
+            <Container fullWidth sx={{padding: 1, color: "text.primary", borderRadius: 1}}>
                 <Typography variant="h3" align="center">TipBot</Typography>
             </Container>
             <Divider />
@@ -79,8 +84,8 @@ const LLMChat = (roundData) => {
                             alignSelf: "flex-end",
                             padding: 1,
                             margin: 1,
-                            bgcolor: "#1976d2",
-                            color: "white",
+                            bgcolor: "primary.main",
+                            color: "text.primary",
                             borderRadius: 1
                         }}>
                             {message.text}
@@ -91,8 +96,8 @@ const LLMChat = (roundData) => {
                             alignSelf: "flex-start",
                             padding: 1,
                             margin: 1,
-                            bgcolor: "#eee",
-                            color: "black",
+                            bgcolor: "background.paper",
+                            color: "text.primary",
                             borderRadius: 1
                         }}>
                             <Typewriter
@@ -113,7 +118,7 @@ const LLMChat = (roundData) => {
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
             />
-            <Button onClick={sendMessage} sx={{color: "black"}}>Send</Button>
+            <Button onClick={sendMessage} sx={{color: "text.primary"}}>Send</Button>
         </Container>
     );
 }

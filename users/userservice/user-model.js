@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
     refreshToken: {
       type: String,
     },
+    coins: {
+      type: Number,
+      default: 1000, // Default coins for new users
+    }
 });
 
 const User = mongoose.model('User', userSchema);

@@ -169,6 +169,26 @@ app.get('/userstats/user/:username', async (req, res) => {
   }
 });
 
+
+app.get('/usercoins/:username', async (req, res) => {
+  try {
+    const coinsResponse = await axios.get(userServiceUrl + '/usercoins/' + req.params.username);
+    res.json(coinsResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+
+app.post('/updatecoins', async (req, res) => {
+  try {
+    const updateResponse = await axios.post(userServiceUrl + '/updatecoins', req.body);
+    res.json(updateResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
 app.get('/userstats/topic/:topic', async (req, res) => {
   try {
     const usersResponse = await axios.get(userServiceUrl + '/userstats/topic/' + req.params.topic);
@@ -182,6 +202,15 @@ app.get('/userstats/:username/:topic', async (req, res) => {
   try {
     const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username + '/' + req.params.topic);
     res.json(statsResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.get('/games/:username', async (req, res) => {
+  try {
+    const gamesResponse = await axios.get(userServiceUrl + '/games/' + req.params.username);
+    res.json(gamesResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }

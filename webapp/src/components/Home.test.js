@@ -6,6 +6,7 @@ import MockAdapter from "axios-mock-adapter";
 import Home from "./Home";
 import useAxios from "../hooks/useAxios";
 import useAuth from "../hooks/useAuth";
+import { ThemeProvider } from "../context/ThemeContext";
 
 // Mock the hooks
 jest.mock("../hooks/useAxios", () => jest.fn());
@@ -41,9 +42,11 @@ describe("Home component", () => {
 
   it("should render the home and show the welcome message", async () => {
     render(
-      <MemoryRouter>
-        <Home />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <Home />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     await waitFor(() => {
@@ -53,9 +56,11 @@ describe("Home component", () => {
 
   it("should navigate to the game topic page when 'Play A Game Now' is clicked", async () => {
     render(
-      <MemoryRouter>
-        <Home />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <Home />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     const playButton = screen.getByText(/Play A Game Now/i);
@@ -66,9 +71,11 @@ describe("Home component", () => {
 
   it("should render the tabs and allow switching between them", async () => {
     render(
-      <MemoryRouter>
-        <Home />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <Home />
+        </MemoryRouter>
+      </ThemeProvider>
     );
 
     const statsTab = screen.getByText(/Your Stats/i);
@@ -116,9 +123,11 @@ describe("Home component", () => {
     });
   
     render(
-      <MemoryRouter>
-        <Home />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <Home />
+        </MemoryRouter>
+      </ThemeProvider>
     );
   
     // Navigate to the rankings tab

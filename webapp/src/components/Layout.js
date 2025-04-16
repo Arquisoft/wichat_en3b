@@ -1,15 +1,23 @@
-import { AppBar, Box, Button, Container } from "@mui/material";
+import { useState } from "react";
+import { alpha, AppBar, Box, Button, Container } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import { Outlet, NavLink } from 'react-router';
 import useAuth from "../hooks/useAuth";
 import axios from "../utils/axios";
 import { useTranslation } from "react-i18next";
-import LanguageSelect from "./LanguageSelect";
+import SettingsDialog from "./SettingsDialog";
+import useTheme from "../hooks/useTheme";
+import SettingsIcon from "@mui/icons-material/Settings";
+import IconButton from "@mui/material/IconButton";
 
-const StyledNavlink = ({ to, label, icon }) => {
+const StyledNavlink = ({ theme, to, label, icon }) => {
     return (
         <NavLink to={to}>
-            <Button sx={{ color: "white", gap: "0.5rem", "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+            <Button sx={{
+                color: theme.palette.primary.contrastText,
+                gap: "0.5rem",
+                "&:hover": { backgroundColor: alpha(theme.palette.primary.contrastText, 0.1) }
+            }}>
                 {icon} {label}
             </Button>
         </NavLink>
@@ -18,6 +26,8 @@ const StyledNavlink = ({ to, label, icon }) => {
 
 const Layout = () => {
     const { auth, setAuth } = useAuth();
+    const { theme } = useTheme();
+    const [settingsOpen, setSettingsOpen] = useState(false);
 
     const handleLogout = async () => {
         try {
@@ -29,47 +39,55 @@ const Layout = () => {
         }
     }
 
-    const  { t } = useTranslation();
+    const { t } = useTranslation();
 
     return (
         <Container component="main" disableGutters sx={{
             minWidth: "100vw",
             minHeight: "100vh",
             p: 0,
-            background: "linear-gradient(to bottom right,rgb(200, 240, 255), rgb(255, 240, 200))"
+            background: theme.palette.gradient.bg
         }}>
             <AppBar position="static" sx={{
                 display: "flex",
                 flexDirection: "row",
                 padding: "0.5rem",
-                background: "linear-gradient(to right,rgb(70, 80, 180),rgb(100, 90, 200))"
+                background: theme.palette.gradient.main.right,
             }}>
-                <StyledNavlink to="/home" label={t("home")} icon={<HomeIcon />} />
-                <LanguageSelect />
-                <Box sx={{ ml: "auto" }}>
-                <>
-                {auth.username ? (
-                <Button
-                    onClick={handleLogout}
-                    sx={{
-                    color: "white",
-                    gap: "0.5rem",
-                    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
-                    }}
+                <StyledNavlink to="/home" label={t("home")} icon={<HomeIcon />} theme={theme} />
+
+                <IconButton
+                    onClick={() => setSettingsOpen(true)}
+                    sx={{ color: "primary.contrastText" }}
                 >
-                    {t("logout")}
-                </Button>
-                ) : (
-                <>
-                    <StyledNavlink to="/login" label={t("login")} />
-                    <StyledNavlink to="/signup" label={t("signUp")} /> 
-                </>
-                )}
-            </>
-            </Box>
+                    <SettingsIcon />
+                </IconButton>
+
+                <Box sx={{ ml: "auto" }}>
+                    {auth.username ? (
+                        <Button
+                            onClick={handleLogout}
+                            sx={{
+                                color: "primary.contrastText",
+                                gap: "0.5rem",
+                                "&:hover": {
+                                    backgroundColor: alpha(theme.palette.primary.contrastText, 0.1)
+                                }
+                            }}
+                        >
+                            {t("logout")}
+                        </Button>
+                    ) : (
+                        <>
+                            <StyledNavlink to="/login" label={t("login")} theme={theme} />
+                            <StyledNavlink to="/signup" label={t("signUp")} theme={theme} />
+                        </>
+                    )}
+                </Box>
             </AppBar>
 
             <Outlet />
+            <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />
         </Container>
     );
 }

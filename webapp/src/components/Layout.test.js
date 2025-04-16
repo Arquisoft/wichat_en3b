@@ -6,6 +6,7 @@ import useAuth from "../hooks/useAuth";
 import axios from "../utils/axios";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../utils/i18n";
+import { ThemeProvider } from "../context/ThemeContext";
 
 jest.mock("../hooks/useAuth");
 jest.mock("../utils/axios", () => ({
@@ -15,11 +16,13 @@ jest.mock("../utils/axios", () => ({
 describe("Layout Component", () => {
   const renderLayout = () => {
     render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <Layout />
-        </MemoryRouter>
-      </I18nextProvider>
+      <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
+          <MemoryRouter>
+            <Layout />
+          </MemoryRouter>
+        </I18nextProvider>
+      </ThemeProvider>
     );
   };
 
