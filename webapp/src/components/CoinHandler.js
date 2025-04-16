@@ -1,32 +1,26 @@
 import { useState } from "react";
 
-const useCoinHandler = () => {
+const useCoinHandler = (axios, auth) => {
   const [coins, setCoins] = useState(0);
   const [spentCoins, setSpentCoins] = useState(0);
-
-  const getCoins = () => {
-    return coins;
-  }
-
-  const getSpentCoins = () => {
-    return spentCoins;
-  }
 
   const canAfford = (cost) => {
     return coins >= cost;
   }
 
-  const spendCoins = (cost) => {
-    if (!canAfford(cost)) 
+  const spendCoins = async (cost) => {
+    if (!canAfford(cost)) {
       alert("You don't have enough coins!");
+      return false;
+    }
     else {
-      setCoins(coins - cost);
-      setSpentCoins(spentCoins + cost);
-      updateUserCoins(-cost);
+      await updateUserCoins(-cost);
+      setSpentCoins(prev => prev + cost);
+      return true;
     }
   }
 
-  const fetchUserCoins = async (axios, auth) => {
+  const fetchUserCoins = async () => {
     if (auth && auth.username) {
       try {
         const response = await axios.get(`/usercoins/${auth.username}`);
@@ -37,7 +31,7 @@ const useCoinHandler = () => {
     }
   };
 
-  const updateUserCoins = async (axios, auth, amount) => {
+  const updateUserCoins = async (amount) => {
     try {
       const response = await axios.post("/updatecoins", {
         username: auth.username,
@@ -51,11 +45,7 @@ const useCoinHandler = () => {
     }
   };
 
-  const updateSpentCoins = (spent) => {
-    setSpentCoins(spent);
-  };
-
-  return { getCoins, getSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins, updateSpentCoins };
+  return { coins, spentCoins, setSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins };
 }
 
 export default useCoinHandler;
