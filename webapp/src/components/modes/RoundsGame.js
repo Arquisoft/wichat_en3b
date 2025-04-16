@@ -16,16 +16,15 @@ import PhoneDialog from "../phone/PhoneDialog";
 import useAuth from "../../hooks/useAuth"
 import { NavLink, useNavigate } from "react-router";
 import { GameContainer, StyledAppBar, LogoButton, ScoreChip, CoinsChip, LifelineButton, OptionButton, ImageContainer, LoadingContainer } from "./BaseStyles";
+import useCoinHandler from "../CoinHandler"
 
-function Game() {
+function RoundsGame() {
   const axios = useAxios();
   const { auth } = useAuth();
   const navigate = useNavigate();
   const [roundData, setRoundData] = useState(null);
   const [roundPrompt, setRoundPrompt] = useState("");
   const [score, setScore] = useState(0);
-  const [coins, setCoins] = useState(0);
-  const [spentCoins, setSpentCoins] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false);
   const [callFriendUsed, setCallFriendUsed] = useState(false);
@@ -43,9 +42,9 @@ function Game() {
   
   const [round, setRound] = useState(1);
   const totalRounds = 10;
+  const { getCoins, getSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins, updateSpentCoins } = useCoinHandler();
 
   useEffect(() => {
-
     fetchUserCoins();
   }, [auth, axios]);
 
@@ -74,17 +73,6 @@ function Game() {
       setLoading(false)
     }
   }
-    
-  const fetchUserCoins = async () => {
-    if (auth && auth.username) {
-      try {
-        const response = await axios.get(`/usercoins/${auth.username}`);
-        setCoins(response.data.coins);
-      } catch (error) {
-        console.error("Error fetching user coins:", error);
-      }
-    }
-  };
 
   const gameSetup = async () => {
     try {
@@ -137,19 +125,6 @@ function Game() {
     };
   }, [loading]);
 
-  const updateUserCoins = async (amount) => {
-    try {
-      const response = await axios.post("/updatecoins", {
-        username: auth.username,
-        amount: amount
-      });
-      setCoins(response.data.newBalance);
-      return true;
-    } catch (error) {
-      console.error("Error updating user coins:", error);
-      return false;
-    }
-  };
 
   // Add the game statistics to the database and show the statistics dialog
   const endGame = async (questions) => {
@@ -163,7 +138,7 @@ function Game() {
     }
     setShowStatistics(true);
   };
-
+  
   const handleNewGame = async () => {
     setShowStatistics(false);
     setRoundData(null);
@@ -177,7 +152,7 @@ function Game() {
     setHiddenOptions([]);
     setSelectedAnswer(null);
     fetchUserCoins(); // Reset coins to the latest value from the server
-    setSpentCoins(0);
+    updateSpentCoins(0);
 
     setRound(1);
     setCorrectAnswers(0);
@@ -231,7 +206,7 @@ function Game() {
       }
     }, 2000);
   }
-
+  
   const CorrectOption = (index) => {
     if (!roundData) return false
     const selectedName = roundData.items[index].name
@@ -242,14 +217,7 @@ function Game() {
   const handleFiftyFifty = () => {
     if (fiftyFiftyUsed || !roundData) return
 
-    if (coins < 100) {
-      alert("You dont have enough coins to use this lifeline!");
-      return;
-    }
-
-    setCoins(coins - 100);
-    setSpentCoins(spentCoins + 100);
-    updateUserCoins(-100);
+    spendCoins(100);
 
     // Find the correct answer index
     const correctIndex = roundData.items.findIndex((item) => item.name === roundData.itemWithImage.name)
@@ -279,14 +247,7 @@ function Game() {
   const handleAudienceCall = () => {
     if (askAudience || !roundData) return
 
-    if (coins < 150) {
-      alert("You dont have enough coins to use this lifeline!");
-      return;
-    }
-
-    setCoins(coins - 150);
-    setSpentCoins(spentCoins + 150);
-    updateUserCoins(-150);
+    spendCoins(150);
 
     setAskAudience(true)
     setShowGraph(true); // Make the graph visible when the audience call is used
@@ -303,232 +264,227 @@ function Game() {
 
   const handleUseChat = () => {
     if (useChatUsed || !roundData) return
+    
     // Implement logic to use the chat
-    if (coins < 200) {
-      alert("You dont have enough coins to use this lifeline!");
-      return;
-    }
 
-    setCoins(coins - 200);
-    setSpentCoins(spentCoins + 200);
-    updateUserCoins(-200);
+    spendCoins(200);
 
     alert("Chat is now available to help you!")
     setUseChatUsed(true)
   }
   
-  return (
-    <GameContainer maxWidth="100%" height="100%">
-      {/* Top Bar */}
-      <StyledAppBar position="static">
-        <Toolbar>
-          <LogoButton color="inherit" disableRipple>
-            TRIVIA
-          </LogoButton>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <CoinsChip variant="contained" startIcon={<MonetizationOnIcon />}>
-            {coins} 🪙
-            </CoinsChip>
-            <ScoreChip elevation={0}>
-              <EmojiEventsIcon sx={{ mr: 1 }} />
-              Score: {score}
-            </ScoreChip>
-          </Box>
-        </Toolbar>
-      </StyledAppBar>
-
-      {/* Main Content */}
-      <Grid container spacing={3} sx={{ flex: 1, mt: 2 }}>
-        {/* Left Side (Lifelines) */}
-        <Grid item xs={12} md={3}>
-          <Card elevation={3} >
-            <CardContent>
-              <Typography variant="h4" component="h2" gutterBottom color="primary" sx={{ fontWeight: "bold", textDecoration: "underline" }}>
-                Lifelines
-              </Typography>
-              <LifelineButton
-                variant="contained"
-                startIcon={<HelpOutlineIcon />}
-                onClick={handleFiftyFifty}
-                disabled={fiftyFiftyUsed || coins < 100}
-                isUsed={fiftyFiftyUsed}
-                colorVariant="blue"
-              >
-                50/50 - 100 🪙 {fiftyFiftyUsed && "(Used)"}
-              </LifelineButton>
-
-              <LifelineButton
-                variant="contained"
-                startIcon={<PhoneIcon />}
-                onClick={handleCallFriend}
-                disabled={callFriendUsed}
-                isUsed={callFriendUsed}
-                colorVariant="green"
-              >
-                Call a Friend {callFriendUsed && "(Used)"}
-              </LifelineButton>
-
-              <LifelineButton
-                variant="contained"
-                startIcon={<InterpreterModeIcon />}
-                onClick={handleAudienceCall}
-                disabled={askAudience || coins < 150}
-                isUsed={askAudience}
-                colorVariant="red"
-              >
-                Audience Call - 150 🪙 {askAudience && "(Used)"}
-              </LifelineButton>
-
-              <LifelineButton
-                variant="contained"
-                startIcon={<ChatIcon />}
-                onClick={handleUseChat}
-                disabled={useChatUsed || coins < 200}
-                isUsed={useChatUsed}
-                colorVariant="purple"
-              >
-                Use the Chat - 200 🪙 {useChatUsed && "(Used)"}
-              </LifelineButton>
-
-              <LifelineButton
-                variant="contained"
-                onClick={handlePhoneOut}
-                colorVariant="purple"
-              >
-                Phone Out
-              </LifelineButton>
-
-              {callFriendUsed && (<CallFriend
-                open={isCallFriendOpen}
-                onClose={handleCloseCallFriend}
-                correctAnswer={roundData.itemWithImage.name}
-                possibleAnswers={roundData.items.map(item => item.name)}
-              />)}
-              {phoneOut && (<PhoneDialog
-                open={phoneOut}
-                onClose={handlePhoneOutClose}
-                key={chatKey} roundData={roundData}
-              />)}
-
-            </CardContent>{showGraph && (
-            <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
+    return (
+      <GameContainer maxWidth="100%" height="100%">
+        {/* Top Bar */}
+        <StyledAppBar position="static">
+          <Toolbar>
+            <LogoButton color="inherit" disableRipple>
+              TRIVIA
+            </LogoButton>
+            <Box sx={{ flexGrow: 1 }} />
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <CoinsChip variant="contained" startIcon={<MonetizationOnIcon />}>
+              {getCoins} 🪙
+              </CoinsChip>
+              <ScoreChip elevation={0}>
+                <EmojiEventsIcon sx={{ mr: 1 }} />
+                Score: {score}
+              </ScoreChip>
+            </Box>
+          </Toolbar>
+        </StyledAppBar>
+  
+        {/* Main Content */}
+        <Grid container spacing={3} sx={{ flex: 1, mt: 2 }}>
+          {/* Left Side (Lifelines) */}
+          <Grid item xs={12} md={3}>
+            <Card elevation={3} >
               <CardContent>
-                <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
-                  The audience says...
+                <Typography variant="h4" component="h2" gutterBottom color="primary" sx={{ fontWeight: "bold", textDecoration: "underline" }}>
+                  Lifelines
                 </Typography>
-                {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name}
-                  distractors={roundData.items
-                    .filter(item => item.name !== roundData.itemWithImage.name)
-                    .map(item => item.name)
-                  }
-                />}
+                <LifelineButton
+                  variant="contained"
+                  startIcon={<HelpOutlineIcon />}
+                  onClick={handleFiftyFifty}
+                  disabled={fiftyFiftyUsed || !canAfford(100)}
+                  isUsed={fiftyFiftyUsed}
+                  colorVariant="blue"
+                >
+                  50/50 - 100 🪙 {fiftyFiftyUsed && "(Used)"}
+                </LifelineButton>
+  
+                <LifelineButton
+                  variant="contained"
+                  startIcon={<PhoneIcon />}
+                  onClick={handleCallFriend}
+                  disabled={callFriendUsed}
+                  isUsed={callFriendUsed}
+                  colorVariant="green"
+                >
+                  Call a Friend {callFriendUsed && "(Used)"}
+                </LifelineButton>
+  
+                <LifelineButton
+                  variant="contained"
+                  startIcon={<InterpreterModeIcon />}
+                  onClick={handleAudienceCall}
+                  disabled={askAudience || !canAfford(150)}
+                  isUsed={askAudience}
+                  colorVariant="red"
+                >
+                  Audience Call - 150 🪙 {askAudience && "(Used)"}
+                </LifelineButton>
+  
+                <LifelineButton
+                  variant="contained"
+                  startIcon={<ChatIcon />}
+                  onClick={handleUseChat}
+                  disabled={useChatUsed || !canAfford(200)}
+                  isUsed={useChatUsed}
+                  colorVariant="purple"
+                >
+                  Use the Chat - 200 🪙 {useChatUsed && "(Used)"}
+                </LifelineButton>
+  
+                <LifelineButton
+                  variant="contained"
+                  onClick={handlePhoneOut}
+                  colorVariant="purple"
+                >
+                  Phone Out
+                </LifelineButton>
+  
+                {callFriendUsed && (<CallFriend
+                  open={isCallFriendOpen}
+                  onClose={handleCloseCallFriend}
+                  correctAnswer={roundData.itemWithImage.name}
+                  possibleAnswers={roundData.items.map(item => item.name)}
+                />)}
+                {phoneOut && (<PhoneDialog
+                  open={phoneOut}
+                  onClose={handlePhoneOutClose}
+                  key={chatKey} roundData={roundData}
+                />)}
+  
+              </CardContent>{showGraph && (
+              <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
+                <CardContent>
+                  <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
+                    The audience says...
+                  </Typography>
+                  {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name}
+                    distractors={roundData.items
+                      .filter(item => item.name !== roundData.itemWithImage.name)
+                      .map(item => item.name)
+                    }
+                  />}
+                </CardContent>
+              </Card>
+            )}
+              <CardContent>
+                
               </CardContent>
             </Card>
-          )}
-            <CardContent>
-              
-            </CardContent>
-          </Card>
-          
-        </Grid>
-
-        {/* Game Area */}
-        <Grid item xs={12} md={6}>
-          <Card elevation={3} sx={{ height: "100%", minHeight: 400 }}>
-            <CardContent>
-              {loading ? (
-                <LoadingContainer>
-                  <CircularProgress size={60} thickness={4} color="primary" />
-                  <Typography variant="h6" color="textSecondary" sx={{ mt: 3 }}>
-                    Loading question...
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                    Get ready for round {round}!
-                  </Typography>
-                </LoadingContainer>
-              ) : (
-                roundData && (
-                  <>
-                    <Typography variant="h4" component="h2" align="center" gutterBottom color="primary" sx={{ fontWeight: "bold" }}>
-                      Round {round}/{totalRounds}
+            
+          </Grid>
+  
+          {/* Game Area */}
+          <Grid item xs={12} md={6}>
+            <Card elevation={3} sx={{ height: "100%", minHeight: 400 }}>
+              <CardContent>
+                {loading ? (
+                  <LoadingContainer>
+                    <CircularProgress size={60} thickness={4} color="primary" />
+                    <Typography variant="h6" color="textSecondary" sx={{ mt: 3 }}>
+                      Loading question...
                     </Typography>
-                    <ImageContainer>
-                      <img
-                        src={roundData.itemWithImage.imageUrl || "/placeholder.svg"}
-                        alt={roundData.itemWithImage.imageAltText || "Item image"}
-                      />
-                    </ImageContainer>
-                    <Container sx={{ textAlign: "center", mb: 2 }}>
-                      <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
-                    </Container>
-                    <Grid container spacing={2}>
-                      {roundData.items.map((item, index) => (
-                        <Grid item xs={6} key={index}>
-                          <OptionButton
-                            variant="contained"
-                            fullWidth
-                            onClick={() => handleOptionSelect(index)}
-                            disabled={hiddenOptions.includes(index)}
-                            isHidden={hiddenOptions.includes(index)}
-                            hasSelectedAnswer={selectedAnswer !== null}
-                            isSelected={selectedAnswer === index}
-                            isCorrect={CorrectOption(index)}
-                          >
-                            {item.name}
-                          </OptionButton>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </>
-                )
-              )}
-            </CardContent>
-          </Card>
-          
+                    <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                      Get ready for round {round}!
+                    </Typography>
+                  </LoadingContainer>
+                ) : (
+                  roundData && (
+                    <>
+                      <Typography variant="h4" component="h2" align="center" gutterBottom color="primary" sx={{ fontWeight: "bold" }}>
+                        Round {round}/{totalRounds}
+                      </Typography>
+                      <ImageContainer>
+                        <img
+                          src={roundData.itemWithImage.imageUrl || "/placeholder.svg"}
+                          alt={roundData.itemWithImage.imageAltText || "Item image"}
+                        />
+                      </ImageContainer>
+                      <Container sx={{ textAlign: "center", mb: 2 }}>
+                        <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
+                      </Container>
+                      <Grid container spacing={2}>
+                        {roundData.items.map((item, index) => (
+                          <Grid item xs={6} key={index}>
+                            <OptionButton
+                              variant="contained"
+                              fullWidth
+                              onClick={() => handleOptionSelect(index)}
+                              disabled={hiddenOptions.includes(index)}
+                              isHidden={hiddenOptions.includes(index)}
+                              hasSelectedAnswer={selectedAnswer !== null}
+                              isSelected={selectedAnswer === index}
+                              isCorrect={CorrectOption(index)}
+                            >
+                              {item.name}
+                            </OptionButton>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </>
+                  )
+                )}
+              </CardContent>
+            </Card>
+            
+          </Grid>
+  
+          {/* Right Side (Chat) */}
+          <Grid item xs={12} md={3}>
+            <Card elevation={3} sx={{ height: "100%" }}>
+              <CardContent>
+                {roundData && <Chat key={chatKey} roundData={roundData} />}
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-
-        {/* Right Side (Chat) */}
-        <Grid item xs={12} md={3}>
-          <Card elevation={3} sx={{ height: "100%" }}>
-            <CardContent>
-              {roundData && <Chat key={chatKey} roundData={roundData} />}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* Game statistics */}
-      <Dialog 
-        open={showStatistics} 
-        onClose={(event, reason) => {
-          // Prevent the user to interact with the rest of the screen when the dialog is shown
-          if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
-            setShowStatistics(false)
-          }
-        }}
-        >
-        <DialogTitle sx={{ fontWeight: "bold", color: "primary.main" }}>Game Over</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1"><b>Final Score:</b> {score}</Typography>
-          <Typography variant="body1"><b>Correct Answers:</b> {correctAnswers} / {totalRounds}</Typography>
-          <Typography variant="body1"><b>Accuracy Rate:</b> {((correctAnswers / totalRounds) * 100).toFixed(2)}%</Typography>
-          <Typography variant="body1" colorVariant= "red"><b>Spent on lifelines:</b> {spentCoins} 🪙</Typography>
-          <Typography variant="body1"><b>Earned from correct answers:</b> {score * 0.3} 🪙</Typography>     
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-          <NavLink to="/home">
-            <Button variant="contained" color="secondary">
-              Return Home
+  
+        {/* Game statistics */}
+        <Dialog 
+          open={showStatistics} 
+          onClose={(event, reason) => {
+            // Prevent the user to interact with the rest of the screen when the dialog is shown
+            if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
+              setShowStatistics(false)
+            }
+          }}
+          >
+          <DialogTitle sx={{ fontWeight: "bold", color: "primary.main" }}>Game Over</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1"><b>Final Score:</b> {score}</Typography>
+            <Typography variant="body1"><b>Correct Answers:</b> {correctAnswers} / {totalRounds}</Typography>
+            <Typography variant="body1"><b>Accuracy Rate:</b> {((correctAnswers / totalRounds) * 100).toFixed(2)}%</Typography>
+            <Typography variant="body1" colorVariant= "red"><b>Spent on lifelines:</b> {getSpentCoins} 🪙</Typography>
+            <Typography variant="body1"><b>Earned from correct answers:</b> {score * 0.3} 🪙</Typography>     
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+            <NavLink to="/home">
+              <Button variant="contained" color="secondary">
+                Return Home
+              </Button>
+            </NavLink>
+            <Button variant="contained" color="primary" onClick={handleNewGame}>
+              New Game
             </Button>
-          </NavLink>
-          <Button variant="contained" color="primary" onClick={handleNewGame}>
-            New Game
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </GameContainer>
-  )
+          </DialogActions>
+        </Dialog>
+      </GameContainer>
+    )
 }
 
-export default Game;
+export default RoundsGame;
