@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import GameTopicSelection from "./GameTopicSelection";
-import useAxios from "../hooks/useAxios";
+import { ThemeProvider } from "../context/ThemeContext";
 
 // Mock the useAxios hook
 jest.mock("../hooks/useAxios", () => () => ({ post: jest.fn() }));
@@ -17,21 +17,25 @@ jest.mock("@mui/icons-material", () => {
 describe("GameTopicSelection Component", () => {
   test("renders correctly with title and options", () => {
     render(
-      <MemoryRouter>
-        <GameTopicSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameTopicSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
     expect(screen.getByText(/trivia game/i)).toBeInTheDocument();
-    expect(screen.getByText(/select the topic/i)).toBeInTheDocument();
+    expect(screen.getByText(/choose your topics/i)).toBeInTheDocument();
     expect(screen.getByText(/custom/i)).toBeInTheDocument();
-    expect(screen.getByText(/wild - everything all at once!/i)).toBeInTheDocument();
+    expect(screen.getByText(/wild mode/i)).toBeInTheDocument();
   });
 
   test("NEXT button is disabled initially", () => {
     render(
-      <MemoryRouter>
-        <GameTopicSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameTopicSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
     const nextButton = screen.getByText(/next/i);
     expect(nextButton).toBeDisabled();
@@ -39,9 +43,11 @@ describe("GameTopicSelection Component", () => {
 
   test("NEXT button enables when a topic is selected", () => {
     render(
-      <MemoryRouter>
-        <GameTopicSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameTopicSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
     const button = screen.getByText(/f1 drivers/i);
     fireEvent.click(button);
@@ -50,9 +56,11 @@ describe("GameTopicSelection Component", () => {
 
   test("NEXT button disables when all topics are deselected", () => {
     render(
-      <MemoryRouter>
-        <GameTopicSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameTopicSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
     const button = screen.getByText(/f1 drivers/i);
     fireEvent.click(button);
@@ -62,20 +70,24 @@ describe("GameTopicSelection Component", () => {
 
   test("Selecting 'Wild' automatically selects all topics", () => {
     render(
-      <MemoryRouter>
-        <GameTopicSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameTopicSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
-    const wildOption = screen.getByText(/wild - everything all at once!/i);
+    const wildOption = screen.getByText(/wild mode/i);
     fireEvent.click(wildOption);
     expect(screen.getByText(/next/i)).toBeEnabled();
   });
 
   test("Selecting a specific topic updates state", () => {
     render(
-      <MemoryRouter>
-        <GameTopicSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameTopicSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
     const button = screen.getByText(/f1 drivers/i);
     fireEvent.click(button);
@@ -84,22 +96,36 @@ describe("GameTopicSelection Component", () => {
 
   test("Topic buttons are disabled when 'Wild' mode is selected", () => {
     render(
-      <MemoryRouter>
-        <GameTopicSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameTopicSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
-    const wildOption = screen.getByText(/wild - everything all at once!/i);
+    const wildOption = screen.getByText(/wild mode/i); 
     fireEvent.click(wildOption);
-
+    
     const button = screen.getByText(/f1 drivers/i);
-    expect(button).toBeDisabled();
+    
+    const topicButtons = screen.getAllByRole('button').filter(btn => 
+      btn.textContent.includes('F1 DRIVERS') || 
+      btn.textContent.includes('CITIES') || 
+      btn.textContent.includes('COUNTRIES')
+    );
+    
+    const initialSelectedCount = screen.getByText(/all \d+ topics selected/i).textContent;
+    fireEvent.click(button);
+    const afterClickSelectedCount = screen.getByText(/all \d+ topics selected/i).textContent;
+    expect(initialSelectedCount).toEqual(afterClickSelectedCount);
   });
 
   test("handleCustomSelection resets wild mode and clears selected topics", () => {
     render(
-      <MemoryRouter>
-        <GameTopicSelection />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <GameTopicSelection />
+        </MemoryRouter>
+      </ThemeProvider>
     );
     const customOption = screen.getByText(/custom/i);
     fireEvent.click(customOption);

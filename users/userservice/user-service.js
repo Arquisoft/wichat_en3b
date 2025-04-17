@@ -69,6 +69,7 @@ app.post('/adduser', async (req, res) => {
     const newUser = new User({
       username: req.body.username,
       password: hashedPassword,
+      coins: 1000
     });
 
     await newUser.save();
@@ -112,12 +113,78 @@ app.post('/addgame', async (req, res) => {
     });
 
     await newGame.save();
+
+    
     calculateUserStatistics(newGame, questions);
+
     res.json(newGame);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
+
+// Function to update user coins
+async function updateUserCoins(username, coinsToAdd) {
+  try {
+    const sanitizedUsername = checkInput(username);
+
+    const user = await User.findOne({ username: sanitizedUsername });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    
+    user.coins += coinsToAdd;
+    await user.save();
+    return user.coins;
+  } catch (error) {
+    console.error('Error updating user coins:', error);
+    throw error;
+  }
+}
+
+// Endpoint to obtain user coins
+app.get('/usercoins/:username', async (req, res) => {
+  try {
+    const sanitizedUsername = checkInput(req.params.username);
+    
+    const user = await User.findOne({ username: sanitizedUsername }).select('username coins');
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({ 
+      username: user.username,
+      coins: user.coins 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/updatecoins', async (req, res) => {
+  try {
+    validateRequiredFields(req, ['username', 'amount']);
+    
+    const username = req.body.username;
+    const amount = parseInt(req.body.amount);
+    
+    if (isNaN(amount)) {
+      return res.status(400).json({ error: 'Amount must be a number' });
+    }
+    
+    const newCoinsBalance = await updateUserCoins(username, amount);
+    
+    res.json({ 
+      username: username,
+      coinsAdded: amount,
+      newBalance: newCoinsBalance 
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 
 //Function only called when a new game is added
 async function calculateUserStatistics(newGame, questions) {

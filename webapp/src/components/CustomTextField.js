@@ -14,7 +14,7 @@ const CustomTextField = ({ name, labelKey, value, onChange, type = "text" }) => 
       value={value}
       onChange={onChange}
       type={type}
-      sx={{ mb: 2 }}
+      sx={{ mb: 2, backgroundColor: "background.default" }}
     />
   );
 };

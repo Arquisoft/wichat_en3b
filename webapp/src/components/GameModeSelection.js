@@ -16,7 +16,7 @@ const StyledContainer = styled(Container)(({ theme }) => ({
 const SectionPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   width: "100%",
-  background: "linear-gradient(to right, #f5f7fa, #e4e8f0)",
+  background: theme.palette.background.paper,
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[2],
 }))
@@ -37,16 +37,16 @@ const StyledButton = styled(Button)(({ theme }) => ({
   fontSize: "1.2rem",
   fontWeight: "bold",
   borderRadius: 30,
-  background: "linear-gradient(to right, #3f51b5, #7e57c2)",
+  background: theme.palette.gradient.main.right,
   "&:hover": {
-    background: "linear-gradient(to right, #303f9f, #5e35b1)",
+    background: theme.palette.gradient.hover.right,
     transform: "scale(1.03)",
   },
   "&.Mui-disabled": {
-    background: theme.palette.grey[300],
+    background: theme.palette.background.paper,
     color: theme.palette.text.disabled,
   },
-  transition: theme.transitions.create(["background", "transform"], {
+  transition: theme.transitions.create(["transform"], {
     duration: theme.transitions.duration.short,
   }),
 }))

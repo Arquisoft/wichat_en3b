@@ -9,12 +9,11 @@ app.use(express.json());
 // Load enviornment variables
 require('dotenv').config();
 
-// Define configurations for different LLM APIs
-const llmConfigs = (prompt) => {
-  const model = {
+const empathy = (model, prompt) => {
+  return {
     url: () => 'https://empathyai.prod.empathy.co/v1/chat/completions',
     transformRequest: (question) => ({
-      model: "mistralai/Mistral-7B-Instruct-v0.3",
+      model: model,
       messages: [
         { role: "system", content: prompt },
         { role: "user", content: question }
@@ -25,9 +24,17 @@ const llmConfigs = (prompt) => {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json'
     })
+  }
+}
+
+// Define configurations for different LLM APIs
+const llmConfigs = (model, prompt) => {
+  const models = {
+    mistral: empathy("mistralai/Mistral-7B-Instruct-v0.3", prompt),
+    qwen: empathy("qwen/Qwen2.5-Coder-7B-Instruct", prompt),
   };
 
-  return model;
+  return models[model] || models.mistral; // Default to Mistral if model is not found
 };
 
 // Function to validate required fields in the request body
@@ -40,9 +47,9 @@ function validateRequiredFields(req, requiredFields) {
 }
 
 // Generic function to send questions to LLM
-async function sendQuestionToLLM(question, apiKey, prompt) {
+async function sendQuestionToLLM(question, apiKey, model, prompt) {
   try {
-    const config = llmConfigs(prompt);
+    const config = llmConfigs(model, prompt);
     if (!config) {
       throw new Error(`Something failed setting up the model`);
     }
@@ -68,15 +75,15 @@ async function sendQuestionToLLM(question, apiKey, prompt) {
 app.post('/ask', async (req, res) => {
   try {
     // Check if required fields are present in the request body
-    validateRequiredFields(req, ['question', 'prompt']);
+    validateRequiredFields(req, ['question', 'model', 'prompt']);
 
-    const { question, prompt } = req.body;
+    const { question, model, prompt } = req.body;
     //load the api key from an environment variable
     const apiKey = process.env.LLM_API_KEY;
     if (!apiKey) {
       return res.status(500).json({ error: 'API key is missing.' });
     }
-    const answer = await sendQuestionToLLM(question, apiKey, prompt);
+    const answer = await sendQuestionToLLM(question, apiKey, model, prompt);
     res.json({ answer });
   } catch (error) {
     const statusCode = error.response?.status || 500;

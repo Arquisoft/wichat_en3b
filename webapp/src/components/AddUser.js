@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import axios from '../utils/axios';
 import { useTranslation } from 'react-i18next';
 
-import { Container, Typography, Button, Snackbar, Box, Paper, Alert, FormHelperText } from '@mui/material';
+
+import { Container, Typography, Button, Snackbar, Box, Paper, Alert, FormHelperText, alpha } from '@mui/material';
 import { NavLink, useNavigate } from 'react-router';
 import logInPic from './photos/logInPic.png';
 import CustomTextField from './CustomTextField'; // Import the external CustomTextField
+import { grey } from '@mui/material/colors';
 
 const AddUser = () => {
   const [username, setUsername] = useState('');
@@ -111,9 +113,10 @@ const AddUser = () => {
             sx={{
               mt: 1,
               fontWeight: 'bold',
-              backgroundColor: '#5254bc',
+              backgroundColor: 'primary.main',
+              color: 'primary.contrastText',
               '&:hover': {
-                backgroundColor: '#3f47a3',
+                backgroundColor: 'primary.dark',
               },
             }}
           >
@@ -131,7 +134,7 @@ const AddUser = () => {
         <Box
           sx={{
             width: '50%',
-            backgroundColor: '#5254bc',
+            backgroundColor: 'primary.main',
             color: '#fff',
             display: 'flex',
             flexDirection: 'column',
@@ -157,7 +160,8 @@ const AddUser = () => {
           {/* Speech bubble */}
           <Box
             sx={{
-              backgroundColor: '#29293d',
+              color: "primary.contrastText",
+              backgroundColor: alpha(grey[900], 0.5),
               borderRadius: 2,
               px: 3,
               py: 2,
