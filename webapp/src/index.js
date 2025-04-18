@@ -4,8 +4,6 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import './index.css'; // Global css to fix margin
-import styles from './index.css';
-
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import PrivateRoute from './components/PrivateRoute';
@@ -16,8 +14,8 @@ import Home from './components/Home';
 import Login from './components/login/Login';
 import SignUp from './components/AddUser';
 import GameModeSelection from './components/selections/GameModeSelection';
-import RoundsGame from './components/modes/RoundsGame';
-import TimeGame from './components/modes/TimeGame';
+import RoundsGame from './components/game/RoundsGame';
+import TimeGame from './components/game/TimeGame';
 import GameTopicSelection from './components/selections/GameTopicSelection';
 import PersistentLogin from './components/login/PersistentLogin';
 
