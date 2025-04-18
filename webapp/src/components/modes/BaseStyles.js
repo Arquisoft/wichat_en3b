@@ -126,3 +126,7 @@ export const LoadingContainer = styled(Box)(({ theme }) => ({
   height: "100%",
   minHeight: 300,
 }))
+
+export const HighlightedTopic = styled('span')(({ theme }) => ({
+  color: theme.palette.secondary.main,
+}))

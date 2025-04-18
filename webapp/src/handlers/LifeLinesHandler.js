@@ -66,15 +66,14 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
 
   const isTrue = (lifeLine) => {
     switch(lifeLine) {
-      case "50": {return fiftyFiftyUsed};
-      case "CallFriend": {return callFriendUsed};
-      case "AskAudience": {return askAudience};
-      case "UseChat": {return useChatUsed};
-      case "CallFriend": {return callFriendUsed};
-      case "CallFriendOpen": {return isCallFriendOpen};
-      case "PhoneOut": {return phoneOut};
-      case "ShowGraph": {return showGraph};
-      default: {alert("Unknown")};
+      case "50": return fiftyFiftyUsed;
+      case "AskAudience": return askAudience;
+      case "UseChat": return useChatUsed;
+      case "CallFriend": return callFriendUsed;
+      case "CallFriendOpen": return isCallFriendOpen;
+      case "PhoneOut": return phoneOut;
+      case "ShowGraph": return showGraph;
+      default: alert("Unknown");
     }
   }
 
