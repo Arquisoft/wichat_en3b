@@ -18,6 +18,8 @@ import PhoneDialog from "./phone/PhoneDialog";
 import useAuth from "../hooks/useAuth"
 import { NavLink , useNavigate} from "react-router";
 
+import { TOPIC_QUESTION_MAP } from "../utils/topicQuestionMap";
+
 // Custom styled components
 const GameContainer = styled(Container)(({ theme }) => ({
   display: "flex",
@@ -146,6 +148,10 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
   minHeight: 300,
 }))
 
+const HighlightedTopic = styled('span')(({ theme }) => ({
+  color: theme.palette.secondary.main,
+}))
+
 function Game() {
   const axios = useAxios();
   const { auth } = useAuth();
@@ -238,8 +244,8 @@ function Game() {
   // Check if the game is still loading after modifying the round data
   useEffect(() => {
     if (roundData && roundData.items.length > 0) {
-      let wh = (roundData.topic === "athlete" || roundData.topic === "singer") ? "Who" : "What";
-      setRoundPrompt(`${wh} is this ${roundData.topic}?`);
+      const questionInfo = TOPIC_QUESTION_MAP[roundData.topic] || { wh: "What", name: roundData.topic }; // Value by default if topic is not found
+      setRoundPrompt(`${questionInfo.wh} is this ${questionInfo.name}?`);
       setLoading(false);
     } else {
       setLoading(true);
@@ -593,7 +599,11 @@ const endGame = async (questions) => {
                       />
                     </ImageContainer>
                     <Container sx={{ textAlign: "center", mb: 2 }}>
-                      <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
+                      {roundData && (
+                        <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+                          {TOPIC_QUESTION_MAP[roundData.topic]?.wh || "What"} is this <HighlightedTopic>{TOPIC_QUESTION_MAP[roundData.topic]?.name || roundData.topic.toUpperCase()}</HighlightedTopic>?
+                        </Typography>
+                      )}
                     </Container>
                     <Grid container spacing={2}>
                       {roundData.items.map((item, index) => (
