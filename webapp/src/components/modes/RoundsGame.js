@@ -14,12 +14,141 @@ import GraphComponent from '../lifelines/GraphComponent';
 import CallFriend from "../lifelines/CallFriend"
 import PhoneDialog from "../phone/PhoneDialog";
 import useAuth from "../../hooks/useAuth"
-import { NavLink, useNavigate } from "react-router";
+import { NavLink , useNavigate} from "react-router";
 import { GameContainer, StyledAppBar, LogoButton, ScoreChip, CoinsChip, LifelineButton, OptionButton, ImageContainer, LoadingContainer } from "./BaseStyles";
 import useCoinHandler from "../CoinHandler"
 import useLifeLinesHandler from "../lifelines/LifeLinesHandler"
+import { TOPIC_QUESTION_MAP } from "../utils/topicQuestionMap";
 
-function RoundsGame() {
+// Custom styled components
+const GameContainer = styled(Container)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+  paddingTop: theme.spacing(4),
+  paddingBottom: theme.spacing(4),
+}))
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  background: theme.palette.gradient.main.left,
+  boxShadow: theme.shadows[3],
+}))
+
+const LogoButton = styled(Button)(({ theme }) => ({
+  fontSize: "1.5rem",
+  fontWeight: "bold",
+  color: theme.palette.common.white,
+  "&:hover": {
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+  },
+}))
+
+const ScoreChip = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(1, 2),
+  backgroundColor: theme.palette.secondary.main,
+  color: theme.palette.common.white,
+  borderRadius: 20,
+  display: "inline-flex",
+  alignItems: "center",
+  fontWeight: "bold",
+}))
+
+const CoinsChip = styled(Button)(({ theme }) => ({
+  backgroundColor: "#ffc107",
+  color: "#333",
+  borderRadius: 20,
+  fontWeight: "bold",
+  "&:hover": {
+    backgroundColor: "#ffb300",
+  },
+}))
+
+const LifelineButton = styled(Button, {
+  shouldForwardProp: (prop) => prop !== "isUsed" && prop !== "colorVariant",
+})(({ theme, isUsed, colorVariant }) => ({
+  width: "100%",
+  marginBottom: theme.spacing(2),
+  backgroundColor: isUsed
+    ? theme.palette.grey[300]
+    : colorVariant === "blue"
+      ? theme.palette.primary.main
+      : colorVariant === "green"
+        ? theme.palette.success.main
+        : colorVariant === "red"
+          ? "#d94a2b"
+          : theme.palette.secondary.main,
+  color: isUsed ? theme.palette.text.disabled : theme.palette.common.white,
+  "&:hover": {
+    backgroundColor: isUsed
+      ? theme.palette.grey[300]
+      : colorVariant === "blue"
+        ? theme.palette.primary.dark
+        : colorVariant === "green"
+          ? theme.palette.success.dark
+          : colorVariant === "red"
+            ? "#b14027"
+            : theme.palette.secondary.dark,
+    transform: isUsed ? "none" : "scale(1.03)",
+  },
+  transition: theme.transitions.create(["background-color", "transform"], {
+    duration: theme.transitions.duration.short,
+  }),
+}));
+
+
+const OptionButton = styled(Button, {
+  shouldForwardProp: (prop) => prop !== "isHidden",
+})(({ theme, isHidden, hasSelectedAnswer, isSelected, isCorrect }) => ({
+  padding: theme.spacing(2),
+  fontSize: "1.5rem",
+  fontWeight: "bold",
+  visibility: isHidden ? "hidden" : "visible",
+  backgroundColor:
+    isCorrect && hasSelectedAnswer // If it's the correct answer, always green
+      ? theme.palette.success.main
+      : isSelected // If it's the selected answer
+        ? theme.palette.error.main // Incorrect selection turns red
+        : theme.palette.primary.main, // Default color
+
+  color: theme.palette.common.white,
+  "&:hover": {
+    backgroundColor:
+      isCorrect && hasSelectedAnswer
+        ? theme.palette.success.dark
+        : isSelected
+          ? theme.palette.error.dark
+          : theme.palette.primary.dark,
+    transform: "scale(1.03)",
+    boxShadow: theme.shadows[4],
+  },
+  transition: theme.transitions.create(["background-color", "transform", "box-shadow"], {
+    duration: theme.transitions.duration.short,
+  }),
+}))
+
+const ImageContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  marginBottom: theme.spacing(3),
+  "& img": {
+    maxHeight: 250,
+    objectFit: "cover",
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: theme.shadows[2],
+  },
+}))
+
+const LoadingContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: theme.spacing(6),
+  height: "100%",
+  minHeight: 300,
+}))
+
+function Game() {
   const axios = useAxios();
   const { auth } = useAuth();
   const navigate = useNavigate();
@@ -89,8 +218,8 @@ function RoundsGame() {
   // Check if the game is still loading after modifying the round data
   useEffect(() => {
     if (roundData && roundData.items.length > 0) {
-      let wh = (roundData.topic === "athlete" || roundData.topic === "singer") ? "Who" : "What";
-      setRoundPrompt(`${wh} is this ${roundData.topic}?`);
+      const questionInfo = TOPIC_QUESTION_MAP[roundData.topic] || { wh: "What", name: roundData.topic }; // Value by default if topic is not found
+      setRoundPrompt(`${questionInfo.wh} is this ${questionInfo.name}?`);
       setLoading(false);
     } else {
       setLoading(true);
@@ -347,7 +476,11 @@ function RoundsGame() {
                       />
                     </ImageContainer>
                     <Container sx={{ textAlign: "center", mb: 2 }}>
-                      <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
+                      {roundData && (
+                        <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+                          {TOPIC_QUESTION_MAP[roundData.topic]?.wh || "What"} is this <HighlightedTopic>{TOPIC_QUESTION_MAP[roundData.topic]?.name || roundData.topic.toUpperCase()}</HighlightedTopic>?
+                        </Typography>
+                      )}
                     </Container>
                     <Grid container spacing={2}>
                       {roundData.items.map((item, index) => (
