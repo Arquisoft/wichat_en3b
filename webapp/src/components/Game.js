@@ -146,41 +146,45 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
   minHeight: 300,
 }))
 
+const HighlightedTopic = styled('span')(({ theme }) => ({
+  color: theme.palette.secondary.main,
+}))
+
 const TOPIC_QUESTION_MAP = {
   // Geography
-  "city": { key: "city", wh: "What", name: "city" },
-  "country": { key: "country", wh: "Which", name: "country" },
-  "spanishProvince": { key: "spanishProvince", wh: "Which", name: "Spanish province" },
-  "spanishCity": { key: "spanishCity", wh: "Which", name: "Spanish city" },
-  "famousPlace": { key: "famousPlace", wh: "What", name: "famous place" },
-  "asturianCouncil": { key: "asturianCouncil", wh: "Which", name: "Asturian council" },
+  "city": { key: "city", wh: "What", name: "CITY" },
+  "country": { key: "country", wh: "Which", name: "COUNTRY" },
+  "spanishProvince": { key: "spanishProvince", wh: "Which", name: "SPANISH PROVINCE" },
+  "spanishCity": { key: "spanishCity", wh: "Which", name: "SPANISH CITY" },
+  "famousPlace": { key: "famousPlace", wh: "What", name: "FAMOUS PLACE" },
+  "asturianCouncil": { key: "asturianCouncil", wh: "Which", name: "ASTURIAN COUNCIL" },
   
   // Flags & Languages
-  "flag": { key: "flag", wh: "Which", name: "country's flag" },
-  "spanishCommunityFlag": { key: "spanishCommunityFlag", wh: "Which", name: "Spanish community's flag" },
-  "language": { key: "language", wh: "What", name: "language" },
+  "flag": { key: "flag", wh: "Which", name: "COUNTRY'S FLAG" },
+  "spanishCommunityFlag": { key: "spanishCommunityFlag", wh: "Which", name: "SPANISH COMMUNITY'S FLAG" },
+  "language": { key: "language", wh: "What", name: "LANGUAGE" },
   
   // History
-  "historicalEvent": { key: "historicalEvent", wh: "What", name: "historical event" },
-  "historicalWoman": { key: "historicalWoman", wh: "Who", name: "historical woman" },
+  "historicalEvent": { key: "historicalEvent", wh: "What", name: "HISTORICAL EVENT" },
+  "historicalWoman": { key: "historicalWoman", wh: "Who", name: "HISTORICAL WOMAN" },
   
   // Music
-  "singer": { key: "singer", wh: "Who", name: "singer" },
-  "musicalInstrument": { key: "musicalInstrument", wh: "What", name: "musical instrument" },
+  "singer": { key: "singer", wh: "Who", name: "SINGER" },
+  "musicalInstrument": { key: "musicalInstrument", wh: "What", name: "MUSICAL INSTRUMENT" },
   
   // Sports
-  "athlete": { key: "athlete", wh: "Who", name: "athlete" },
-  "sport": { key: "sport", wh: "What", name: "sport" },
-  "sportingGijonPlayer": { key: "sportingGijonPlayer", wh: "Who", name: "Sporting Gijón player" },
-  "oviedoPlayer": { key: "oviedoPlayer", wh: "Who", name: "Oviedo player" },
-  "realMadridPlayer": { key: "realMadridPlayer", wh: "Who", name: "Real Madrid player" },
-  "barcelonaPlayer": { key: "barcelonaPlayer", wh: "Who", name: "Barcelona player" },
-  "atleticoMadridPlayer": { key: "atleticoMadridPlayer", wh: "Who", name: "Atlético Madrid player" },
-  "f1Driver": { key: "f1Driver", wh: "Who", name: "F1 driver" },
-  "racingCircuit": { key: "racingCircuit", wh: "Which", name: "racing circuit" },
+  "athlete": { key: "athlete", wh: "Who", name: "ATHLETE" },
+  "sport": { key: "sport", wh: "What", name: "SPORT" },
+  "sportingGijonPlayer": { key: "sportingGijonPlayer", wh: "Who", name: "SPORTING GIJÓN PLAYER" },
+  "oviedoPlayer": { key: "oviedoPlayer", wh: "Who", name: "OVIEDO PLAYER" },
+  "realMadridPlayer": { key: "realMadridPlayer", wh: "Who", name: "REAL MADRID PLAYER" },
+  "barcelonaPlayer": { key: "barcelonaPlayer", wh: "Who", name: "BARCELONA PLAYER" },
+  "atleticoMadridPlayer": { key: "atleticoMadridPlayer", wh: "Who", name: "ATLÉTICO MADRID PLAYER" },
+  "f1Driver": { key: "f1Driver", wh: "Who", name: "F1 DRIVER" },
+  "racingCircuit": { key: "racingCircuit", wh: "Which", name: "RACING CIRCUIT" },
   
   // Famous People
-  "asturianFamous": { key: "asturianFamous", wh: "Who", name: "Asturian famous person" }
+  "asturianFamous": { key: "asturianFamous", wh: "Who", name: "ASTURIAN FAMOUS PERSON" }
 };
 
 function Game() {
@@ -630,7 +634,11 @@ const endGame = async (questions) => {
                       />
                     </ImageContainer>
                     <Container sx={{ textAlign: "center", mb: 2 }}>
-                      <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>{roundPrompt}</Typography>
+                      {roundData && (
+                        <Typography data-testid="question-prompt" variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+                          {TOPIC_QUESTION_MAP[roundData.topic]?.wh || "What"} is this <HighlightedTopic>{TOPIC_QUESTION_MAP[roundData.topic]?.name || roundData.topic.toUpperCase()}</HighlightedTopic>?
+                        </Typography>
+                      )}
                     </Container>
                     <Grid container spacing={2}>
                       {roundData.items.map((item, index) => (
