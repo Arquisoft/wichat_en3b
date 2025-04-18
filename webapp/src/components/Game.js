@@ -146,6 +146,43 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
   minHeight: 300,
 }))
 
+const TOPIC_QUESTION_MAP = {
+  // Geography
+  "city": { key: "city", wh: "What", name: "city" },
+  "country": { key: "country", wh: "Which", name: "country" },
+  "spanishProvince": { key: "spanishProvince", wh: "Which", name: "Spanish province" },
+  "spanishCity": { key: "spanishCity", wh: "Which", name: "Spanish city" },
+  "famousPlace": { key: "famousPlace", wh: "What", name: "famous place" },
+  "asturianCouncil": { key: "asturianCouncil", wh: "Which", name: "Asturian council" },
+  
+  // Flags & Languages
+  "flag": { key: "flag", wh: "Which", name: "country's flag" },
+  "spanishCommunityFlag": { key: "spanishCommunityFlag", wh: "Which", name: "Spanish community's flag" },
+  "language": { key: "language", wh: "What", name: "language" },
+  
+  // History
+  "historicalEvent": { key: "historicalEvent", wh: "What", name: "historical event" },
+  "historicalWoman": { key: "historicalWoman", wh: "Who", name: "historical woman" },
+  
+  // Music
+  "singer": { key: "singer", wh: "Who", name: "singer" },
+  "musicalInstrument": { key: "musicalInstrument", wh: "What", name: "musical instrument" },
+  
+  // Sports
+  "athlete": { key: "athlete", wh: "Who", name: "athlete" },
+  "sport": { key: "sport", wh: "What", name: "sport" },
+  "sportingGijonPlayer": { key: "sportingGijonPlayer", wh: "Who", name: "Sporting Gijón player" },
+  "oviedoPlayer": { key: "oviedoPlayer", wh: "Who", name: "Oviedo player" },
+  "realMadridPlayer": { key: "realMadridPlayer", wh: "Who", name: "Real Madrid player" },
+  "barcelonaPlayer": { key: "barcelonaPlayer", wh: "Who", name: "Barcelona player" },
+  "atleticoMadridPlayer": { key: "atleticoMadridPlayer", wh: "Who", name: "Atlético Madrid player" },
+  "f1Driver": { key: "f1Driver", wh: "Who", name: "F1 driver" },
+  "racingCircuit": { key: "racingCircuit", wh: "Which", name: "racing circuit" },
+  
+  // Famous People
+  "asturianFamous": { key: "asturianFamous", wh: "Who", name: "Asturian famous person" }
+};
+
 function Game() {
   const axios = useAxios();
   const { auth } = useAuth();
@@ -238,8 +275,8 @@ function Game() {
   // Check if the game is still loading after modifying the round data
   useEffect(() => {
     if (roundData && roundData.items.length > 0) {
-      let wh = (roundData.topic === "athlete" || roundData.topic === "singer") ? "Who" : "What";
-      setRoundPrompt(`${wh} is this ${roundData.topic}?`);
+      const questionInfo = TOPIC_QUESTION_MAP[roundData.topic] || { wh: "What", name: roundData.topic }; // Value by default if topic is not found
+      setRoundPrompt(`${questionInfo.wh} is this ${questionInfo.name}?`);
       setLoading(false);
     } else {
       setLoading(true);
