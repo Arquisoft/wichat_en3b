@@ -2,10 +2,10 @@ import React from 'react';
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import GameTopicSelection from "./GameTopicSelection";
-import { ThemeProvider } from "../context/ThemeContext";
+import { ThemeProvider } from '../../context/ThemeContext';
 
 // Mock the useAxios hook
-jest.mock("../hooks/useAxios", () => () => ({ post: jest.fn() }));
+jest.mock("../../hooks/useAxios", () => () => ({ post: jest.fn() }));
 
 // Global mock for Material UI icons
 jest.mock("@mui/icons-material", () => {

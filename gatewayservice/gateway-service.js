@@ -128,7 +128,6 @@ app.post('/askllm', async (req, res) => {
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
-
 app.get('/getRound', async (req, res) => {
   try {
     const { topics } = req.query;

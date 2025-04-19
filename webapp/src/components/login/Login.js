@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, Button, Snackbar, Checkbox, FormControlLabel, Box, Paper, alpha } from '@mui/material';
 import { NavLink, useLocation, useNavigate } from 'react-router';
-import logInPic from './photos/logInPic.png';
+import logInPic from '../photos/logInPic.png';
 
-import useAuth from "../hooks/useAuth";
-import axios from "../utils/axios";
-import CustomTextField from './CustomTextField'; // Import the external CustomTextField
+import useAuth from "../../hooks/useAuth";
+import useAxios from "../../hooks/useAxios";
+import CustomTextField from '../CustomTextField'; // Import the external CustomTextField
 import { grey } from '@mui/material/colors';
 
 const Login = () => {
   const { setAuth, persist, setPersist } = useAuth();
+  const axios = useAxios();
   const navigate = useNavigate();
   const from = useLocation().state?.from.pathname || "/home";
 

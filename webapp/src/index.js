@@ -4,20 +4,20 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import './index.css'; // Global css to fix margin
-
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import PersistentLogin from './components/PersistentLogin';
 import PrivateRoute from './components/PrivateRoute';
 
 import Layout from './components/Layout';
 import App from './App';
 import Home from './components/Home';
-import Login from './components/Login';
+import Login from './components/login/Login';
 import SignUp from './components/AddUser';
-import GameTopicSelection from './components/GameTopicSelection';
-import GameModeSelection from './components/GameModeSelection';
-import Game from './components/Game';
+import GameModeSelection from './components/selections/GameModeSelection';
+import RoundsGame from './components/game/RoundsGame';
+import TimeGame from './components/game/TimeGame';
+import GameTopicSelection from './components/selections/GameTopicSelection';
+import PersistentLogin from './components/login/PersistentLogin';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -36,7 +36,8 @@ root.render(
                 <Route path="/home" element={<Home />} />
                 <Route path="/gamemode" element={<GameModeSelection />} />
                 <Route path="/gametopic" element={<GameTopicSelection />} />
-                <Route path="/game" element={<Game />} />
+                <Route path="/timegame" element={<TimeGame />} />
+                <Route path="/roundsgame" element={<RoundsGame />} />
               </Route>
             </Route>
           </Route>
