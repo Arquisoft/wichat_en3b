@@ -34,6 +34,20 @@ function RoundsGame() {
     fetchUserCoins();
   }, [auth]);
 
+  // Initialize and track displayed images
+  const trackUsedImage = (imageUrl, itemId) => {
+    if (!imageUrl) return;
+    
+    // Get current displayed images from sessionStorage or initialize empty array
+    const usedImages = JSON.parse(sessionStorage.getItem('usedImages') || '[]');
+    
+    // Add the current image if not already tracked
+    if (!usedImages.includes(imageUrl)) {
+      usedImages.push(imageUrl);
+      sessionStorage.setItem('usedImages', JSON.stringify(usedImages));
+    }
+  }
+
   const gameSetup = async () => {
     try {
       // First round
@@ -48,26 +62,43 @@ function RoundsGame() {
   // Function to load the data for each round.
   const loadRound = async () => {
     try {
-        setLoading(true)
-        setChatKey(chatKey + 1);
+      setLoading(true)
+      setChatKey(chatKey + 1);
 
-        const selectedTopics = JSON.parse(sessionStorage.getItem('selectedTopics'));
-        let response = ""; 
-
-        if (!selectedTopics || !Array.isArray(selectedTopics) || selectedTopics.length === 0) {
+      const selectedTopics = JSON.parse(sessionStorage.getItem('selectedTopics'));
+      if (!selectedTopics || !Array.isArray(selectedTopics) || selectedTopics.length === 0) {
         navigate("/home", {replace:true}); 
-        }
-        else {
-        response = await axios.get("/getRound", {
+        return null;
+      }
+      
+      // Get currently used images
+      const usedImages = JSON.parse(sessionStorage.getItem('usedImages') || '[]');
+      
+      // We'll try up to 5 times to get a non-repeated question
+      let data = null;
+      
+      while (true) {
+        const response = await axios.get("/getRound", {
             params: { topics: selectedTopics }
         });
-        }
         
-        setHiddenOptions([])
-        return response.data
+        data = response.data;
+        
+        // Check if this image has already been used
+        if (data && (!data.itemWithImage.imageUrl || !usedImages.includes(data.itemWithImage.imageUrl))) {
+          // New image found, track it and break the loop
+          if (data.itemWithImage.imageUrl) {
+            trackUsedImage(data.itemWithImage.imageUrl, data.itemWithImage.id);
+          }
+          break;
+        }
+      }
+      
+      setHiddenOptions([]);
+      return data;
     } catch (error) {
-        console.error("Error fetching data from question service:", error)
-        setLoading(false)
+      console.error("Error fetching data from question service:", error)
+      setLoading(false)
     }
   }
 
@@ -136,6 +167,9 @@ function RoundsGame() {
     setCorrectAnswers(0);
 
     setRound(1);
+
+    // Clear used images for the new game
+    sessionStorage.removeItem('usedImages');
 
     gameSetup();
   };
