@@ -2,8 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import GameTopicSelection from "./GameTopicSelection";
-import { ThemeProvider } from "../context/ThemeContext";
-import useAxios from "../../hooks/useAxios";
+import { ThemeProvider } from '../../context/ThemeContext';
 
 // Mock the useAxios hook
 jest.mock("../../hooks/useAxios", () => () => ({ post: jest.fn() }));
