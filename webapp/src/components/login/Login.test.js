@@ -5,8 +5,8 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Login from './Login';
 import { I18nextProvider } from "react-i18next";
-import i18n from "../utils/i18n";
-import { ThemeProvider } from "../context/ThemeContext";
+import i18n from "../../utils/i18n";
+import { ThemeProvider } from '../../context/ThemeContext';
 
 const mockAxios = new MockAdapter(axios);
 
