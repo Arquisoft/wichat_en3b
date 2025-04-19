@@ -12,7 +12,7 @@ import GraphComponent from '../lifelines/GraphComponent';
 import CallFriend from "../lifelines/CallFriend"
 import PhoneDialog from "../phone/PhoneDialog";
 import { NavLink } from "react-router";
-import { GameContainer, StyledAppBar, LogoButton, ScoreChip, CoinsChip, LifelineButton } from "./BaseStyles";
+import { GameContainer, StyledAppBar, LogoButton, ScoreChip, CoinsChip, LifelineButton } from "./GameStyles";
 
 const BaseGame = ({
   children,

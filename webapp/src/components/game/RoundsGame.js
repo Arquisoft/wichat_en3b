@@ -5,7 +5,7 @@ import { Typography, Card, CardContent, Grid, Container, CircularProgress } from
 import useAxios from "../../hooks/useAxios"
 import useAuth from "../../hooks/useAuth"
 import { useNavigate} from "react-router";
-import { OptionButton, ImageContainer, LoadingContainer, HighlightedTopic } from "./BaseStyles";
+import { OptionButton, ImageContainer, LoadingContainer, HighlightedTopic } from "./GameStyles";
 import useCoinHandler from "../../handlers/CoinHandler"
 import useLifeLinesHandler from "../../handlers/LifeLinesHandler"
 import { TOPIC_QUESTION_MAP } from "../../utils/topicQuestionMap";
