@@ -104,6 +104,7 @@ function GameModeSelection() {
             fullWidth
             onClick={() => handleModeChange("rounds")}
             isSelected={selectedMode === "rounds"}
+            data-selected={selectedMode === "rounds"} // For the test (isSelected is not a valid HTML attribute and therefore is not rendered automatically)
           >
             ROUNDS
           </ModeButton>
@@ -111,6 +112,7 @@ function GameModeSelection() {
             fullWidth
             onClick={() => handleModeChange("time")}
             isSelected={selectedMode === "time"}
+            data-selected={selectedMode === "time"} // For the test (isSelected is not a valid HTML attribute and therefore is not rendered automatically)
           >
             TIME
           </ModeButton>
@@ -118,6 +120,7 @@ function GameModeSelection() {
             fullWidth
             onClick={() => handleModeChange("hide")}
             isSelected={selectedMode === "hide"}
+            data-selected={selectedMode === "hide"} // For the test (isSelected is not a valid HTML attribute and therefore is not rendered automatically)
           >
             HIDE
           </ModeButton>
