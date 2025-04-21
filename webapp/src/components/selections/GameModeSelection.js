@@ -1,8 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Container, Typography, Button, Paper, Box } from "@mui/material"
-import { styled } from "@mui/material/styles"
+import { Typography, Box } from "@mui/material"
 import { useNavigate } from 'react-router';
 import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton } from './SelectionStyles'
 

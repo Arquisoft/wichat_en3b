@@ -1,14 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Container, Typography, Button, Paper, Box, Grid, TextField, Collapse, Divider, FormControlLabel } from "@mui/material"
-import { styled } from "@mui/material/styles"
+import { Typography, Box, Grid, TextField, Collapse, Divider } from "@mui/material"
 import { useNavigate } from "react-router"
 import {
   LocationCity, Flag, SportsBasketball, MusicNote, Public, Sports, Map, Event, PushPin,
   Piano, Female, SportsSoccer, Language, SportsMotorsports, People, Landscape
 } from "@mui/icons-material"
-import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton, TopicButton } from './SelectionStyles'
+import { StyledContainer, SectionPaper, SectionTitle, StyledButton, TopicButton } from './SelectionStyles'
 
 const CATEGORY_MAP = {
   "Geography": [
