@@ -6,7 +6,8 @@ import { styled } from "@mui/material/styles"
 import { useNavigate } from "react-router"
 import {
   LocationCity, Flag, SportsBasketball, MusicNote, Public, Sports, Map, Event, PushPin,
-  Piano, Female, SportsSoccer, Language, SportsMotorsports, People, Landscape, SportsTennis
+  Piano, Female, SportsSoccer, Language, SportsMotorsports, People, Landscape, SportsTennis,
+  InterpreterMode
 } from "@mui/icons-material"
 import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton, TopicButton } from './SelectionStyles'
 
@@ -31,6 +32,7 @@ const CATEGORY_MAP = {
   "Music": [
     { key: "singer", label: "SINGERS", icon: <MusicNote /> },
     { key: "musicalInstrument", label: "MUSICAL INSTRUMENTS", icon: <Piano /> },
+    { key: "rockBand", label: "ROCK BANDS", icon: <InterpreterMode /> },
   ],
   "Sports": [
     { key: "athlete", label: "ATHLETES", icon: <SportsBasketball /> },

@@ -19,6 +19,7 @@ export const TOPIC_QUESTION_MAP = {
   // Music
   "singer": { key: "singer", wh: "Who", name: "SINGER" },
   "musicalInstrument": { key: "musicalInstrument", wh: "What", name: "MUSICAL INSTRUMENT" },
+  "rockBand": { key: "rockBand", wh: "Which", name: "ROCK BAND" },
   
   // Sports
   "athlete": { key: "athlete", wh: "Who", name: "ATHLETE" },

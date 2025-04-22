@@ -365,8 +365,19 @@ LIMIT 200
 }
 ORDER BY DESC(?sitelinks)
 LIMIT 200
+`,
+
+    rockBand: `SELECT ?rockBand ?rockBandLabel ?image WHERE {
+  ?rockBand wdt:P31 wd:Q215380;        # instance of: musical group
+             wdt:P136 wd:Q11399;        # genre: rock music
+             wdt:P18 ?image;            # image
+             wikibase:sitelinks ?sitelinks.
+
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY DESC(?sitelinks)
+LIMIT 200
 `
-  
       
 };
 
