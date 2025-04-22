@@ -20,7 +20,8 @@ const BaseGame = ({
   children,
   onNewGame = () => { },
   onRoundComplete = () => { },
-  gameEnding = () => false }) => {
+  gameEnding = () => false
+}) => {
   const axios = useAxios();
   const { auth } = useAuth();
   const navigate = useNavigate();
@@ -87,7 +88,7 @@ const BaseGame = ({
   // Check if the game is still loading after modifying the round data
   useEffect(() => {
     if (roundData && roundData.items.length > 0) {
-      const questionInfo = TOPIC_QUESTION_MAP[roundData.topic] || { wh: "What", name: roundData.topic }; // Value by default if topic is not found
+      //const questionInfo = TOPIC_QUESTION_MAP[roundData.topic] || { wh: "What", name: roundData.topic }; // Value by default if topic is not found
       //setRoundPrompt(`${questionInfo.wh} is this ${questionInfo.name}?`);
       setLoading(false);
     } else {
@@ -152,10 +153,8 @@ const BaseGame = ({
   };
 
   const handleOptionSelect = async (index) => {
-    if (selectedAnswer !== null) return;
-
     setRoundsPlayed(roundsPlayed + 1);
-    
+
     const isCorrect = correctOption(index);
     setSelectedAnswer(index);
 
@@ -201,7 +200,7 @@ const BaseGame = ({
   }
 
   const correctOption = (index) => {
-    if (!roundData) return false
+    if (!roundData || !roundData.items[index]) return false
     const selectedName = roundData.items[index].name
     const correctName = roundData.itemWithImage.name
     return selectedName === correctName
@@ -337,7 +336,7 @@ const BaseGame = ({
               ) : (
                 roundData && (
                   <>
-                    {typeof children === 'function' ? children({ endGame }) : children}
+                    {typeof children === 'function' ? children({ endGame, handleOptionSelect }) : children}
                     <ImageContainer>
                       <img
                         src={roundData.itemWithImage.imageUrl || "/placeholder.svg"}
@@ -389,7 +388,7 @@ const BaseGame = ({
       {/* Game statistics */}
       <Dialog
         open={showStatistics}
-        onClose={(event, reason) => {
+        onClose={(_, reason) => {
           // Prevent the user to interact with the rest of the screen when the dialog is shown
           if (reason !== "backdropClick" && reason !== "escapeKeyDown") {
             setShowStatistics(false)
@@ -400,7 +399,7 @@ const BaseGame = ({
         <DialogContent>
           <Typography variant="body1"><b>Final Score:</b> {score}</Typography>
           <Typography variant="body1"><b>Correct Answers:</b> {correctAnswers} / {roundsPlayed}</Typography>
-          <Typography variant="body1"><b>Accuracy Rate:</b> {((correctAnswers / roundsPlayed) * 100).toFixed(2)}%</Typography>
+          <Typography variant="body1"><b>Accuracy Rate:</b> {roundsPlayed ? ((correctAnswers / roundsPlayed) * 100).toFixed(2) : 0}%</Typography>
           <Typography variant="body1"><b>Spent on lifelines:</b> {spentCoins} 🪙</Typography>
           <Typography variant="body1"><b>Coins earned:</b> {Math.round(score * 0.3)} 🪙</Typography>
         </DialogContent>

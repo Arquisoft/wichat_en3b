@@ -7,9 +7,18 @@ import BaseGame from "./BaseGameLayout"
 function TimeGame() {
   const TIME = 60;
   const [timeLeft, setTimeLeft] = useState(TIME);
+  const [gameEnded, setGameEnded] = useState(false);
   const endGameRef = useRef(null);
 
+  const onNewGame = () => {
+    setTimeLeft(TIME);
+    setGameEnded(false);
+  }
+
   useEffect(() => {
+    if (gameEnded)
+      return;
+
     const startTime = Date.now();
     const interval = setInterval(() => {
       const elapsedTime = (Date.now() - startTime) / 1000;
@@ -18,15 +27,16 @@ function TimeGame() {
 
       if (remainingTime <= 0) {
         clearInterval(interval);
+        setGameEnded(true);
         endGameRef.current();
       }
     }, 100);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [gameEnded]);
 
   return (
-    <BaseGame onNewGame={() => setTimeLeft(TIME)}>
+    <BaseGame onNewGame={onNewGame}>
       {({ endGame }) => {
         endGameRef.current = endGame;
 

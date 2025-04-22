@@ -18,7 +18,7 @@ function GameModeSelection() {
     switch (mode) {
       case "rounds": navigate("/roundsgame"); break;
       case "time": navigate("/timegame"); break;
-      case "hide": alert("Not yet implemented"); break;
+      case "hide": navigate("/hidegame"); break;
       default: break;
     }
   }
