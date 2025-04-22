@@ -303,7 +303,71 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language "es,en". }  # Get lab
 }
 ORDER BY DESC(?sitelinks)  # Sort by most popular
 LIMIT 100  # Limit the number of results for better performance
+`,
+ 
+    nbaPlayer:  `SELECT ?nbaPlayer ?nbaPlayerLabel ?image WHERE {
+      ?nbaPlayer wdt:P106 wd:Q3665646;      # occupation: basketball player
+                 wdt:P118 wd:Q155223;       # league: NBA
+                 wdt:P18 ?image;            # image
+                 wikibase:sitelinks ?sitelinks.
+    
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+    }
+    ORDER BY DESC(?sitelinks)
+    LIMIT 200
+    `,
+
+    wnbaPlayer:  `SELECT ?wnbaPlayer ?wnbaPlayerLabel ?image ?sitelinks WHERE {
+  ?wnbaPlayer wdt:P106 wd:Q3665646;      # occupation: basketball player
+              wdt:P118 wd:Q2593221;      # league: WNBA
+              wdt:P18 ?image;            # image
+              wikibase:sitelinks ?sitelinks.
+
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY DESC(?sitelinks)
+LIMIT 200
+`,
+
+    atpPlayer: `SELECT ?atpPlayer ?atpPlayerLabel ?image WHERE {
+  ?atpPlayer wdt:P106 wd:Q10833314;   # occupation: tennis player
+                wdt:P641 wd:Q847;        # sport: tennis
+                wdt:P21 wd:Q6581097;     # gender: male
+                wdt:P18 ?image;          # image
+                wikibase:sitelinks ?sitelinks.
+
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY DESC(?sitelinks)
+LIMIT 200
+`,
+
+   wtaPlayer: `SELECT ?tennisPlayer ?tennisPlayerLabel ?image WHERE {
+  ?tennisPlayer wdt:P106 wd:Q10833314;   # occupation: tennis player
+                wdt:P641 wd:Q847;        # sport: tennis
+                wdt:P21 wd:Q6581072;     # gender: female
+                wdt:P18 ?image;          # image
+                wikibase:sitelinks ?sitelinks.
+
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY DESC(?sitelinks)
+LIMIT 200
+`,
+
+    euroleaguePlayer: `SELECT ?euroleaguePlayer ?euroleaguePlayerLabel ?image WHERE {
+  ?euroleaguePlayer wdt:P106 wd:Q3665646;    # occupation: basketball player
+                    wdt:P118 wd:Q185982;     # league: EuroLeague
+                    wdt:P18 ?image;          # image
+                    wikibase:sitelinks ?sitelinks.
+
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY DESC(?sitelinks)
+LIMIT 200
 `
+  
+      
 };
 
 module.exports = QUERIES;

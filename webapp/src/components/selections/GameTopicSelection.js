@@ -6,7 +6,7 @@ import { styled } from "@mui/material/styles"
 import { useNavigate } from "react-router"
 import {
   LocationCity, Flag, SportsBasketball, MusicNote, Public, Sports, Map, Event, PushPin,
-  Piano, Female, SportsSoccer, Language, SportsMotorsports, People, Landscape
+  Piano, Female, SportsSoccer, Language, SportsMotorsports, People, Landscape, SportsTennis
 } from "@mui/icons-material"
 import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton, TopicButton } from './SelectionStyles'
 
@@ -40,6 +40,11 @@ const CATEGORY_MAP = {
     { key: "realMadridPlayer", label: "REAL MADRID PLAYERS", icon: <SportsSoccer /> },
     { key: "barcelonaPlayer", label: "BARCELONA PLAYERS", icon: <SportsSoccer /> },
     { key: "atleticoMadridPlayer", label: "ATLETICO MADRID PLAYERS", icon: <SportsSoccer /> },
+    { key: "nbaPlayer", label: "NBA PLAYERS", icon: <SportsBasketball /> },
+    { key: "wnbaPlayer", label: "WNBA PLAYERS", icon: <SportsBasketball /> },
+    { key: "euroleaguePlayer", label: "EUROLEAGUE PLAYERS", icon: <SportsBasketball /> },
+    { key: "atpPlayer", label: "ATP PLAYERS", icon: <SportsTennis /> },
+    { key: "wtaPlayer", label: "WTA PLAYERS", icon: <SportsTennis /> },
     { key: "f1Driver", label: "F1 DRIVERS", icon: <SportsMotorsports /> },
     { key: "racingCircuit", label: "RACING CIRCUITS", icon: <SportsMotorsports /> },
   ],
