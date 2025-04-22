@@ -12,12 +12,15 @@ function HideGame() {
   const [round, setRound] = useState(1);
   const roundTime = 30;
   const [roundTimeLeft, setRoundTimeLeft] = useState(roundTime);
-  const [blur, setBlur] = useState(50);
+  const maxBlur = 10;
+  const [blur, setBlur] = useState(maxBlur);
+
   const handleOptionSelectRef = useRef(null);
+  const imageRef = useRef(null);
 
   const resetValues = () => {
     setRoundTimeLeft(roundTime);
-    setBlur(50);
+    setBlur(maxBlur);
   }
 
   const onNewGame = () => {
@@ -26,7 +29,7 @@ function HideGame() {
   }
 
   const onRoundComplete = () => {
-    setRound((prevRound) => prevRound + 1);
+    setRound(prevRound => prevRound + 1);
     resetValues();
   }
 
@@ -36,6 +39,7 @@ function HideGame() {
       const elapsedTime = (Date.now() - startTime) / 1000;
       const remainingTime = Math.max(roundTime - elapsedTime, 0);
       setRoundTimeLeft(remainingTime);
+      setBlur(maxBlur * Math.max((remainingTime - 5) / roundTime, 0));
 
       if (remainingTime <= 0) {
         clearInterval(interval);
@@ -46,8 +50,13 @@ function HideGame() {
     return () => clearInterval(interval);
   }, [round]);
 
+  useEffect(() => {
+    if (imageRef.current)
+      imageRef.current.style.filter = `blur(${blur}px)`;
+  }, [blur]);
+
   return (
-    <BaseGame onNewGame={onNewGame} onRoundComplete={onRoundComplete} gameEnding={() => round === totalRounds}>
+    <BaseGame onNewGame={onNewGame} onRoundComplete={onRoundComplete} gameEnding={() => round === totalRounds} ref={imageRef}>
       {({ handleOptionSelect }) => {
         handleOptionSelectRef.current = handleOptionSelect;
 

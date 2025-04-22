@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router";
 import { Toolbar, Typography, Button, Card, CardContent, Grid, Box, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Container } from "@mui/material";
 import { HelpOutline, Phone, Chat, InterpreterMode, EmojiEvents, MonetizationOn } from "@mui/icons-material";
@@ -16,12 +16,12 @@ import useCoinHandler from "../../handlers/CoinHandler";
 import useLifeLinesHandler from "../../handlers/LifeLinesHandler";
 import { TOPIC_QUESTION_MAP } from "../../utils/topicQuestionMap";
 
-const BaseGame = ({
+const BaseGame = React.forwardRef(({
   children,
   onNewGame = () => { },
   onRoundComplete = () => { },
-  gameEnding = () => false
-}) => {
+  gameEnding = () => false,
+}, ref) => {
   const axios = useAxios();
   const { auth } = useAuth();
   const navigate = useNavigate();
@@ -316,7 +316,6 @@ const BaseGame = ({
               </Card>
             )}
           </Card>
-
         </Grid>
 
         {/* Game Area */}
@@ -339,6 +338,7 @@ const BaseGame = ({
                     {typeof children === 'function' ? children({ endGame, handleOptionSelect }) : children}
                     <ImageContainer>
                       <img
+                        ref={ref}
                         src={roundData.itemWithImage.imageUrl || "/placeholder.svg"}
                         alt={roundData.itemWithImage.imageAltText || "Item image"}
                       />
@@ -416,6 +416,6 @@ const BaseGame = ({
       </Dialog>
     </GameContainer>
   );
-};
+});
 
 export default BaseGame;
