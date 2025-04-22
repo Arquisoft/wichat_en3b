@@ -16,7 +16,11 @@ import useCoinHandler from "../../handlers/CoinHandler";
 import useLifeLinesHandler from "../../handlers/LifeLinesHandler";
 import { TOPIC_QUESTION_MAP } from "../../utils/topicQuestionMap";
 
-const BaseGame = ({ children, onNewGame, onRoundComplete, gameEnding }) => {
+const BaseGame = ({
+  children,
+  onNewGame = () => { },
+  onRoundComplete = () => { },
+  gameEnding = () => false }) => {
   const axios = useAxios();
   const { auth } = useAuth();
   const navigate = useNavigate();
@@ -139,7 +143,9 @@ const BaseGame = ({ children, onNewGame, onRoundComplete, gameEnding }) => {
     setSpentCoins(0);
     setQuestions([]);
     setCorrectAnswers(0);
+    setRoundsPlayed(0);
 
+    // Mode specific setup
     onNewGame();
 
     gameSetup();
@@ -148,6 +154,8 @@ const BaseGame = ({ children, onNewGame, onRoundComplete, gameEnding }) => {
   const handleOptionSelect = async (index) => {
     if (selectedAnswer !== null) return;
 
+    setRoundsPlayed(roundsPlayed + 1);
+    
     const isCorrect = correctOption(index);
     setSelectedAnswer(index);
 
@@ -172,12 +180,12 @@ const BaseGame = ({ children, onNewGame, onRoundComplete, gameEnding }) => {
     });
 
     setTimeout(async () => {
-      setRoundsPlayed(roundsPlayed + 1);
-
+      // Mode specific end condition
       if (gameEnding()) {
         return await endGame(updatedQuestions);
       }
 
+      // Mode specific round complete
       onRoundComplete();
       setRoundData(null);
       setSelectedAnswer(null);
@@ -329,7 +337,7 @@ const BaseGame = ({ children, onNewGame, onRoundComplete, gameEnding }) => {
               ) : (
                 roundData && (
                   <>
-                    {children}
+                    {typeof children === 'function' ? children({ endGame }) : children}
                     <ImageContainer>
                       <img
                         src={roundData.itemWithImage.imageUrl || "/placeholder.svg"}
