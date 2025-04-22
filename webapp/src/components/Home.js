@@ -187,7 +187,7 @@ const Home = () => {
                                             {game.score} pts
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary">
-                                            {game.correctRate * 100}% accuracy
+                                            {(game.correctRate * 100).toFixed(2)}% accuracy
                                         </Typography>
                                     </Box>
                                 </Box>

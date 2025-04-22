@@ -18,6 +18,7 @@ import RoundsGame from './components/game/RoundsGame';
 import TimeGame from './components/game/TimeGame';
 import GameTopicSelection from './components/selections/GameTopicSelection';
 import PersistentLogin from './components/login/PersistentLogin';
+import HideGame from './components/game/HideGame';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -36,8 +37,9 @@ root.render(
                 <Route path="/home" element={<Home />} />
                 <Route path="/gamemode" element={<GameModeSelection />} />
                 <Route path="/gametopic" element={<GameTopicSelection />} />
-                <Route path="/timegame" element={<TimeGame />} />
                 <Route path="/roundsgame" element={<RoundsGame />} />
+                <Route path="/timegame" element={<TimeGame />} />
+                <Route path="/hidegame" element={<HideGame />} />
               </Route>
             </Route>
           </Route>

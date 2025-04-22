@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import RoundsGame from "./RoundsGame";
+import HideGame from "./HideGame";
 import useAxios from "../../hooks/useAxios";
 import { ThemeProvider } from "../../context/ThemeContext";
 
@@ -21,9 +21,9 @@ jest.mock("@mui/icons-material", () => {
 jest.mock("../../hooks/useAxios", () => jest.fn());
 const mockAxios = new MockAdapter(axios);
 
-describe("RoundsGame component", () => {
+describe("HideGame component", () => {
   beforeEach(() => {
-    jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => { });
     useAxios.mockReturnValue(axios);
     // Mock sessionStorage
     Storage.prototype.getItem = jest.fn(() => JSON.stringify(["city"]));
@@ -33,7 +33,7 @@ describe("RoundsGame component", () => {
     console.error.mockRestore();
   });
 
-  it("should render the game and show the round", async () => {
+  it("should render the game and show the rounds and blurry image", async () => {
     mockAxios.onGet("/getRound").reply(200, {
       topic: "city",
       itemWithImage: { name: "Paris", imageUrl: "paris.jpg" },
@@ -44,17 +44,23 @@ describe("RoundsGame component", () => {
         { name: "Madrid" }
       ]
     });
-  
+
     render(
       <ThemeProvider>
         <MemoryRouter>
-          <RoundsGame />
+          <HideGame />
         </MemoryRouter>
       </ThemeProvider>
     );
-      
+
     await waitFor(() => {
       expect(screen.getByText(/Round/i)).toBeInTheDocument();
+    });
+
+    await waitFor(async () => {
+    const image = await screen.findByRole("img", { name: /item image/i });
+    expect(image).toBeInTheDocument();
+    expect(getComputedStyle(image).filter).toContain("blur");
     });
   });
 });
