@@ -7,10 +7,10 @@ const app = express();
 
 app.use(express.json());
 
-//define the port
+// Define the port
 const port = 8004;
 
-//Define the connection to DB
+// Define the connection to DB
 const mongoDB = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongo-db-wichat_en3b';
 
 // Get the queries for the topics
@@ -18,6 +18,9 @@ const QUERIES = require('./sparqlQueries');
 
 // SPARQL endpoint for WikiData
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
+
+// Retry configuration
+const RETRY_DELAY = 5000; // 5 seconds between retry attempts
 
 async function startUp() {
     try {
@@ -42,46 +45,109 @@ async function clearDatabase() {
     }
 }
 
+// Function to pause execution
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function fetchAndStoreData() {
     console.log("Fetching data from Wikidata and storing it in the database");
-    try {
-        const fetchPromises = Object.entries(QUERIES).map(async ([topic, query]) => {
-            console.log(`-> Fetching data for topic: ${topic}`);
+    
+    // Create a map to track the processing status of each topic
+    const topicStatus = Object.keys(QUERIES).reduce((acc, topic) => {
+        acc[topic] = { 
+            processed: false, 
+            attempts: 0 
+        };
+        return acc;
+    }, {});
+    
+    let allProcessed = false;
+    
+    while (!allProcessed) {
+        // Identify pending topics that haven't been processed yet
+        const pendingTopics = Object.entries(topicStatus)
+            .filter(([_, status]) => !status.processed)
+            .map(([topic, _]) => topic);
+        
+        if (pendingTopics.length === 0) {
+            allProcessed = true;
+            continue;
+        }
+        
+        console.log(`Starting a new batch with ${pendingTopics.length} pending topics...`);
+        
+        // Process pending topics
+        const fetchPromises = pendingTopics.map(async (topic) => {
+            const query = QUERIES[topic];
+            topicStatus[topic].attempts += 1;
+            
+            console.log(`-> Fetching data for topic: ${topic} (Attempt ${topicStatus[topic].attempts})`);
             console.time(`Time taken for ${topic}`);
+            
+            try {
+                const response = await axios.get(SPARQL_ENDPOINT, {
+                    params: { query, format: "json" },
+                    headers: { "User-Agent": "QuizGame/1.0 (student project)" }
+                });
 
-            const response = await axios.get(SPARQL_ENDPOINT, {
-                params: { query, format: "json" },
-                headers: { "User-Agent": "QuizGame/1.0 (student project)" }
-            });
+                const items = response.data.results.bindings.map(item => ({
+                    id: item[topic]?.value?.split("/").pop() || "Unknown",
+                    name: item[`${topic}Label`]?.value || "No Name",
+                    imageUrl: item.image?.value || "",
+                    topic
+                })).filter(item => !/^Q\d+$/.test(item.name));
 
-            const items = response.data.results.bindings.map(item => ({
-                id: item[topic]?.value?.split("/").pop() || "Unknown",
-                name: item[`${topic}Label`]?.value || "No Name",
-                imageUrl: item.image?.value || "",
-                topic
-            })).filter(item => !/^Q\d+$/.test(item.name));
+                const bulkOps = items.map(item => ({
+                    updateOne: {
+                        filter: { id: item.id },
+                        update: { $set: item },
+                        upsert: true
+                    }
+                }));
 
-            const bulkOps = items.map(item => ({
-                updateOne: {
-                    filter: { id: item.id },
-                    update: { $set: item },
-                    upsert: true
+                if (bulkOps.length > 0) {
+                    await WikidataObject.bulkWrite(bulkOps);
                 }
-            }));
 
-            if (bulkOps.length > 0) {
-                await WikidataObject.bulkWrite(bulkOps);
+                console.timeEnd(`Time taken for ${topic}`);
+                console.log(`✔ Finished storing ${topic} data.`);
+                
+                // Mark as successfully processed
+                topicStatus[topic].processed = true;
+                return { topic, success: true };
+                
+            } catch (error) {
+                console.timeEnd(`Time taken for ${topic}`);
+                console.error(`❌ Error processing topic ${topic}:`, error.message);
+                return { topic, success: false };
             }
-
-            console.timeEnd(`Time taken for ${topic}`);
-            console.log(`✔ Finished storing ${topic} data.`);
         });
 
-        await Promise.all(fetchPromises);
-        console.log("✅ Data successfully stored in the database.");
-    } catch (error) {
-        console.error("❌ Error obtaining data from Wikidata:", error);
+        // Wait for all promises in this batch to complete
+        const results = await Promise.all(fetchPromises);
+        
+        // Log current processing status
+        const successCount = results.filter(r => r.success).length;
+        const failedCount = results.filter(r => !r.success).length;
+        
+        console.log(`Batch completed: ${successCount} topics processed successfully, ${failedCount} failed.`);
+        
+        // Check overall status
+        const remainingTopics = Object.entries(topicStatus)
+            .filter(([_, status]) => !status.processed)
+            .map(([topic, _]) => topic);
+        
+        if (remainingTopics.length > 0) {
+            console.log(`Waiting ${RETRY_DELAY/1000} seconds before retrying ${remainingTopics.length} pending topics...`);
+            await sleep(RETRY_DELAY);
+        } else {
+            allProcessed = true;
+            console.log("✅ All topics were processed successfully!");
+        }
     }
+    
+    console.log("✅ Data loading process completed.");
 }
 
 // Function to get random items from MongoDB
