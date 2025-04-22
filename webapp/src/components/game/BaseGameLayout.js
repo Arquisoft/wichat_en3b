@@ -121,7 +121,7 @@ const BaseGame = React.forwardRef(({
   }, [loading]);
 
   // Add the game statistics to the database and show the statistics dialog
-  const endGame = async () => {
+  const endGame = async (questions) => {
     try {
       // Calculate earned coins based on score
       const earnedCoins = Math.round(score * 0.3);
