@@ -151,7 +151,7 @@ const Home = () => {
                 {/* Statistics tab */}
                 <Box hidden={activeMainTab !== 0} mb={4}>
                     {/* User statistics */}
-                    <CardHeader title="Your Statistics" sx={{ p: 0, my: 2 }} />
+                    <CardHeader title={`Your Stats for ${mode.charAt(0).toUpperCase() + mode.slice(1)}`} sx={{ p: 0, my: 2 }} />
                     {userStats?.username ? (
                         <Grid2 container spacing={2}>
                             <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.paper", border: 1, borderColor: "divider" }}>
@@ -225,7 +225,7 @@ const Home = () => {
                 {/* Rankings tab */}
                 <Box hidden={activeMainTab !== 1} mb={4}>
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", width: "100%" }}>
-                        <CardHeader title="Leaderboard" subheader={`Top players ranked by ${stat}`} />
+                        <CardHeader title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} Leaderboard`} subheader={`Top players ranked by ${stat}`} />
                         <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
                                 Rank by:
