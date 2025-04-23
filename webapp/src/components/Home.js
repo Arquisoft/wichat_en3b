@@ -13,7 +13,7 @@ const Home = () => {
     const { theme } = useTheme();
 
     const [activeMainTab, setactiveMainTab] = useState(0);
-    const [activeModeTab, setActiveModeTab] = useState(0);
+    const [activeModeTab, setActiveModeTab] = useState("rounds");
     const [mode, setMode] = useState("rounds");
     const [gametopic, setGameTopic] = useState("all");
     const [gametopics, setGameTopics] = useState(["all"]);
@@ -39,7 +39,6 @@ const Home = () => {
         // Get recent games
         axios.get(`/games/${auth.username}`)
             .then((res) => {
-                console.log(res.data.games);
                 setGames(res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
             }).catch((err) => {
                 console.error("Error fetching games:", err);
