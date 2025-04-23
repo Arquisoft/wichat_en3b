@@ -190,13 +190,48 @@ function secureRandomInt(max) {
 // Endpoint to get a game round with random items
 app.get("/getRound", async (req, res) => {
     try {
-        const { topics } = req.query; // Get the topics from the query parameters
+        const { topics, mode, usedImages } = req.query; // Get all three parameters
+        
+        // Validate topics
         if (!topics || !Array.isArray(topics) || topics.length === 0) {
             return res.status(400).json({ error: "Missing or invalid topics" });
         }
+        
+        // Parse usedImages if it exists (it might come as a string from the query params)
+        let parsedUsedImages = [];
+        if (usedImages) {
+            try {
+                // If it's an array in string form, parse it
+                parsedUsedImages = Array.isArray(usedImages) ? usedImages : JSON.parse(usedImages);
+            } catch (e) {
+                console.warn("Could not parse usedImages, treating as empty array", e);
+            }
+        }
 
-        const data = await getRandomItems(topics);
-        res.json(data);
+        // For "rounds" or "hide" modes, filter out used images
+        if (mode === "rounds" || mode === "hide") {
+            let data;
+            let attempts = 0;
+            const maxAttempts = 10; // Prevent infinite loops
+            
+            // Try to get an image that's not in usedImages
+            do {
+                data = await getRandomItems(topics);
+                attempts++;
+                
+                // Break the loop if we found an unused image or reached max attempts
+                if (!parsedUsedImages.includes(data.itemWithImage.imageUrl) || attempts >= maxAttempts) {
+                    break;
+                }
+            } while (true);
+            
+            // If we couldn't find an unused image after max attempts, just return what we have
+            return res.json(data);
+        } else {
+            // For other modes, just get random items without filtering
+            const data = await getRandomItems(topics);
+            return res.json(data);
+        }
     } catch (error) {
         console.error("Error in /getRound endpoint:", error);
         res.status(500).json({ error: "Internal server error" });

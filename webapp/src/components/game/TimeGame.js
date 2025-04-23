@@ -36,7 +36,7 @@ function TimeGame() {
   }, [gameEnded]);
 
   return (
-    <BaseGame onNewGame={onNewGame}>
+    <BaseGame mode="time" onNewGame={onNewGame}>
       {({ endGame }) => {
         endGameRef.current = endGame;
 

@@ -128,17 +128,22 @@ app.post('/askllm', async (req, res) => {
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
+
 app.get('/getRound', async (req, res) => {
   try {
-    const { topics } = req.query;
+    const { topics, mode, usedImages } = req.query;
 
     const roundResponse = await axios.get(questionServiceUrl + '/getRound', {
-      params:{topics: topics}
+      params: {
+        topics: topics,
+        mode: mode,
+        usedImages: usedImages
+      }
     });
 
     res.json(roundResponse.data);
   } catch (error) {
-    res.status(error.response?.status).json({ error: error.response.data.error });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal server error' });
   }
 });
 

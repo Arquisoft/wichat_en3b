@@ -56,7 +56,7 @@ function HideGame() {
   }, [blur]);
 
   return (
-    <BaseGame onNewGame={onNewGame} onRoundComplete={onRoundComplete} gameEnding={() => round === totalRounds} ref={imageRef}>
+    <BaseGame mode="hide" onNewGame={onNewGame} onRoundComplete={onRoundComplete} gameEnding={() => round === totalRounds} ref={imageRef}>
       {({ handleOptionSelect }) => {
         handleOptionSelectRef.current = handleOptionSelect;
 
