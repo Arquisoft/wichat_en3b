@@ -159,7 +159,7 @@ async function fetchAndStoreData() {
         }
     }
     
-    console.log("✅ Data loading process completed.");
+    console.log("✅ Data successfully stored in the database.");
 
     // Log the number of items for each topic
     for (const topic of Object.keys(QUERIES)) {
