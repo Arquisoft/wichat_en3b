@@ -342,8 +342,8 @@ ORDER BY DESC(?sitelinks)
 LIMIT 200
 `,
 
-   wtaPlayer: `SELECT ?tennisPlayer ?tennisPlayerLabel ?image WHERE {
-  ?tennisPlayer wdt:P106 wd:Q10833314;   # occupation: tennis player
+   wtaPlayer: `SELECT ?wtaPlayer ?wtaPlayerLabel ?image WHERE {
+  ?wtaPlayer wdt:P106 wd:Q10833314;   # occupation: tennis player
                 wdt:P641 wd:Q847;        # sport: tennis
                 wdt:P21 wd:Q6581072;     # gender: female
                 wdt:P18 ?image;          # image
