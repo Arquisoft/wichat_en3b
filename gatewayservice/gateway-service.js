@@ -151,6 +151,15 @@ app.get('/getTopics', async (req, res) => {
   }
 });
 
+app.get('/getAvailableTopics', async (req, res) => {
+  try {
+    const availabilityResponse = await axios.get(questionServiceUrl + '/getAvailableTopics');
+    res.json(availabilityResponse.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Unknown error' });
+  }
+});
+
 app.post('/addgame', async (req, res) => {
   try {
     const gameResponse = await axios.post(userServiceUrl + '/addgame', req.body);

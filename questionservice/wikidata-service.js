@@ -217,5 +217,27 @@ const server = app.listen(port, () => {
     startUp(); // Start the service and load data
 });
 
+// Verify if the topics are available in the database
+app.get("/getAvailableTopics", async (req, res) => {
+    try {
+        const availableTopics = [];
+
+        const allTopics = Object.keys(QUERIES);
+
+        for (const topic of allTopics) {
+            const count = await WikidataObject.countDocuments({ topic });
+            if (count > 0) {
+                availableTopics.push(topic);
+            }
+        }
+
+        res.json({ availableTopics });
+    } catch (error) {
+        console.error("Error checking available topics:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});  
+
+
 // Exporting the function so that it can be used in other files
 module.exports = { server, startUp };

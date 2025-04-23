@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Container, Typography, Button, Paper, Box, Grid, TextField, Collapse, Divider, FormControlLabel } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { useNavigate } from "react-router"
@@ -10,6 +10,7 @@ import {
   InterpreterMode
 } from "@mui/icons-material"
 import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton, TopicButton } from './SelectionStyles'
+import useAxios from "../../hooks/useAxios";
 
 const CATEGORY_MAP = {
   "Geography": [
@@ -55,11 +56,14 @@ const CATEGORY_MAP = {
   ]
 }
 
+
 const GameTopicSelection = () => {
+  const axios = useAxios()
   const navigate = useNavigate()
   const [selectedTopics, setSelectedTopics] = useState([])
   const [isWild, setIsWild] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [availableTopics, setAvailableTopics] = useState([])
 
   const ALL_TOPICS = Object.values(CATEGORY_MAP).flat().map((t) => t.key)
 
@@ -70,6 +74,21 @@ const GameTopicSelection = () => {
       )
     }
   }
+
+  useEffect(() => {
+    const fetchAvailableTopics = async () => {
+      try {
+        const response = await axios.get(`/getAvailableTopics`)
+        setAvailableTopics(response.data.availableTopics)
+      } catch (err) {
+        console.error("Error fetching available topics:", err)
+      }
+    }
+  
+    fetchAvailableTopics()
+    const interval = setInterval(fetchAvailableTopics, 2500)
+    return () => clearInterval(interval)
+  }, [])  
 
   const handleWildSelection = () => {
     setIsWild(true)
@@ -195,7 +214,8 @@ const GameTopicSelection = () => {
                         startIcon={icon}
                         onClick={() => handleTopicChange(key)}
                         isSelected={selectedTopics.includes(key)}
-                      >
+                        disabled={!isWild && (!Array.isArray(availableTopics) || !availableTopics.includes(key))}
+                        >
                         {label}
                       </TopicButton>
                     </Grid>
