@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Container, Typography, Button, Paper, Box, Grid, TextField, Collapse, Divider, FormControlLabel } from "@mui/material"
-import { styled } from "@mui/material/styles"
+import { Typography, Box, Grid, TextField, Collapse, Divider } from "@mui/material"
 import { useNavigate } from "react-router"
 import {
   LocationCity, Flag, SportsBasketball, MusicNote, Public, Sports, Map, Event, PushPin,
