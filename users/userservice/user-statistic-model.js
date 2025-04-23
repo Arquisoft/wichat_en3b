@@ -17,10 +17,6 @@ const userStatisticSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  totalQuestions: {
-    type: Number,
-    default: 0,
-  },
   totalGamesPlayed: {
     type: Number,
     default: 0,

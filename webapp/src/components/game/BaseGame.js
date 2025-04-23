@@ -21,6 +21,7 @@ const BaseGame = React.forwardRef(({
   onNewGame = () => { },
   onRoundComplete = () => { },
   gameEnding = () => false,
+  mode = "rounds",
 }, ref) => {
   const axios = useAxios();
   const { auth } = useAuth();
@@ -32,7 +33,7 @@ const BaseGame = React.forwardRef(({
   const [loading, setLoading] = useState(true);
   const [chatKey, setChatKey] = useState(0); // resets the chat component every time it is updated
   const [showStatistics, setShowStatistics] = useState(false);
-  const [questions, setQuestions] = useState([]);
+  const [_, setQuestions] = useState([]);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [roundsPlayed, setRoundsPlayed] = useState(0);
 
@@ -126,7 +127,7 @@ const BaseGame = React.forwardRef(({
       // Calculate earned coins based on score
       const earnedCoins = Math.round(score * 0.3);
       await updateUserCoins(earnedCoins);
-      await axios.post("/addgame", { username: auth.username, questions });
+      await axios.post("/addgame", { username: auth.username, mode, questions });
     } catch (error) {
       console.error("Error saving user stadistics:", error);
     }
