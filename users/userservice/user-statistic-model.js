@@ -5,6 +5,10 @@ const userStatisticSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  mode: {
+    type: String,
+    required: true,
+  },
   topic: {
     type: String,
     required: true,
@@ -23,7 +27,7 @@ const userStatisticSchema = new mongoose.Schema({
   },
 });
 
-userStatisticSchema.index({ username: 1, topic: 1 }, { unique: true });
+userStatisticSchema.index({ username: 1, mode: 1, topic: 1 }, { unique: true });
 
 const UserStatistics = mongoose.model('UserStatistic', userStatisticSchema);
 

@@ -26,6 +26,7 @@ const Home = () => {
         // Clear selected topics after finishing the game and navigating back to the home page
         sessionStorage.removeItem("selectedTopics");
 
+        // Get user statistics
         axios.get(`/userstats/${auth.username}/all`)
             .then((res) => {
                 setUserStats(res.data.stats);
@@ -33,6 +34,7 @@ const Home = () => {
                 console.error("Error fetching user stats:", err);
             });
 
+        // Get game topics
         axios.get("/getTopics")
             .then((res) => {
                 setGameTopics(["all", ...res.data.topics]);
@@ -40,14 +42,17 @@ const Home = () => {
                 console.error("Error fetching gametopics:", err);
             });
 
+        // Get recent games
         axios.get(`/games/${auth.username}`)
             .then((res) => {
+                console.log(res.data.games);
                 setGames(res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
             }).catch((err) => {
                 console.error("Error fetching games:", err);
             });
     }, []);
 
+    // Get all user statistics for the selected game topic and stat
     useEffect(() => {
         axios.get(`/userstats/topic/${gametopic}`)
             .then((res) => {
@@ -175,7 +180,7 @@ const Home = () => {
                                         {getIconForTopics(game.gameTopic)}
                                         <Box>
                                             <Typography variant="body1" fontWeight="bold">
-                                                GAMEMODE - Topics: {game.gameTopic.join(", ")}
+                                                {game.gameMode.toUpperCase()} - Topics: {game.gameTopic.join(", ")}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
                                                 Played on {new Date(game.createdAt).toLocaleDateString("es")}

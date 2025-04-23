@@ -3,10 +3,9 @@ import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import RoundsGame from "./RoundsGame";
 import useAxios from "../../hooks/useAxios";
 import { ThemeProvider } from "../../context/ThemeContext";
-import BaseGame from "./BaseGameLayout";
+import BaseGame from "./BaseGame";
 
 // Global mock for Material UI icons
 jest.mock("@mui/icons-material", () => {

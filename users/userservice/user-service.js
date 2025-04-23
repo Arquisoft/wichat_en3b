@@ -152,6 +152,7 @@ async function calculateUserStatistics(newGame, questions) {
         // Create a new user statistics entry if it doesn't exist
         const newUserStats = new UserStatistics({
           username: newGame.username,
+          mode: newGame.gameMode,
           topic: topic,
           totalScore: score,
           correctRate: correctRate,
@@ -161,7 +162,7 @@ async function calculateUserStatistics(newGame, questions) {
       } else {
         // Update existing user statistics
         await UserStatistics.findOneAndUpdate(
-          { username: newGame.username, topic: topic },
+          { username: newGame.username, mode: newGame.gameMode, topic: topic },
           {
             $inc: { totalGamesPlayed: 1 },
             $set: {
