@@ -110,6 +110,18 @@ async function fetchAndStoreData() {
                     await WikidataObject.bulkWrite(bulkOps);
                 }
 
+                // Log the number of items fetched for the topic
+                if (bulkOps.length > 0) {
+                    await WikidataObject.bulkWrite(bulkOps);
+                    console.log(`✅ Stored ${bulkOps.length} items for topic '${topic}'`);
+                    
+                    // Log a sample of what was stored (first item only to avoid console clutter)
+                    if (bulkOps.length > 0) {
+                        const sampleItem = bulkOps[0].updateOne.update.$set;
+                        console.log(`Sample item stored for '${topic}':`, JSON.stringify(sampleItem, null, 2));
+                    }
+                }
+
                 console.timeEnd(`Time taken for ${topic}`);
                 console.log(`✔ Finished storing ${topic} data.`);
                 
@@ -148,6 +160,12 @@ async function fetchAndStoreData() {
     }
     
     console.log("✅ Data loading process completed.");
+
+    // Log the number of items for each topic
+    for (const topic of Object.keys(QUERIES)) {
+        const topicCount = await WikidataObject.countDocuments({ topic });
+        console.log(`  - Topic '${topic}': ${topicCount} items`);
+    }
 }
 
 // Function to get random items from MongoDB
