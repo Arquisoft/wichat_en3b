@@ -182,6 +182,19 @@ function calculateNewAvg(newRate, totalGamesPlayed, oldAvg) {
   return (totalGamesPlayed * oldAvg + newRate) / (totalGamesPlayed + 1);
 }
 
+// Find user statistics for a specific user
+app.get('/userstats', async (req, res) => {
+  try {
+    const filter = { ...req.query };
+
+    const stats = await UserStatistics.find(filter);
+
+    res.json({ message: `Fetched statistics`, stats });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Function to update user coins
 async function updateUserCoins(username, coinsToAdd) {
   try {
@@ -241,46 +254,6 @@ app.post('/updatecoins', async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
-  }
-});
-
-// Find user statistics for a specific user
-app.get('/userstats/user/:username', async (req, res) => {
-  try {
-    const username = req.params.username;
-
-    const userStats = await UserStatistics.find({ username: username });
-
-    res.json({ message: `Fetched statistics for user: ${username}`, stats: userStats });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Find user statistics for a specific topic
-app.get('/userstats/topic/:topic', async (req, res) => {
-  try {
-    const topic = req.params.topic;
-
-    const userStats = await UserStatistics.find({ topic: topic });
-
-    res.json({ message: `Fetched statistics for topic: ${topic}`, stats: userStats });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Find user statistics for a specific user and topic
-app.get('/userstats/:username/:topic', async (req, res) => {
-  try {
-    const username = req.params.username;
-    const topic = req.params.topic;
-
-    const userStats = await UserStatistics.findOne({ username: username, topic: topic });
-
-    res.json({ message: `Fetched statistics for user ${username} in topic ${topic}`, stats: userStats });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
   }
 });
 

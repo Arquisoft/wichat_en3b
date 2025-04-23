@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { alpha, Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
-import { AutoAwesome, BarChart, ChevronRight, FilterAlt, LocationCity, MusicNote, OutlinedFlag, People, SportsBasketball, SportsEsports, TrackChanges } from "@mui/icons-material";
+import { AccessTime, AutoAwesome, BarChart, BlurOn, ChevronRight, FilterAlt, Games, LocationCity, MusicNote, OutlinedFlag, People, SportsBasketball, SportsEsports, TrackChanges } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
@@ -12,7 +12,9 @@ const Home = () => {
     const navigate = useNavigate();
     const { theme } = useTheme();
 
-    const [activeTab, setActiveTab] = useState(0);
+    const [activeMainTab, setactiveMainTab] = useState(0);
+    const [activeModeTab, setActiveModeTab] = useState(0);
+    const [mode, setMode] = useState("rounds");
     const [gametopic, setGameTopic] = useState("all");
     const [gametopics, setGameTopics] = useState(["all"]);
     const [stat, setStat] = useState("points");
@@ -25,14 +27,6 @@ const Home = () => {
     useEffect(() => {
         // Clear selected topics after finishing the game and navigating back to the home page
         sessionStorage.removeItem("selectedTopics");
-
-        // Get user statistics
-        axios.get(`/userstats/${auth.username}/all`)
-            .then((res) => {
-                setUserStats(res.data.stats);
-            }).catch((err) => {
-                console.error("Error fetching user stats:", err);
-            });
 
         // Get game topics
         axios.get("/getTopics")
@@ -52,9 +46,19 @@ const Home = () => {
             });
     }, []);
 
+    useEffect(() => {
+        // Get user statistics for the selected mode
+        axios.get(`/userstats?username=${auth.username}&mode=${mode}&topic=all`)
+            .then((res) => {
+                setUserStats(res.data.stats[0]);
+            }).catch((err) => {
+                console.error("Error fetching user stats:", err);
+            });
+    }, [mode]);
+
     // Get all user statistics for the selected game topic and stat
     useEffect(() => {
-        axios.get(`/userstats/topic/${gametopic}`)
+        axios.get(`/userstats?topic=${gametopic}&mode=${mode}`)
             .then((res) => {
                 // sort the ranking based on the selected stat
                 const sortedRanking = res.data.stats.sort((a, b) => {
@@ -66,7 +70,7 @@ const Home = () => {
             }).catch((err) => {
                 console.error("Error fetching user stats:", err);
             });
-    }, [stat, gametopic]);
+    }, [stat, gametopic, mode]);
 
     const getStatLabel = (user, stat) => {
         switch (stat) {
@@ -125,13 +129,27 @@ const Home = () => {
             {/* Main content */}
             <Box>
                 {/* Tab navigation */}
-                <Tabs value={activeTab} onChange={(_, val) => setActiveTab(val)} sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <Tab icon={<BarChart fontSize="small" />} label="Your Stats" iconPosition="start" />
-                    <Tab icon={<People fontSize="small" />} label="Rankings" iconPosition="start" />
-                </Tabs>
+                <Box sx={{ display: "flex", justifyContent: "space-between", borderBottom: 1, borderColor: "divider" }}>
+                    <Tabs value={activeMainTab} onChange={(_, val) => setactiveMainTab(val)}>
+                        <Tab icon={<BarChart fontSize="small" />} label="Your Stats" iconPosition="start" />
+                        <Tab icon={<People fontSize="small" />} label="Rankings" iconPosition="start" />
+                    </Tabs>
+
+                    <Tabs
+                        value={activeModeTab}
+                        onChange={(_, val) => {
+                            setActiveModeTab(val);
+                            setMode(val);
+                        }}
+                    >
+                        <Tab value="rounds" label="Rounds" icon={<Games fontSize="small" />} iconPosition="start" />
+                        <Tab value="time" label="Time" icon={<AccessTime fontSize="small" />} iconPosition="start" />
+                        <Tab value="hide" label="Hide" icon={<BlurOn fontSize="small" />} iconPosition="start" />
+                    </Tabs>
+                </Box>
 
                 {/* Statistics tab */}
-                <Box hidden={activeTab !== 0} mb={4}>
+                <Box hidden={activeMainTab !== 0} mb={4}>
                     {/* User statistics */}
                     <CardHeader title="Your Statistics" sx={{ p: 0, my: 2 }} />
                     {userStats?.username ? (
@@ -205,7 +223,7 @@ const Home = () => {
                 </Box>
 
                 {/* Rankings tab */}
-                <Box hidden={activeTab !== 1} mb={4}>
+                <Box hidden={activeMainTab !== 1} mb={4}>
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", width: "100%" }}>
                         <CardHeader title="Leaderboard" subheader={`Top players ranked by ${stat}`} />
                         <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -275,7 +293,7 @@ const Home = () => {
             </Box>
 
             {/* Game topic selection */}
-            <Paper elevation={3} sx={{ p: 2, display: "flex", justifyContent: "space-between", gap: 2 }}>
+            <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", gap: 2, bgcolor: "background.paper", borderRadius: 2 }}>
                 <Box>
                     <Typography variant="h5" fontWeight="bold">
                         Ready to play?
@@ -297,7 +315,7 @@ const Home = () => {
                 >
                     Play A Game Now
                 </Button>
-            </Paper>
+            </Box>
         </Container >
     );
 }
