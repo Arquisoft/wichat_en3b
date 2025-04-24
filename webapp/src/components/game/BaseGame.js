@@ -104,8 +104,6 @@ const BaseGame = React.forwardRef(({
   // Check if the game is still loading after modifying the round data
   useEffect(() => {
     if (roundData && roundData.items.length > 0) {
-      //const questionInfo = TOPIC_QUESTION_MAP[roundData.topic] || { wh: "What", name: roundData.topic }; // Value by default if topic is not found
-      //setRoundPrompt(`${questionInfo.wh} is this ${questionInfo.name}?`);
       setLoading(false);
     } else {
       setLoading(true);

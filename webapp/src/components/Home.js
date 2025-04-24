@@ -150,7 +150,7 @@ const Home = () => {
                 {/* Statistics tab */}
                 <Box hidden={activeMainTab !== 0} mb={4}>
                     {/* User statistics */}
-                    <CardHeader title={`Your Stats for ${mode.charAt(0).toUpperCase() + mode.slice(1)}`} sx={{ p: 0, my: 2 }} />
+                    <CardHeader title={`Your statistics for ${mode.charAt(0).toUpperCase() + mode.slice(1)}`} sx={{ p: 0, my: 2 }} />
                     {userStats?.username ? (
                         <Grid2 container spacing={2}>
                             <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.paper", border: 1, borderColor: "divider" }}>
@@ -176,7 +176,7 @@ const Home = () => {
                             </Grid2>
                         </Grid2>
                     ) : (
-                        <Typography variant="body1" color="text.secondary">No statistics found.</Typography>
+                        <Typography variant="body1" color="text.secondary">No statistics found for this mode.</Typography>
                     )}
 
                     {/* Recent games */}
