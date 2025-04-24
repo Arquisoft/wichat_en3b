@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { alpha, LinearProgress, Typography } from "@mui/material";
-import BaseGame from "./BaseGameLayout";
+import BaseGame from "./BaseGame";
 import useTheme from "../../hooks/useTheme";
 
 function HideGame() {
@@ -34,6 +34,8 @@ function HideGame() {
   }
 
   useEffect(() => {
+    if (round === totalRounds + 1) return; // No need to set up the timer if the game is over
+
     const startTime = Date.now();
     const interval = setInterval(() => {
       const elapsedTime = (Date.now() - startTime) / 1000;
@@ -56,14 +58,14 @@ function HideGame() {
   }, [blur]);
 
   return (
-    <BaseGame mode="hide" onNewGame={onNewGame} onRoundComplete={onRoundComplete} gameEnding={() => round === totalRounds} ref={imageRef}>
+    <BaseGame mode="hide" onNewGame={onNewGame} onRoundComplete={onRoundComplete} isGameOver={round === totalRounds + 1} ref={imageRef}>
       {({ handleOptionSelect }) => {
         handleOptionSelectRef.current = handleOptionSelect;
 
         return (
           <>
             <Typography variant="h4" component="h2" align="center" gutterBottom color="primary" sx={{ fontWeight: "bold" }}>
-              Round {round}/{totalRounds}
+              Round {Math.min(round, totalRounds)}/{totalRounds}
             </Typography>
             <LinearProgress
               variant="determinate"

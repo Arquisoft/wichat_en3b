@@ -117,7 +117,7 @@ describe('User Service', () => {
     it('should add a new game on POST /addgame and update user statistics', async () => {
       const newGameData = {
         username: 'GameUser1',
-        password: 'GameUser1!',
+        mode: 'rounds',
         questions: [
           { topic: 'arcade', isCorrect: true, pointsIncrement: 50 },
           { topic: 'arcade', isCorrect: false, pointsIncrement: 50 },
@@ -147,6 +147,7 @@ describe('User Service', () => {
           score: i,
           correctRate: 0.5,
           gameTopic: 'classic',
+          gameMode: 'rounds',
           createdAt: new Date(Date.now() - 1000 * (MAX_GAMES - i))
         }).save();
       }
@@ -156,12 +157,11 @@ describe('User Service', () => {
 
       const newGameData = {
         username: 'GameUser1',
-        password: 'GameUser1!',
+        mode: 'rounds',
         questions: [
           { topic: 'classic', isCorrect: true, pointsIncrement: 50 },
           { topic: 'classic', isCorrect: false, pointsIncrement: 50 },
         ],
-        createdAt: Date.now(), // Set createdAt to the current date
       };
 
       const response = await request(app).post('/addgame').send(newGameData);
@@ -176,16 +176,14 @@ describe('User Service', () => {
   });
 
   describe('User Statistics endpoint', () => {
-    async function addGameData(username, password, questions) {
-      await request(app).post('/addgame').send({ username, password, questions });
+    async function addGameData(username, mode, questions) {
+      await request(app).post('/addgame').send({ username, mode, questions });
     }
 
     beforeAll(async () => {
-
       // Clear previous data
       await UserStatistics.deleteMany({});
       await Game.deleteMany({});
-
 
       // Create users with valid credentials
       const statsUser = { username: 'StatsUser1', password: 'StatsPass1!' };
@@ -199,85 +197,50 @@ describe('User Service', () => {
       await request(app).post('/adduser').send(allUser);
 
       // Add game data for testing
-      await addGameData('StatsUser1', 'StatsPass1!', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 70 }]);
-      await addGameData('StatsUser1', 'StatsPass1!', [{ topic: 'arcade', isCorrect: false, pointsIncrement: 80 }]);
+      await addGameData('user1', 'rounds', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 70 }]);
+      await addGameData('user1', 'rounds', [{ topic: 'arcade', isCorrect: false, pointsIncrement: 80 }]);
 
-      await addGameData('User1Test', 'Password1!', [{ topic: 'flag', isCorrect: true, pointsIncrement: 70 }]);
-      await addGameData('User1Test', 'Password1!', [{ topic: 'flag', isCorrect: false, pointsIncrement: 50 }]);
-      await addGameData('User2Test', 'Password2!', [{ topic: 'flag', isCorrect: true, pointsIncrement: 80 }]);
+      await addGameData('user1', 'time', [{ topic: 'flag', isCorrect: true, pointsIncrement: 70 }]);
+      await addGameData('user1', 'time', [{ topic: 'flag', isCorrect: false, pointsIncrement: 50 }]);
+      await addGameData('user1', 'time', [{ topic: 'flag', isCorrect: true, pointsIncrement: 80 }]);
 
-      await addGameData('User1Test', 'Password1!', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 100 }]);
-      await addGameData('User1Test', 'Password1!', [{ topic: 'arcade', isCorrect: false, pointsIncrement: 50 }]);
-      await addGameData('User2Test', 'Password2!', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 90 }]);
+      await addGameData('user1', 'hide', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 100 }]);
+      await addGameData('user1', 'hide', [{ topic: 'arcade', isCorrect: false, pointsIncrement: 50 }]);
+      await addGameData('user1', 'hide', [{ topic: 'sports', isCorrect: true, pointsIncrement: 90 }]);
 
-      await addGameData('AllUserTest', 'Password3!', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 100 }]);
-      await addGameData('AllUserTest', 'Password3!', [{ topic: 'flag', isCorrect: false, pointsIncrement: 50 }]);
-      await addGameData('AllUserTest', 'Password3!', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 90 }]);
+      await addGameData('user2', 'rounds', [{ topic: 'arcade', isCorrect: true, pointsIncrement: 100 }]);
+      await addGameData('user2', 'rounds', [{ topic: 'flag', isCorrect: false, pointsIncrement: 50 }]);
+      await addGameData('user2', 'rounds', [{ topic: 'sports', isCorrect: true, pointsIncrement: 90 }]);
     });
 
-    it('should return user statistics on GET /userstats/user/:username', async () => {
-
-      const response = await request(app).get('/userstats/user/StatsUser1');
-      expect(response.status).toBe(200);
-
-      expect(Array.isArray(response.body.stats)).toBe(true);
-      expect(response.body.stats.length).toBeGreaterThan(0);
-      
-      const stats = response.body.stats[0];
-      expect(stats.username).toBe('StatsUser1');
-      expect(stats.totalScore).toBe(70); // Only the correct answer adds points
-      expect(stats.correctRate).toBe(0.5); // 1 correct, 1 incorrect = 0.5
-      expect(stats.totalGamesPlayed).toBe(2);
-    });
-
-    it('should return empty array if user statistics not found on GET /userstats/user/:username', async () => {
-      const response = await request(app).get('/userstats/user/nonexistentuser');
+    it('should return empty array if user statistics not found on GET /userstats', async () => {
+      const response = await request(app).get('/userstats?username=nonexistentuser');
       expect(response.status).toBe(200);
       expect(response.body.stats).toEqual([]);
     });
 
-    it('should return all statistics for a specific game topic on GET /userstats/topic/:topic', async () => {
-      const response = await request(app).get('/userstats/topic/flag');
+    it('should return stats corresponding to the filter on GET /userstats', async () => {
+      // Get all user statistics
+      let response = await request(app).get('/userstats?mode=rounds&topic=arcade');
       expect(response.status).toBe(200);
-      
+
       // Check array length and sort order
       expect(response.body.stats.length).toBeGreaterThanOrEqual(2);
-      
+
       // Find the users in the results (order might vary)
-      const user1Stats = response.body.stats.find(s => s.username === 'User1Test');
-      const user2Stats = response.body.stats.find(s => s.username === 'User2Test');
+      const user1Stats = response.body.stats.find(s => s.username === 'user1');
+      const user2Stats = response.body.stats.find(s => s.username === 'user2');
       
       expect(user1Stats).toBeDefined();
       expect(user2Stats).toBeDefined();
       
       expect(user1Stats.totalScore).toBe(70);
-      expect(user2Stats.totalScore).toBe(80);
+      expect(user2Stats.totalScore).toBe(100);
       expect(user1Stats.correctRate).toBe(0.5);
       expect(user2Stats.correctRate).toBe(1);
       expect(user1Stats.totalGamesPlayed).toBe(2);
       expect(user2Stats.totalGamesPlayed).toBe(1);
     });
-
-    it('should return all statistics for a specific user and topic on GET /userstats/:username/:topic', async () => {
-      const response = await request(app).get('/userstats/User1Test/arcade');
-      expect(response.status).toBe(200);
-      expect(response.body.stats.username).toBe('User1Test');
-      expect(response.body.stats.totalScore).toBe(100);
-      expect(response.body.stats.correctRate).toBe(0.5);
-      expect(response.body.stats.totalGamesPlayed).toBe(2);
-    });
-
-    it('should return the combined statistics for all game topics on GET /userstats/:username/all', async () => {
-       const response = await request(app).get('/userstats/AllUserTest/all');
-      expect(response.status).toBe(200);
-      expect(response.body.stats.username).toBe('AllUserTest');
-      expect(response.body.stats.totalScore).toBe(190); // 100 + 0 + 90
-      
-      // Weighted average: (1*1 + 0*1 + 1*1)/3 = 2/3
-      expect(response.body.stats.correctRate).toBeCloseTo(2/3, 5);
-      expect(response.body.stats.totalGamesPlayed).toBe(3);
-    });
-
   }); 
 },
 
@@ -429,6 +392,7 @@ describe('Game Management', () => {
     // First add some games
     const gameData = {
       username: 'GameTestUser',
+      mode: 'rounds',
       questions: [
         { topic: 'arcade', isCorrect: true, pointsIncrement: 50 },
         { topic: 'flag', isCorrect: false, pointsIncrement: 30 }
@@ -456,7 +420,8 @@ describe('Game Management', () => {
   
   it('should handle error when adding game with missing required fields', async () => {
     const invalidGameData = {
-      username: 'GameTestUser'
+      username: 'GameTestUser',
+      mode: 'rounds',
       // Missing 'questions' field
     };
     
@@ -485,6 +450,7 @@ describe('Game Management', () => {
   // Add a game with multiple topics to test statistics creation
   const gameData = {
     username: 'StatsTestUser',
+    mode: 'rounds',
     questions: [
       { topic: 'newTopic', isCorrect: true, pointsIncrement: 100 }
     ]
