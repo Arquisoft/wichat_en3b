@@ -175,13 +175,15 @@ async function getRandomItems(topics) {
             throw new Error("No valid topics provided.");
         }
 
-        const randomTopic = topics[secureRandomInt(topics.length)]; // Choose a random topic from the selected ones
+        // Use Math.random instead of secureRandomInt
+        const randomTopic = topics[Math.floor(Math.random() * topics.length)]; // Choose a random topic from the selected ones
         const items = await WikidataObject.aggregate([
             { $match: { topic: randomTopic } }, // Filter by the chosen topic
             { $sample: { size: 4 } } // Retrieve 4 random items
         ]);
 
-        const randomItem = items[secureRandomInt(items.length)]; // Choose one random item
+        // Use Math.random instead of secureRandomInt
+        const randomItem = items[Math.floor(Math.random() * items.length)]; // Choose one random item
         return {
             topic: randomTopic,
             items: items.map(item => ({ name: item.name })), // Return only names
@@ -191,18 +193,6 @@ async function getRandomItems(topics) {
         console.error("Error fetching random items:", error);
         throw error;
     }
-}
-
-function secureRandomInt(max) {
-    if (max <= 0 || !Number.isInteger(max)) throw new Error("Invalid max value");
-
-    const byteSize = 256;
-    const randomByte = () => crypto.randomBytes(1)[0];
-    let rand;
-    do {
-        rand = randomByte();
-    } while (rand >= byteSize - (byteSize % max));
-    return rand % max;
 }
 
 // Endpoint to get a game round with random items
