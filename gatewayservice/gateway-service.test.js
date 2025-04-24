@@ -45,12 +45,8 @@ describe('Gateway Service', () => {
                 return Promise.resolve({ data: { accessToken: 'mockedToken' } });
             } else if (url.endsWith('/getTopics')) {
                 return Promise.resolve({ data: { modes: ['city', 'athlete'] } });
-            } else if (url.endsWith('/userstats/user/testuser')) {
-                return Promise.resolve({ data: { message: 'Fetched user statistics for user: testuser' } });
-            } else if (url.endsWith('/userstats/mode/flag')) {
-                return Promise.resolve({ data: { message: 'Fetched statistics for mode: flag' } });
-            } else if (url.endsWith('/userstats/testuser/flag')) {
-                return Promise.resolve({ data: { message: 'Fetched statistics for user testuser in mode flag' } });
+            } else if (url.endsWith('/userstats')) {
+                return Promise.resolve({ data: { message: 'Fetched statistics' } });
             }
         });
     });
@@ -292,28 +288,12 @@ describe('Gateway Service', () => {
         expect(response.body.error).toBe('User service error');
     });
 
-    // Test /userstats/user/:username endpoint
+    // Test /userstats endpoint
     it('should fetch user statistics for a specific user from the user service', async () => {
-        const response = await request(app).get('/userstats/user/testuser').set('Authorization', `Bearer ${token}`);
+        const response = await request(app).get('/userstats').set('Authorization', `Bearer ${token}`);
 
         expect(response.statusCode).toBe(200);
-        expect(response.body.message).toBe('Fetched user statistics for user: testuser');
-    });
-
-    // Test /userstats/mode/:mode endpoint
-    it('should fetch user statistics for a specific game mode from the user service', async () => {
-        const response = await request(app).get('/userstats/mode/flag').set('Authorization', `Bearer ${token}`);
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.message).toBe('Fetched statistics for mode: flag');
-    });
-
-    // Test /userstats/:username/:mode endpoint
-    it('should fetch user statistics for a specific user and game mode from the user service', async () => {
-        const response = await request(app).get('/userstats/testuser/flag').set('Authorization', `Bearer ${token}`);
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.message).toBe('Fetched statistics for user testuser in mode flag');
+        expect(response.body.message).toBe('Fetched statistics');
     });
 
     // Test /usercoins/:username endpoint
