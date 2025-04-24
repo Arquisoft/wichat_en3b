@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Typography, Box, Grid, TextField, Collapse, Divider } from "@mui/material"
 import { useNavigate } from "react-router"
 import {
   LocationCity, Flag, SportsBasketball, MusicNote, Public, Sports, Map, Event, PushPin,
-  Piano, Female, SportsSoccer, Language, SportsMotorsports, People, Landscape
+  Piano, Female, SportsSoccer, Language, SportsMotorsports, People, Landscape, SportsTennis,
+  InterpreterMode
 } from "@mui/icons-material"
-import { StyledContainer, SectionPaper, SectionTitle, StyledButton, TopicButton } from './SelectionStyles'
+import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton, TopicButton } from './SelectionStyles'
+import useAxios from "../../hooks/useAxios";
 
 const CATEGORY_MAP = {
   "Geography": [
@@ -30,6 +32,7 @@ const CATEGORY_MAP = {
   "Music": [
     { key: "singer", label: "SINGERS", icon: <MusicNote /> },
     { key: "musicalInstrument", label: "MUSICAL INSTRUMENTS", icon: <Piano /> },
+    { key: "rockBand", label: "ROCK BANDS", icon: <InterpreterMode /> },
   ],
   "Sports": [
     { key: "athlete", label: "ATHLETES", icon: <SportsBasketball /> },
@@ -39,6 +42,11 @@ const CATEGORY_MAP = {
     { key: "realMadridPlayer", label: "REAL MADRID PLAYERS", icon: <SportsSoccer /> },
     { key: "barcelonaPlayer", label: "BARCELONA PLAYERS", icon: <SportsSoccer /> },
     { key: "atleticoMadridPlayer", label: "ATLETICO MADRID PLAYERS", icon: <SportsSoccer /> },
+    { key: "nbaPlayer", label: "NBA PLAYERS", icon: <SportsBasketball /> },
+    { key: "wnbaPlayer", label: "WNBA PLAYERS", icon: <SportsBasketball /> },
+    { key: "euroleaguePlayer", label: "EUROLEAGUE PLAYERS", icon: <SportsBasketball /> },
+    { key: "atpPlayer", label: "ATP PLAYERS", icon: <SportsTennis /> },
+    { key: "wtaPlayer", label: "WTA PLAYERS", icon: <SportsTennis /> },
     { key: "f1Driver", label: "F1 DRIVERS", icon: <SportsMotorsports /> },
     { key: "racingCircuit", label: "RACING CIRCUITS", icon: <SportsMotorsports /> },
   ],
@@ -47,11 +55,14 @@ const CATEGORY_MAP = {
   ]
 }
 
+
 const GameTopicSelection = () => {
+  const axios = useAxios()
   const navigate = useNavigate()
   const [selectedTopics, setSelectedTopics] = useState([])
   const [isWild, setIsWild] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [availableTopics, setAvailableTopics] = useState([])
 
   const ALL_TOPICS = Object.values(CATEGORY_MAP).flat().map((t) => t.key)
 
@@ -62,6 +73,21 @@ const GameTopicSelection = () => {
       )
     }
   }
+
+  useEffect(() => {
+    const fetchAvailableTopics = async () => {
+      try {
+        const response = await axios.get(`/getAvailableTopics`)
+        setAvailableTopics(response.data.availableTopics)
+      } catch (err) {
+        console.error("Error fetching available topics:", err)
+      }
+    }
+  
+    fetchAvailableTopics()
+    const interval = setInterval(fetchAvailableTopics, 2500)
+    return () => clearInterval(interval)
+  }, [])  
 
   const handleWildSelection = () => {
     setIsWild(true)
@@ -187,7 +213,8 @@ const GameTopicSelection = () => {
                         startIcon={icon}
                         onClick={() => handleTopicChange(key)}
                         isSelected={selectedTopics.includes(key)}
-                      >
+                        disabled={!isWild && (!Array.isArray(availableTopics) || !availableTopics.includes(key))}
+                        >
                         {label}
                       </TopicButton>
                     </Grid>

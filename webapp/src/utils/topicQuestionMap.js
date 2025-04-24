@@ -19,6 +19,7 @@ export const TOPIC_QUESTION_MAP = {
   // Music
   "singer": { key: "singer", wh: "Who", name: "SINGER" },
   "musicalInstrument": { key: "musicalInstrument", wh: "What", name: "MUSICAL INSTRUMENT" },
+  "rockBand": { key: "rockBand", wh: "Which", name: "ROCK BAND" },
   
   // Sports
   "athlete": { key: "athlete", wh: "Who", name: "ATHLETE" },
@@ -28,6 +29,11 @@ export const TOPIC_QUESTION_MAP = {
   "realMadridPlayer": { key: "realMadridPlayer", wh: "Who", name: "REAL MADRID PLAYER" },
   "barcelonaPlayer": { key: "barcelonaPlayer", wh: "Who", name: "BARCELONA PLAYER" },
   "atleticoMadridPlayer": { key: "atleticoMadridPlayer", wh: "Who", name: "ATLÉTICO MADRID PLAYER" },
+  "nbaPlayer": { key: "nbaPlayer", wh: "Who", name: "NBA PLAYER" },
+  "wnbaPlayer": { key: "wnbaPlayer", wh: "Who", name: "WNBA PLAYER" },
+  "euroleaguePlayer": { key: "euroleaguePlayer", wh: "Who", name: "EUROLEAGUE PLAYER" },
+  "atpPlayer": { key: "atpPlayer", wh: "Who", name: "ATP PLAYER" },
+  "wtaPlayer": { key: "wtaPlayer", wh: "Who", name: "WTA PLAYER" },
   "f1Driver": { key: "f1Driver", wh: "Who", name: "F1 DRIVER" },
   "racingCircuit": { key: "racingCircuit", wh: "Which", name: "RACING CIRCUIT" },
   

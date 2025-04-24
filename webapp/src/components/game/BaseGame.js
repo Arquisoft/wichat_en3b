@@ -16,6 +16,7 @@ import useCoinHandler from "../../handlers/CoinHandler";
 import useLifeLinesHandler from "../../handlers/LifeLinesHandler";
 import { TOPIC_QUESTION_MAP } from "../../utils/topicQuestionMap";
 
+
 const BaseGame = React.forwardRef(({
   children,
   onNewGame = () => { },
@@ -36,6 +37,7 @@ const BaseGame = React.forwardRef(({
   const [questions, setQuestions] = useState([]);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [roundsPlayed, setRoundsPlayed] = useState(0);
+  const [usedImages, setUsedImages] = useState([]);
 
   const answerTimer = useRef(null); // Holds the timer for the answer selection
 
@@ -79,8 +81,17 @@ const BaseGame = React.forwardRef(({
         navigate("/home", { replace: true });
       } else {
         response = await axios.get("/getRound", {
-          params: { topics: selectedTopics }
+          params: { 
+            topics: selectedTopics,
+            mode: mode,
+            usedImages: usedImages
+          }
         });
+      }
+
+      // When we get a new round, add the current image to usedImages
+      if (response.data && response.data.itemWithImage && response.data.itemWithImage.imageUrl) {
+        setUsedImages(prev => [...prev, response.data.itemWithImage.imageUrl]);
       }
 
       return response.data
@@ -150,6 +161,7 @@ const BaseGame = React.forwardRef(({
     onNewGame();
 
     // General setup
+    setUsedImages([]);
     setShowStatistics(false);
     setRoundData(null);
     setScore(0);
