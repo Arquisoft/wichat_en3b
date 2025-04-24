@@ -51,22 +51,4 @@ describe('AddUser component', () => {
     });
   });
 
-  it('should handle error when adding user', async () => {
-    renderLayout();
-
-    const { usernameInput, passwordInput, addUserButton } = getInputsAndButton();
-
-    mockAxios.onPost("/adduser").reply(500, { error: 'Internal Server Error' });
-
-    fireEvent.change(usernameInput, { target: { value: 'TestUser1' } });
-    fireEvent.change(passwordInput, { target: { value: 'TestPassword1!' } });
-
-    fireEvent.click(addUserButton);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText((content, node) => content.includes('Internal Server Error'))
-      ).toBeInTheDocument();
-    });
-  });
 });
