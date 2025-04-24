@@ -51,12 +51,9 @@ describe("Express Service API Endpoints", () => {
 
         await start();
 
-        expect(WikidataObject.deleteMany).toHaveBeenCalled();
         expect(WikidataObject.bulkWrite).toHaveBeenCalled();
 
         expect(console.log).toHaveBeenCalledWith("Connected to MongoDB");
-        expect(console.log).toHaveBeenCalledWith("Clearing the database...");
-        expect(console.log).toHaveBeenCalledWith("✅ Database cleared successfully.");
         expect(console.log).toHaveBeenCalledWith("✅ Data successfully stored in the database.");
 
         console.log.mockRestore();

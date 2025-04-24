@@ -16,12 +16,14 @@ import useCoinHandler from "../../handlers/CoinHandler";
 import useLifeLinesHandler from "../../handlers/LifeLinesHandler";
 import { TOPIC_QUESTION_MAP } from "../../utils/topicQuestionMap";
 
+
 const BaseGame = React.forwardRef(({
   children,
   onNewGame = () => { },
   onRoundComplete = () => { },
   gameEnding = () => false,
-}, ref) => {
+  mode = "rounds",
+}, ref) => {
   const axios = useAxios();
   const { auth } = useAuth();
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ const BaseGame = React.forwardRef(({
   const [questions, setQuestions] = useState([]);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [roundsPlayed, setRoundsPlayed] = useState(0);
+  const [usedImages, setUsedImages] = useState([]);
 
   const { coins, spentCoins, setSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins } = useCoinHandler(axios, auth);
   const { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, handlePhoneOut, handlePhoneOutClose, handleUseChat,
@@ -74,8 +77,17 @@ const BaseGame = React.forwardRef(({
         navigate("/home", { replace: true });
       } else {
         response = await axios.get("/getRound", {
-          params: { topics: selectedTopics }
+          params: { 
+            topics: selectedTopics,
+            mode: mode,
+            usedImages: usedImages
+          }
         });
+      }
+
+      // When we get a new round, add the current image to usedImages
+      if (response.data && response.data.itemWithImage && response.data.itemWithImage.imageUrl) {
+        setUsedImages(prev => [...prev, response.data.itemWithImage.imageUrl]);
       }
 
       return response.data
@@ -135,6 +147,7 @@ const BaseGame = React.forwardRef(({
   };
 
   const handleNewGame = async () => {
+    setUsedImages([]);
     setShowStatistics(false);
     setRoundData(null);
     setScore(0);
