@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router";
 import { Toolbar, Typography, Button, Card, CardContent, Grid, Box, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Container } from "@mui/material";
 import { HelpOutline, Phone, Chat, InterpreterMode, EmojiEvents, MonetizationOn } from "@mui/icons-material";
@@ -81,7 +81,7 @@ const BaseGame = React.forwardRef(({
         navigate("/home", { replace: true });
       } else {
         response = await axios.get("/getRound", {
-          params: { 
+          params: {
             topics: selectedTopics,
             mode: mode,
             usedImages: usedImages
@@ -225,6 +225,14 @@ const BaseGame = React.forwardRef(({
     return selectedName === correctName
   }
 
+  // Values for the graph component
+  const distractors = useMemo(() => {
+    if (!roundData) return [];
+    return roundData.items
+      .filter(item => item.name !== roundData.itemWithImage.name)
+      .map(item => item.name);
+  }, [roundData]);
+
   return (
     <GameContainer maxWidth="100%" height="100%">
       {/* Top Bar */}
@@ -325,12 +333,7 @@ const BaseGame = React.forwardRef(({
                   <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
                     The audience says...
                   </Typography>
-                  {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name}
-                    distractors={roundData.items
-                      .filter(item => item.name !== roundData.itemWithImage.name)
-                      .map(item => item.name)
-                    }
-                  />}
+                  {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name} distractors={distractors} />}
                 </CardContent>
               </Card>
             )}
