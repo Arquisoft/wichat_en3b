@@ -53,16 +53,16 @@ defineFeature(feature, test => {
     let password;
 
     given('The user is on the login page', async () => {
-      username = "correctUser"
-      password = "correctPassword"
+      username = "correctUserLoginForm"
+      password = "42q53w64e586t78puyghFF$"
       //Go from login page to register page
-      await expect(page).toClick("a", { text: "Don't have an account? Register here." });
+      await expect(page).toClick("a", { text: "Don't have an account? Sign up here" });
       //Add the user credentials to the database 
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button', { text: 'Add User' });
+      await expect(page).toClick('button', { text: 'Sign Up' });
       //Go to the login page
-      await expect(page).toClick("a", { text: "Already have an account? Login here." });
+      await expect(page).toClick("a", { text: "Already have an account? Login here" });
     });
 
     when('They submit the correct credentials into the login form', async () => {
