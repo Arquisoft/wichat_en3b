@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router";
 import { Toolbar, Typography, Button, Card, CardContent, Grid, Box, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Container } from "@mui/material";
 import { HelpOutline, Phone, Chat, InterpreterMode, EmojiEvents, MonetizationOn } from "@mui/icons-material";
@@ -16,11 +16,13 @@ import useCoinHandler from "../../handlers/CoinHandler";
 import useLifeLinesHandler from "../../handlers/LifeLinesHandler";
 import { TOPIC_QUESTION_MAP } from "../../utils/topicQuestionMap";
 
+
 const BaseGame = React.forwardRef(({
   children,
   onNewGame = () => { },
   onRoundComplete = () => { },
-  gameEnding = () => false,
+  isGameOver = false,
+  mode = "rounds",
 }, ref) => {
   const axios = useAxios();
   const { auth } = useAuth();
@@ -35,30 +37,35 @@ const BaseGame = React.forwardRef(({
   const [questions, setQuestions] = useState([]);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [roundsPlayed, setRoundsPlayed] = useState(0);
+  const [usedImages, setUsedImages] = useState([]);
+
+  const answerTimer = useRef(null); // Holds the timer for the answer selection
 
   const { coins, spentCoins, setSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins } = useCoinHandler(axios, auth);
   const { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, handlePhoneOut, handlePhoneOutClose, handleUseChat,
     hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame } = useLifeLinesHandler(roundData, spendCoins);
 
-  // Set up the game when the component mounts
+  // Load rounds every time the roundsPlayed changes and on start up
   useEffect(() => {
-    gameSetup();
-  }, []);
+    if (!isGameOver) {
+      const load = async () => {
+        setRoundData(null);
+        try {
+          const data = await loadRound();
+          setRoundData(data);
+        } catch (error) {
+          console.error("Error loading new round", error);
+          setLoading(false);
+        }
+      }
+
+      load();
+    }
+  }, [roundsPlayed, isGameOver]);
 
   useEffect(() => {
     fetchUserCoins();
   }, [auth]);
-
-  const gameSetup = async () => {
-    try {
-      // First round
-      const data = await loadRound()
-      setRoundData(data)
-    } catch (error) {
-      console.error("Error fetching data from question service:", error)
-      setLoading(false)
-    }
-  }
 
   // Function to load the data for each round.
   const loadRound = async () => {
@@ -74,8 +81,17 @@ const BaseGame = React.forwardRef(({
         navigate("/home", { replace: true });
       } else {
         response = await axios.get("/getRound", {
-          params: { topics: selectedTopics }
+          params: { 
+            topics: selectedTopics,
+            mode: mode,
+            usedImages: usedImages
+          }
         });
+      }
+
+      // When we get a new round, add the current image to usedImages
+      if (response.data && response.data.itemWithImage && response.data.itemWithImage.imageUrl) {
+        setUsedImages(prev => [...prev, response.data.itemWithImage.imageUrl]);
       }
 
       return response.data
@@ -88,8 +104,6 @@ const BaseGame = React.forwardRef(({
   // Check if the game is still loading after modifying the round data
   useEffect(() => {
     if (roundData && roundData.items.length > 0) {
-      //const questionInfo = TOPIC_QUESTION_MAP[roundData.topic] || { wh: "What", name: roundData.topic }; // Value by default if topic is not found
-      //setRoundPrompt(`${questionInfo.wh} is this ${questionInfo.name}?`);
       setLoading(false);
     } else {
       setLoading(true);
@@ -100,7 +114,7 @@ const BaseGame = React.forwardRef(({
   useEffect(() => {
     let intervalId;
 
-    if (loading) {
+    if (loading && !isGameOver) {
       intervalId = setInterval(async () => {
         try {
           const data = await loadRound();
@@ -121,20 +135,31 @@ const BaseGame = React.forwardRef(({
   }, [loading]);
 
   // Add the game statistics to the database and show the statistics dialog
-  const endGame = async (questions) => {
-    try {
-      // Calculate earned coins based on score
-      const earnedCoins = Math.round(score * 0.3);
-      await updateUserCoins(earnedCoins);
-      await axios.post("/addgame", { username: auth.username, questions });
-    } catch (error) {
-      console.error("Error saving user stadistics:", error);
-    }
+  useEffect(() => {
+    if (isGameOver) {
+      const endGame = async () => {
+        try {
+          // Calculate earned coins based on score
+          const earnedCoins = Math.round(score * 0.3);
+          await updateUserCoins(earnedCoins);
+          await axios.post("/addgame", { username: auth.username, mode, questions });
+        } catch (error) {
+          console.error("Error saving user stadistics:", error);
+        }
 
-    setShowStatistics(true);
-  };
+        setShowStatistics(true);
+      };
+
+      endGame();
+    }
+  }, [isGameOver]);
 
   const handleNewGame = async () => {
+    // Mode specific setup
+    onNewGame();
+
+    // General setup
+    setUsedImages([]);
     setShowStatistics(false);
     setRoundData(null);
     setScore(0);
@@ -145,15 +170,10 @@ const BaseGame = React.forwardRef(({
     setQuestions([]);
     setCorrectAnswers(0);
     setRoundsPlayed(0);
-
-    // Mode specific setup
-    onNewGame();
-
-    gameSetup();
   };
 
   const handleOptionSelect = async (index) => {
-    setRoundsPlayed(roundsPlayed + 1);
+    if (isGameOver || selectedAnswer !== null) return; // Prevent multiple selections
 
     const isCorrect = correctOption(index);
     setSelectedAnswer(index);
@@ -165,38 +185,41 @@ const BaseGame = React.forwardRef(({
       setShowGraph(false);
     }
 
-    let updatedQuestions = [];
-    setQuestions((prev) => {
-      updatedQuestions = [
-        ...prev,
-        {
-          topic: roundData.topic,
-          isCorrect: isCorrect,
-          pointsIncrement: pointsIncrement,
-        },
-      ];
-      return updatedQuestions;
-    });
+    setQuestions((prev) => [
+      ...prev,
+      {
+        topic: roundData.topic,
+        isCorrect: isCorrect,
+        pointsIncrement: pointsIncrement,
+      },
+    ]);
 
-    setTimeout(async () => {
-      // Mode specific end condition
-      if (gameEnding()) {
-        return await endGame(updatedQuestions);
-      }
+    answerTimer.current = setTimeout(() => {
+      triggerNewRound(); // Trigger the next round after 2 seconds
 
-      // Mode specific round complete
-      onRoundComplete();
-      setRoundData(null);
-      setSelectedAnswer(null);
-
-      try {
-        const data = await loadRound();
-        setRoundData(data);
-      } catch (error) {
-        console.error("Error loading new round", error);
-        setLoading(false);
-      }
+      answerTimer.current = null; // Clear the timer reference
     }, 2000);
+
+    console.log("timer set", answerTimer.current)
+  }
+
+  useEffect(() => {
+    console.log("isGameOver", isGameOver, answerTimer.current)
+    if (isGameOver && answerTimer.current) {
+      console.log("Clearing timer", answerTimer.current)
+      clearTimeout(answerTimer.current); // Clear the timer when the game is over
+      answerTimer.current = null; // Reset the timer reference
+
+      triggerNewRound(); // Trigger the next round immediately
+    }
+  }, [isGameOver]);
+
+  const triggerNewRound = () => {
+    setRoundsPlayed(roundsPlayed + 1);
+    setSelectedAnswer(null);
+
+    // Mode specific round complete
+    onRoundComplete();
   }
 
   const correctOption = (index) => {
@@ -335,7 +358,7 @@ const BaseGame = React.forwardRef(({
               ) : (
                 roundData && (
                   <>
-                    {typeof children === 'function' ? children({ endGame, handleOptionSelect }) : children}
+                    {typeof children === 'function' ? children({ handleOptionSelect }) : children}
                     <ImageContainer>
                       <img
                         ref={ref}

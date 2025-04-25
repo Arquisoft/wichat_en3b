@@ -92,19 +92,9 @@ describe("Home component", () => {
   });
 
   it("should fetch and display user stats", async () => {
-    const mockStats = {
-      stats: [{
-        username: "otheruser",
-        totalScore: 1000,
-        correctRate: 0.9,
-        totalQuestions: 200,
-        totalGamesPlayed: 20
-      }]
-    };
-  
     // Mock the API responses
     mockAxios.onGet("/getTopics").reply(200, { topics: ["history", "science"] });
-    mockAxios.onGet("/userstats/testuser/all").reply(200, { 
+    mockAxios.onGet("/userstats?username=testuser&mode=rounds&topic=all").reply(200, { 
       stats: {
         username: "testuser",
         totalScore: 800,
@@ -112,12 +102,11 @@ describe("Home component", () => {
         totalGamesPlayed: 15
       }
     });
-    mockAxios.onGet("/userstats/topic/all").reply(200, { 
+    mockAxios.onGet("/userstats?topic=all&mode=rounds").reply(200, { 
       stats: [{
         username: "otheruser",
         totalScore: 1000,
         correctRate: 0.9,
-        totalQuestions: 200,
         totalGamesPlayed: 20
       }]
     });
