@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
 import axios from '../utils/axios';
 import { useTranslation } from 'react-i18next';
-
-
-import { Container, Typography, TextField, Button, Snackbar, Box, Paper, Alert, FormHelperText, alpha, InputLabel } from '@mui/material';
+import { Container, Typography, TextField, Button, Snackbar, Box, Paper, FormHelperText, alpha, InputLabel } from '@mui/material';
 import { NavLink, useNavigate } from 'react-router';
 import logInPic from './photos/logInPic.png';
 import { grey } from '@mui/material/colors';
+import useAuth from '../hooks/useAuth';
 
 const AddUser = () => {
+  const { auth } = useAuth();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [_, setError] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const labels = {
     createAccount: "createAccount",
@@ -29,7 +31,9 @@ const AddUser = () => {
     registerTxtBubble: "registerTxtBubble",
   };
 
-  const navigate = useNavigate();
+  // Redirect if already logged in
+  if (auth)
+    navigate("/home", { replace: true });
 
   const addUser = async () => {
     setError('');
@@ -58,8 +62,6 @@ const AddUser = () => {
     } else if (errorMsg.toLowerCase().includes('password')) {
       setPasswordError(errorMsg);
     }
-
-
     }
   };
 
