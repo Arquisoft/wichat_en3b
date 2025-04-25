@@ -9,6 +9,12 @@ import i18n from "../utils/i18n";
 import { ThemeProvider } from "../context/ThemeContext";
 
 const mockAxios = new MockAdapter(axios);
+jest.mock("../hooks/useAuth", () => ({
+  __esModule: true,
+  default: () => ({
+    auth: { username: null },
+  }),
+}));
 
 describe('AddUser component', () => {
   const renderLayout = () => {
@@ -50,5 +56,4 @@ describe('AddUser component', () => {
       expect(screen.getByText(i18n.t("userAddedSuccess"))).toBeInTheDocument();
     });
   });
-
 });

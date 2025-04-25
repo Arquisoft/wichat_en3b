@@ -5,7 +5,7 @@ import { Typography } from "@mui/material";
 import BaseGame from "./BaseGame";
 
 function RoundsGame() {
-  const totalRounds = 5;
+  const totalRounds = 10;
   const [round, setRound] = useState(1);
 
   return (

@@ -10,7 +10,7 @@ import CustomTextField from '../CustomTextField'; // Import the external CustomT
 import { grey } from '@mui/material/colors';
 
 const Login = () => {
-  const { setAuth, persist, setPersist } = useAuth();
+  const { auth, setAuth, persist, setPersist } = useAuth();
   const axios = useAxios();
   const navigate = useNavigate();
   const from = useLocation().state?.from.pathname || "/home";
@@ -33,6 +33,10 @@ const Login = () => {
     registerHere: "registerHere",
     loginQuestion: "loginQuestion",
   };
+
+  // Redirect if already logged in
+  if (auth.username)
+    navigate("/home", { replace: true });
 
   const loginUser = async () => {
     try {
