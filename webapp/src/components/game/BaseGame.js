@@ -199,14 +199,10 @@ const BaseGame = React.forwardRef(({
 
       answerTimer.current = null; // Clear the timer reference
     }, 2000);
-
-    console.log("timer set", answerTimer.current)
   }
 
   useEffect(() => {
-    console.log("isGameOver", isGameOver, answerTimer.current)
     if (isGameOver && answerTimer.current) {
-      console.log("Clearing timer", answerTimer.current)
       clearTimeout(answerTimer.current); // Clear the timer when the game is over
       answerTimer.current = null; // Reset the timer reference
 

@@ -32,7 +32,7 @@ const AddUser = () => {
   };
 
   // Redirect if already logged in
-  if (auth)
+  if (auth.username)
     navigate("/home", { replace: true });
 
   const addUser = async () => {
