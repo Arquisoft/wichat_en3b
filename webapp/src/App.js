@@ -2,7 +2,7 @@
 
 import { Container, Typography, Button, Box, Paper, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { Outlet, NavLink } from "react-router"
+import { Outlet, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import logInPic from "./components/photos/homeLogo.png";
@@ -82,12 +82,12 @@ const LoginButton = styled(ActionButton)(({ theme }) => ({
   },
 }))
 
-const StyledNavLink = styled(NavLink)({
+const StyledForm = styled('form')({
   textDecoration: "none",
   width: "100%",
   display: "flex",
-  justifyContent: "center",
-})
+  justifyContent: "center"
+});
 
 const SpeechBubble = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -122,6 +122,12 @@ const TitleTypography = styled(Typography)(({ theme }) => ({
 
 function App() {
   const {t} = useTranslation();
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate("/login");
+  };
 
   return (
     <Container maxWidth="sm">
@@ -138,11 +144,11 @@ function App() {
         
         <Grid container sx={{ mt: 2 }}>
           <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
-            <StyledNavLink to="/login">
-              <LoginButton variant="contained" startIcon={<CelebrationIcon />}>
+            <StyledForm onSubmit={handleSubmit}> 
+              <LoginButton type ="submit" variant="contained" startIcon={<CelebrationIcon />}>
                 Start the fun!
               </LoginButton>
-            </StyledNavLink>
+            </StyledForm>
           </Grid>
         </Grid>
         

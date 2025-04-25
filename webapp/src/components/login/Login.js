@@ -69,43 +69,45 @@ const Login = () => {
             {t(labels.loginStartMsg)}
           </Typography>
 
-          <CustomTextField
-            name="username"
-            labelKey={labels.username}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <CustomTextField
-            name="password"
-            labelKey={labels.password}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-          />
+          <form onSubmit={(e) => { e.preventDefault(); loginUser(); }}> {/* Wrap inputs and button in a form */}
+    <CustomTextField
+      name="username"
+      labelKey={labels.username}
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+    />
+    <CustomTextField
+      name="password"
+      labelKey={labels.password}
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      type="password"
+    />
 
-          <FormControlLabel
-            control={<Checkbox onChange={togglePersist} checked={persist} />}
-            label={t(labels.rememberMe)}
-            sx={{ mb: 2 }}
-          />
+    <FormControlLabel
+      control={<Checkbox onChange={togglePersist} checked={persist} />}
+      label={t(labels.rememberMe)}
+      sx={{ mb: 2 }}
+    />
 
-          <Button
-            fullWidth
-            variant="contained"
-            onClick={loginUser}
-            data-testid="login-submit"
-            sx={{
-              mt: 1,
-              fontWeight: 'bold',
-              backgroundColor: 'primary.main',
-              color: 'primary.contrastText',
-              '&:hover': {
-                backgroundColor: 'primary.dark', 
-              },
-            }}
-          >
-            🔓 {t(labels.login)}
-          </Button>
+    <Button
+      fullWidth
+      type="submit" // Ensure the button is a submit button
+      variant="contained"
+      data-testid="login-submit"
+      sx={{
+        mt: 1,
+        fontWeight: 'bold',
+        backgroundColor: 'primary.main',
+        color: 'primary.contrastText',
+        '&:hover': {
+          backgroundColor: 'primary.dark',
+        },
+      }}
+    >
+      🔓 {t(labels.login)}
+    </Button>
+  </form>
 
           <Typography component="div" align="center" sx={{ marginTop: 3 }}>
             <NavLink to="/signup">

@@ -76,7 +76,7 @@ const AddUser = () => {
           <Typography component="h1" variant="h5" textAlign="center" fontWeight="bold" mb={3}>
             {t(labels.createAccount)}
           </Typography>
-
+          <form onSubmit={(e) => { e.preventDefault(); addUser(); }}>
           <CustomTextField
             name="username"
             labelKey={labels.username}
@@ -107,9 +107,9 @@ const AddUser = () => {
 
           <Button
             fullWidth
+            type="submit" // Ensure the button is a submit button
             variant="contained"
             color="primary"
-            onClick={addUser}
             sx={{
               mt: 1,
               fontWeight: 'bold',
@@ -122,6 +122,8 @@ const AddUser = () => {
           >
             {t(labels.signUp)}
           </Button>
+        </form>
+
 
           <Typography component="div" align="center" sx={{ marginTop: 3 }}>
             <NavLink to={"/login"}>
