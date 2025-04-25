@@ -34,7 +34,8 @@ async function startUp() {
     }
 }
 
-// Function to clear the database
+// Function to clear the database (just for development)
+/** 
 async function clearDatabase() {
     try {
         console.log("Clearing the database...");
@@ -44,6 +45,7 @@ async function clearDatabase() {
         console.error("Error clearing the database:", error);
     }
 }
+*/
 
 // Function to pause execution
 function sleep(ms) {
@@ -335,4 +337,4 @@ app.get("/getAvailableTopics", async (req, res) => {
 });
 
 // Exporting the function so that it can be used in other files
-module.exports = { server, startUp };
+module.exports = { server, startUp, fetchAndStoreData };

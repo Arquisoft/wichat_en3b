@@ -43,6 +43,7 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
     if (askAudience || !roundData || !spendCoins(150)) return
 
     setAskAudience(true)
+    
     setShowGraph(true); // Make the graph visible when the audience call is used
   }
 

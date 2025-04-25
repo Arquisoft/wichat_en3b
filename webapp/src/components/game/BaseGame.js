@@ -39,6 +39,8 @@ const BaseGame = React.forwardRef(({
   const [roundsPlayed, setRoundsPlayed] = useState(0);
   const [usedImages, setUsedImages] = useState([]);
 
+
+
   const answerTimer = useRef(null); // Holds the timer for the answer selection
 
   const { coins, spentCoins, setSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins } = useCoinHandler(axios, auth);
@@ -98,6 +100,7 @@ const BaseGame = React.forwardRef(({
     } catch (error) {
       console.error("Error fetching data from question service:", error)
       setLoading(false)
+      return null;
     }
   }
 
@@ -214,6 +217,10 @@ const BaseGame = React.forwardRef(({
     setRoundsPlayed(roundsPlayed + 1);
     setSelectedAnswer(null);
 
+    // Clear the current round data to force a reload
+    setRoundData(null);
+    setLoading(true);
+    
     // Mode specific round complete
     onRoundComplete();
   }
@@ -327,16 +334,28 @@ const BaseGame = React.forwardRef(({
                 key={chatKey} roundData={roundData}
               />)}
 
-            </CardContent>{isTrue("ShowGraph") && (
+              {isTrue("ShowGraph") && (
               <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
                 <CardContent>
+                <Typography data-testid="audience-response" variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
+                   The audience says...
+                </Typography>
+                  {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name}
+                    distractors={roundData.items
+                      .filter(item => item.name !== roundData.itemWithImage.name)
+                      .map(item => item.name)
+                    }
+                  />}
+
                   <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
                     The audience says...
                   </Typography>
                   {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name} distractors={distractors} />}
+
                 </CardContent>
               </Card>
             )}
+            </CardContent>
           </Card>
         </Grid>
 
