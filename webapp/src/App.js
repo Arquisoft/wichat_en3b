@@ -109,7 +109,6 @@ const SpeechBubble = styled(Box)(({ theme }) => ({
     borderStyle: "solid",
     borderColor: `${theme.palette.primary.main} transparent transparent transparent`,
   },
-
 }));
 
 const TitleTypography = styled(Typography)(({ theme }) => ({
@@ -136,7 +135,7 @@ function App() {
           <TitleTypography component="h1" variant="h4">
             WICHAT
           </TitleTypography>
-          <SpeechBubble variant="h5" color="textSecondary" gutterBottom>
+          <SpeechBubble variant="h5" color="textSecondary">
             {t("welcomeMsg")}
           </SpeechBubble>
           <BouncingImage src={logInPic} alt="Bouncing Icon" />
