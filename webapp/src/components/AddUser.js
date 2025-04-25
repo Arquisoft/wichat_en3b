@@ -75,8 +75,8 @@ const AddUser = () => {
           <Typography component="h1" variant="h5" textAlign="center" fontWeight="bold" mb={3}>
             {t(labels.createAccount)}
           </Typography>
+          <form onSubmit={(e) => { e.preventDefault(); addUser(); }}>
           <Box sx={{ mb: 3 }}>
-            <form onSubmit={(e) => { e.preventDefault(); addUser(); }}>
             <InputLabel 
               htmlFor="username" 
               sx={{ 

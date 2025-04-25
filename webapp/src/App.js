@@ -2,7 +2,7 @@
 
 import { Container, Typography, Button, Box, Paper, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { Outlet, useNavigate } from "react-router-dom"
+import { Outlet, useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import logInPic from "./components/photos/homeLogo.png";
