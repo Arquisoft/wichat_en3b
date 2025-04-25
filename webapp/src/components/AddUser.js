@@ -75,7 +75,7 @@ const AddUser = () => {
           <Typography component="h1" variant="h5" textAlign="center" fontWeight="bold" mb={3}>
             {t(labels.createAccount)}
           </Typography>
-
+          <form onSubmit={(e) => { e.preventDefault(); addUser(); }}>
           <Box sx={{ mb: 3 }}>
             <InputLabel 
               htmlFor="username" 
@@ -102,7 +102,6 @@ const AddUser = () => {
               placeholder="Enter your username"
             />
           </Box>
-
           <Box sx={{ mb: 2 }}>
             <InputLabel 
               htmlFor="password" 
@@ -136,9 +135,9 @@ const AddUser = () => {
 
           <Button
             fullWidth
+            type="submit" // Ensure the button is a submit button
             variant="contained"
             color="primary"
-            onClick={addUser}
             sx={{
               mt: 3,
               py: 1.5,
@@ -152,6 +151,8 @@ const AddUser = () => {
           >
             {t(labels.signUp)}
           </Button>
+        </form>
+
 
           <Typography component="div" align="center" sx={{ marginTop: 4 }}>
             <NavLink to={"/login"} style={{ textDecoration: 'none' }}>
