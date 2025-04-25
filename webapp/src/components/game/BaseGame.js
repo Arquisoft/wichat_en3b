@@ -326,7 +326,7 @@ const BaseGame = React.forwardRef(({
             </CardContent>{isTrue("ShowGraph") && (
               <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
                 <CardContent>
-                  <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
+                  <Typography data-testid="audience-response" variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
                     The audience says...
                   </Typography>
                   {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name}
