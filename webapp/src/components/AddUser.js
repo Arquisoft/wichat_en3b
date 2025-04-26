@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from '../utils/axios';
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, TextField, Button, Snackbar, Box, Paper, FormHelperText, alpha, InputLabel } from '@mui/material';
@@ -32,8 +32,10 @@ const AddUser = () => {
   };
 
   // Redirect if already logged in
-  if (auth.username)
-    navigate("/home", { replace: true });
+  useEffect(() => {
+    if (auth.username)
+      navigate("/home", { replace: true });
+  }, [auth, navigate]);
 
   const addUser = async () => {
     setError('');
