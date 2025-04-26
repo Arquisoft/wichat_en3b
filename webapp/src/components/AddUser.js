@@ -138,6 +138,7 @@ const AddUser = () => {
             fullWidth
             variant="contained"
             color="primary"
+            data-testid="add-user-button"
             onClick={addUser}
             sx={{
               mt: 3,

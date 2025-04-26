@@ -56,7 +56,7 @@ defineFeature(feature, test => {
       username = "correctUserLoginForm"
       password = "42q53w64e586t78puyghFF$"
       //Go from login page to register page
-      await expect(page).toClick("a", { text: "Don't have an account? Sign up here" });
+      await expect(page).toClick('[data-testid="register-link"]');
       //Add the user credentials to the database 
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);

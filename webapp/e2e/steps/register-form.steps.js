@@ -29,22 +29,22 @@ defineFeature(feature, test => {
     let password;
 
     given('An unregistered user', async () => {
-      username = "userTestRegisterForm"
+      username = "RegisterForm"
       password = "1236ukyghji###FFF"
       //Go from landing page to login page
       await expect(page).toClick("button", { text: "Login" }); 
       //Go from login page to register page
-      await expect(page).toClick("a", { text: "Don't have an account? Sign up here" });
+      await expect(page).toClick('[data-testid="register-link"]');
     });
 
     when('I fill the data in the form and press submit', async () => {
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button', { text: 'Sign Up' })
+      await expect(page).toClick('[data-testid="add-user-button"]')
     });
 
-    then('A confirmation message should be shown in the screen', async () => {
-        await expect(page).toMatchElement("div", { text: "User added successfully" });
+    then('I am redirected to the Login screen', async () => {
+      await expect(page).toMatchElement("div", { text: "Ready to test your knowledge? Log in and let's go!" });
     });
   })
 

@@ -29,7 +29,7 @@ defineFeature(feature, test => {
     let password;
 
     given('The user is on the dashboard', async () => {
-      username = "usernameTestGameSelect"
+      username = "TestGameSelect"
       password = "1zSlB3rGK401#$FPBhEWR4rV4Fg62VsaTKazUh3Yh"
       //Go from landing page to login page
       await expect(page).toClick("button", { text: "Login" }); 
@@ -38,9 +38,9 @@ defineFeature(feature, test => {
       //Fill the register form with the user credentials
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button', { text: 'Sign Up' })
+      await expect(page).toClick('[data-testid="add-user-button"]')
       //Go back to the login page
-      await expect(page).toMatchElement("a", { text: "Don’t have an account? Sign up here" });
+      await expect(page).toMatchElement('[data-testid="register-link"]');
       //Fill the register form with the user credentials
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
