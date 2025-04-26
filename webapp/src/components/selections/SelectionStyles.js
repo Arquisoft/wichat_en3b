@@ -102,10 +102,13 @@ export const StyledCard = styled(Card)(({ theme }) => ({
   transition: "transform 0.2s, box-shadow 0.2s",
   borderRadius: theme.shape.borderRadius,
   overflow: "hidden",
+  backgroundColor: theme.palette.background.default, 
+  border: `1px solid ${theme.palette.grey[300]}`,
   "&:hover": {
     transform: "translateY(-5px)",
     boxShadow: theme.shadows[8],
-  },
+    backgroundColor: theme.palette.action.hover
+  }
 }))
 
 export const StyledCardContent = styled(CardContent)(({ theme }) => ({
