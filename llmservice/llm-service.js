@@ -12,7 +12,7 @@ require('dotenv').config();
 const empathy = (model, prompt) => {
   const apiKey = process.env.LLM_API_KEY;
   if (!apiKey) {
-    throw new Error('API key is not set in environment variables');
+    throw new Error('API key is missing.');
   }
 
   return {
