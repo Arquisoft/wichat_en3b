@@ -35,7 +35,7 @@ const empathy = (model, prompt) => {
 const gemini = (prompt) => {
   const apiKey = process.env.GEMINI_LLM_API_KEY;
   if (!apiKey) {
-    throw new Error('Gemini API key is not set in environment variables');
+    throw new Error('API key is missing.');
   }
 
   return {
