@@ -16,5 +16,13 @@
     "alreadyAccount": "¿Ya tienes una cuenta?",
     "loginHere": "Inicia sesión aquí",
     "registerTxtBubble": "¡Qué bien verte aquí! ¡Rellena el formulario y regístrate para comenzar!",
-    "userAddedSuccess": "Usuario añadido con éxito"
+    "userAddedSuccess": "Usuario añadido con éxito",
+    "welcomeButton": "Que comience!",
+    "settings": "Configuración",
+    "language": "Idioma",
+    "theme": "Tema",
+    "advancedSettings": "Configuración avanzada",
+    "llmModel": "Modelo LLM",
+    "save": "Guardar",
+    "cancel": "Cancelar"
 }

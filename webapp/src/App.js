@@ -145,7 +145,7 @@ function App() {
           <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
             <StyledForm onSubmit={handleSubmit}> 
               <LoginButton type ="submit" variant="contained" startIcon={<CelebrationIcon />}>
-                Start the fun!
+                {t("welcomeButton")}
               </LoginButton>
             </StyledForm>
           </Grid>
