@@ -6,7 +6,7 @@ import { useNavigate } from "react-router"
 import {
   LocationCity, Flag, SportsBasketball, MusicNote, Public, Sports, Map, Event, PushPin,
   Piano, Female, SportsSoccer, Language, SportsMotorsports, People, Landscape, SportsTennis,
-  InterpreterMode
+  InterpreterMode, Theaters, Restaurant, Code, ColorLens, Tv
 } from "@mui/icons-material"
 import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton, TopicButton } from './SelectionStyles'
 import useAxios from "../../hooks/useAxios";
@@ -19,8 +19,6 @@ const CATEGORY_MAP = {
     { key: "spanishCity", label: "SPANISH CITIES", icon: <LocationCity /> },
     { key: "famousPlace", label: "FAMOUS PLACES", icon: <PushPin /> },
     { key: "asturianCouncil", label: "ASTURIAN COUNCILS", icon: <Landscape /> },
-  ],
-  "Flags & Languages": [
     { key: "flag", label: "FLAGS", icon: <Flag /> },
     { key: "spanishCommunityFlag", label: "SPANISH COMMUNITIES FLAGS", icon: <Flag /> },
     { key: "language", label: "LANGUAGES", icon: <Language /> },
@@ -31,6 +29,7 @@ const CATEGORY_MAP = {
   ],
   "Music": [
     { key: "singer", label: "SINGERS", icon: <MusicNote /> },
+    { key: "latinSinger", label: "LATIN SINGERS", icon: <MusicNote /> },
     { key: "musicalInstrument", label: "MUSICAL INSTRUMENTS", icon: <Piano /> },
     { key: "rockBand", label: "ROCK BANDS", icon: <InterpreterMode /> },
   ],
@@ -50,8 +49,17 @@ const CATEGORY_MAP = {
     { key: "f1Driver", label: "F1 DRIVERS", icon: <SportsMotorsports /> },
     { key: "racingCircuit", label: "RACING CIRCUITS", icon: <SportsMotorsports /> },
   ],
-  "Famous People": [
+  "Famous People & Characters": [
+    { key: "actor", label: "ACTORS", icon: <Theaters /> },
+    { key: "actress", label: "ACTRESSES", icon: <Theaters /> },
+    { key: "painter", label: "PAINTERS", icon: <ColorLens /> },
+    { key: "fictionalCharacter", label: "FICTIONAL CHARACTERS", icon: <Tv /> },
+    { key: "mangaCharacter", label: "MANGA CHARACTERS", icon: <Tv /> },
     { key: "asturianFamous", label: "ASTURIAN FAMOUS", icon: <People /> },
+    { key: "softwareEngineer", label: "SOFTWARE ENGINEERS", icon: <Code /> },
+  ],
+  "Miscellaneous": [
+    { key: "food", label: "FOODS", icon: <Restaurant /> },
   ]
 }
 
