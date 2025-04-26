@@ -18,7 +18,7 @@ const SettingsDialog = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <DialogTitle data-testid = "settings" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         {t("settings")}
         <IconButton onClick={onClose} size="small" aria-label="Close">
           <Close />
@@ -36,7 +36,7 @@ const SettingsDialog = ({ open, onClose }) => {
 
         {/* Theme */}
         <Box>
-          <Typography variant="subtitle1">🎨 {t("theme")}</Typography>
+          <Typography variant="subtitle1" data-testid = "theme">🎨 {t("theme")}</Typography>
           <Box sx={{ display: 'flex', overflowX: 'auto', gap: 2, p: 1 }}>
             {Object.keys(themes).map((themeOption) => {
               const primaryColor = themes[themeOption].palette.primary.main;
@@ -91,13 +91,13 @@ const SettingsDialog = ({ open, onClose }) => {
       {/* Advanced Settings */}
       <Accordion disableGutters elevation={0} sx={{ backgroundColor: 'transparent' }}>
         <AccordionSummary expandIcon={<ExpandMore />}>
-          <Typography variant="subtitle1">⚙️ {t("advancedSettings")}</Typography>
+          <Typography variant="subtitle1" data-testid="advancedSettings">⚙️ {t("advancedSettings")}</Typography>
         </AccordionSummary>
         <Divider />
         <Container sx={{ py: 2, display: "flex", flexDirection: "column", gap: 2 }}>
           {/* LLM Model */}
           <Box>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>🧠 {t("llmModel")}</Typography>
+            <Typography variant="subtitle2" data-testid = "llmModel" sx={{ mb: 1 }}>🧠 {t("llmModel")}</Typography>
             <FormControl fullWidth size="small">
               <Select
                 value={llmModel}

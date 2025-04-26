@@ -153,7 +153,7 @@ const Home = () => {
                 <Box sx={{ display: "flex", justifyContent: "space-between", borderBottom: 1, borderColor: "divider" }}>
                     <Tabs value={activeMainTab} onChange={(_, val) => setactiveMainTab(val)}>
                         <Tab icon={<BarChart fontSize="small" />} label={t("stats")} iconPosition="start" />
-                        <Tab icon={<People fontSize="small" />} label={t("ranking")} iconPosition="start" />
+                        <Tab icon={<People fontSize="small" />} data-testid="ranking" label={t("ranking")} iconPosition="start" />
                     </Tabs>
 
                     <Tabs
@@ -272,7 +272,7 @@ const Home = () => {
                                 scrollButtons="auto"
                                 sx={{ bgcolor: "background.paper", borderRadius: 2, gap: 1 }}
                             >
-                                {stats.map((stat) => <Tab key={stat} value={stat} label={t(stat)} />)}
+                                {stats.map((stat) => <Tab key={stat} value={stat} label={t(stat)} data-testid={stat} />)}
                             </Tabs>
                         </Box>
                         <FormControl variant="outlined" size="small" sx={{ justifySelf: "end", minWidth: 150 }}>
@@ -341,6 +341,7 @@ const Home = () => {
                     variant="contained"
                     color="secondary"
                     size="large"
+                    data-testid="play-button"
                     endIcon={<ChevronRight />}
                     onClick={() => navigate("/gametopic")}
                     sx={{
