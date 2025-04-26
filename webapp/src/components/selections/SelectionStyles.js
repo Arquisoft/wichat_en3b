@@ -129,6 +129,7 @@ export const ModeTitle = styled(Typography)(({ theme }) => ({
 }))
 
 export const ModeDescription = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.secondary,
+  color: "black",
+  textAlign: "justify",
   marginBottom: theme.spacing(1),
 }))
