@@ -430,17 +430,6 @@ const endGame = async (questions) => {
               </LifelineButton>
               <LifelineButton
                 variant="contained"
-                startIcon={<PhoneIcon />}
-                onClick={handleCallFriend}
-                disabled={callFriendUsed}
-                isUsed={callFriendUsed}
-                colorVariant="green"
-              >
-                Call a Friend {callFriendUsed && "(Used)"}
-              </LifelineButton>
-
-              <LifelineButton
-                variant="contained"
                 startIcon={<InterpreterModeIcon />}
                 onClick={handleAudienceCall}
                 disabled={askAudience}
@@ -449,40 +438,16 @@ const endGame = async (questions) => {
               >
                 Audience Call - 150 🪙 {askAudience && "(Used)"}
               </LifelineButton>
-              <LifelineButton
-                variant="contained"
-                startIcon={<ChatIcon />}
-                onClick={handleUseChat}
-                disabled={useChatUsed}
-                isUsed={useChatUsed}
-                colorVariant="purple"
-              >
-                Use the Chat - 200 🪙 {useChatUsed && "(Used)"}
-              </LifelineButton>
-              <LifelineButton
-                variant="contained"
-                onClick={() => handlePhoneOut(roundData)} 
-                colorVariant="purple"
-              >
-                Phone Out
-              </LifelineButton>
               {callFriendUsed && (<CallFriend
                 open={isCallFriendOpen}
                 onClose={handleCloseCallFriend}
                 correctAnswer={roundData.itemWithImage.name}
                 possibleAnswers={roundData.items.map(item => item.name)}
               />)}
-              {phoneOut && (<PhoneDialog
-                open={phoneOut}
-                onClose={handlePhoneOutClose}
-                key={chatKey} roundData={roundData}
-              />)}
+              
             </CardContent>{showGraph && (
             <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
               <CardContent>
-                <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
-                  The audience says...
-                </Typography>
                 {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name}
                   distractors={roundData.items
                     .filter(item => item.name !== roundData.itemWithImage.name)
@@ -492,9 +457,6 @@ const endGame = async (questions) => {
               </CardContent>
             </Card>
           )}
-            <CardContent>
-              
-            </CardContent>
           </Card>
           
         </Grid>

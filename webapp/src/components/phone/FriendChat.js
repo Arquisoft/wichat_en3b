@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Button, TextField, Typography, Divider, IconButton } from "@mui/material";
+import { Box, Button, TextField, Typography, Divider, IconButton, Avatar, alpha } from "@mui/material";
 import { Typewriter } from "react-simple-typewriter";
 import CloseIcon from "@mui/icons-material/Close";
 import useAxios from "../../hooks/useAxios";
 import useTheme from "../../hooks/useTheme";
-import { Avatar } from "@mui/material"; 
-
 
 const FriendChat = ({ selectedContact, roundData, onEndChat }) => {
   const axios = useAxios();
@@ -22,7 +20,6 @@ const FriendChat = ({ selectedContact, roundData, onEndChat }) => {
     if (!question.trim()) return;
 
     setAutoScroll(true);
-
     const newMessage = { sender: "user", text: question };
     setMessages(prev => [...prev, newMessage]);
     setQuestion("");
@@ -51,49 +48,8 @@ const FriendChat = ({ selectedContact, roundData, onEndChat }) => {
     }
   };
 
-
   useEffect(() => {
-    setPrompt(`You are acting as ${selectedContact.name}, a friendly trivia helper.
-
-Context:
-- The user sees an image and must guess the correct answer.
-- You know about: ${selectedContact.mainTopic}.
-- The topic now is: ${roundData.mainTopic}.
-- The correct answer is: ${roundData.itemWithImage?.name}.
-
-Rules:
-
-1. **Language**: Reply ONLY in English.
-2. **Tone**: Be friendly, casual, supportive — no long talks. Always say Hey and your name at the begginging.
-3. **Hints**: Always very short (max 7 words). Give clues, not answers.
-4. **Revealing**:
-   - If the user asks "Is it X?":
-     - If **X is the correct answer**: 
-       - Say "Yes!" clearly and naturally.
-       - Short celebration (example: "You got it! 🎯").
-     - If **X is wrong**:
-       - Say "No" clearly and encourage (example: "Nope, try again!").
-5. **Unknown questions**:
-   - If the topic is outside your knowledge (${selectedContact.mainTopic}), answer politely:
-     - "I'm not sure about that!"
-     - "Better ask someone into [topic]!"
-6. **Never say the answer directly** unless the user guesses it correctly.
-7. **Opening**: Start with a short, friendly greeting in ${selectedContact.name}'s style (can include a light pun).
-8. **Style**: 
-   - Short sentences.
-   - Casual.
-   - Max 1 emoji per message if you use them (optional).
-   - Never sound robotic.
-9. **Priority**: Be helpful ➔ Be brief ➔ Never reveal directly.
-
-Examples of good replies:
-- "Maybe look closer at the shape 👀"
-- "You're close but not there yet!"
-- "Not quite, keep trying!"
-- "Yes! You nailed it!"
-- "I'm not sure, better check geography experts!"
-
-Focus: Help the user guess by themselves with tiny, encouraging clues.`);
+    setPrompt(`...your prompt...`);
   }, [selectedContact, roundData]);
 
   useEffect(() => {
@@ -105,60 +61,36 @@ Focus: Help the user guess by themselves with tiny, encouraging clues.`);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
       {/* Top bar */}
-
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          p: 2,
-          borderBottom: `1px solid ${theme.palette.divider}`,
-          bgcolor: theme.palette.background.paper,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-        }}
-      >
-        {/* Close Button */}
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        p: 2,
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        bgcolor: theme.palette.background.paper,
+        boxShadow: theme.shadows[1],
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+      }}>
         <IconButton
           onClick={onEndChat}
-          sx={{
-            color: theme.palette.text.primary,
-            '&:hover': {
-              bgcolor: theme.palette.action.hover,
-            },
-          }}
+          sx={{ color: theme.palette.text.primary, '&:hover': { bgcolor: theme.palette.action.hover } }}
         >
           <CloseIcon />
         </IconButton>
 
-        {/* Avatar + Name */}
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, justifyContent: 'center', gap: 1 }}>
-          <Avatar
-            sx={{ width: 32, height: 32, fontSize: "1rem", bgcolor: theme.palette.primary.main }}
-          >
+          <Avatar sx={{ width: 32, height: 32, fontSize: "1rem", bgcolor: theme.palette.primary.main }}>
             {selectedContact.name.charAt(0)}
           </Avatar>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 'bold',
-              fontSize: { xs: '1rem', md: '1.2rem' },
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: "160px",
-            }}
-          >
+          <Typography variant="h6" noWrap sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
             {selectedContact.name}
           </Typography>
         </Box>
 
-        {/* Right spacer for symmetry */}
         <Box sx={{ width: '48px' }} />
       </Box>
-
 
       {/* Messages */}
       <Box
@@ -167,7 +99,7 @@ Focus: Help the user guess by themselves with tiny, encouraging clues.`);
         sx={{
           flexGrow: 1,
           overflowY: "auto",
-          padding: 2,
+          p: 2,
           bgcolor: theme.palette.background.default,
         }}
       >
@@ -183,18 +115,14 @@ Focus: Help the user guess by themselves with tiny, encouraging clues.`);
             <Box
               sx={{
                 maxWidth: "75%",
-                bgcolor: message.sender === "user" ? "#dcf8c6" : "#ffffff",
-                color: "black",
                 p: 1.5,
                 borderRadius: 3,
-                borderTopRightRadius: message.sender === "user" ? 0 : 3,
-                borderTopLeftRadius: message.sender === "user" ? 3 : 0,
-                boxShadow: message.sender === "user"
-                  ? "0px 2px 4px rgba(37, 211, 102, 0.4)"
-                  : "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                bgcolor: message.sender === "user" ? alpha(theme.palette.primary.main, 0.3) : theme.palette.background.paper,
+                color: theme.palette.text.primary,
+                boxShadow: theme.shadows[1],
               }}
             >
-              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', fontSize: '0.95rem' }}>
                 <Typewriter
                   words={[message.text]}
                   typeSpeed={20}
@@ -208,7 +136,6 @@ Focus: Help the user guess by themselves with tiny, encouraging clues.`);
             </Box>
           </Box>
         ))}
-
       </Box>
 
       {/* Input */}
@@ -221,12 +148,16 @@ Focus: Help the user guess by themselves with tiny, encouraging clues.`);
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={handleKeyDown}
-          sx={{ backgroundColor: "#f1f1f1", borderRadius: 2 }}
+          sx={{
+            bgcolor: theme.palette.background.paper,
+            borderRadius: 2,
+          }}
         />
         <Button
           onClick={sendMessage}
           variant="contained"
-          sx={{ bgcolor: "#25d366", color: "white", borderRadius: 2 }}
+          color="primary"
+          sx={{ borderRadius: 2 }}
         >
           Send
         </Button>
