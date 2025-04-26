@@ -10,8 +10,13 @@ app.use(express.json());
 require('dotenv').config();
 
 const empathy = (model, prompt) => {
+  const apiKey = process.env.LLM_API_KEY;
+  if (!apiKey) {
+    throw new Error('API key is not set in environment variables');
+  }
+
   return {
-    url: () => 'https://empathyai.prod.empathy.co/v1/chat/completions',
+    url: 'https://empathyai.prod.empathy.co/v1/chat/completions',
     transformRequest: (question) => ({
       model: model,
       messages: [
@@ -20,10 +25,26 @@ const empathy = (model, prompt) => {
       ]
     }),
     transformResponse: (response) => response.data.choices[0]?.message?.content,
-    headers: (apiKey) => ({
+    headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json'
-    })
+    }
+  }
+}
+
+const gemini = (prompt) => {
+  const apiKey = process.env.GEMINI_LLM_API_KEY;
+  if (!apiKey) {
+    throw new Error('Gemini API key is not set in environment variables');
+  }
+
+  return {
+    url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    transformRequest: (question) => ({
+      system_instruction: { parts: [{ text: prompt }] },
+      contents: [{ role: "user", parts: [{ text: question }] }]
+    }),
+    transformResponse: (response) => response.data.candidates[0]?.content?.parts[0]?.text
   }
 }
 
@@ -32,6 +53,7 @@ const llmConfigs = (model, prompt) => {
   const models = {
     mistral: empathy("mistralai/Mistral-7B-Instruct-v0.3", prompt),
     qwen: empathy("qwen/Qwen2.5-Coder-7B-Instruct", prompt),
+    gemini: gemini(prompt),
   };
 
   return models[model] || models.mistral; // Default to Mistral if model is not found
@@ -47,19 +69,19 @@ function validateRequiredFields(req, requiredFields) {
 }
 
 // Generic function to send questions to LLM
-async function sendQuestionToLLM(question, apiKey, model, prompt) {
+async function sendQuestionToLLM(question, model, prompt) {
   try {
     const config = llmConfigs(model, prompt);
     if (!config) {
       throw new Error(`Something failed setting up the model`);
     }
 
-    const url = config.url(apiKey);
+    const url = config.url;
     const requestData = config.transformRequest(question);
 
     const headers = {
       'Content-Type': 'application/json',
-      ...(config.headers ? config.headers(apiKey) : {})
+      ...(config.headers ? config.headers : {})
     };
 
     const response = await axios.post(url, requestData, { headers });
@@ -78,12 +100,8 @@ app.post('/ask', async (req, res) => {
     validateRequiredFields(req, ['question', 'model', 'prompt']);
 
     const { question, model, prompt } = req.body;
-    //load the api key from an environment variable
-    const apiKey = process.env.LLM_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ error: 'API key is missing.' });
-    }
-    const answer = await sendQuestionToLLM(question, apiKey, model, prompt);
+    
+    const answer = await sendQuestionToLLM(question, model, prompt);
     res.json({ answer });
   } catch (error) {
     const statusCode = error.response?.status || 500;
