@@ -104,6 +104,7 @@ const AddUser = () => {
               helperText={usernameError}
               variant="outlined"
               placeholder="Enter your username"
+              sx={{ backgroundColor: "background.default" }}
             />
           </Box>
           <Box sx={{ mb: 2 }}>
@@ -131,6 +132,7 @@ const AddUser = () => {
               type="password"
               variant="outlined"
               placeholder="Enter your password"
+              sx={{ backgroundColor: "background.default" }}
             />
             <FormHelperText sx={{ mt: 1, mx: 1, color: 'text.secondary' }}>
               {t(labels.passwordReq)}
