@@ -15,6 +15,8 @@ import useAuth from "../../hooks/useAuth";
 import useCoinHandler from "../../handlers/CoinHandler";
 import useLifeLinesHandler from "../../handlers/LifeLinesHandler";
 import { TOPIC_QUESTION_MAP } from "../../utils/topicQuestionMap";
+import { motion } from "framer-motion";
+
 
 
 const BaseGame = React.forwardRef(({
