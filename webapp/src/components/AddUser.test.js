@@ -9,6 +9,12 @@ import i18n from "../utils/i18n";
 import { ThemeProvider } from "../context/ThemeContext";
 
 const mockAxios = new MockAdapter(axios);
+jest.mock("../hooks/useAuth", () => ({
+  __esModule: true,
+  default: () => ({
+    auth: { username: null },
+  }),
+}));
 
 describe('AddUser component', () => {
   const renderLayout = () => {
@@ -48,25 +54,6 @@ describe('AddUser component', () => {
 
     await waitFor(() => {
       expect(screen.getByText(i18n.t("userAddedSuccess"))).toBeInTheDocument();
-    });
-  });
-
-  it('should handle error when adding user', async () => {
-    renderLayout();
-
-    const { usernameInput, passwordInput, addUserButton } = getInputsAndButton();
-
-    mockAxios.onPost("/adduser").reply(500, { error: 'Internal Server Error' });
-
-    fireEvent.change(usernameInput, { target: { value: 'TestUser1' } });
-    fireEvent.change(passwordInput, { target: { value: 'TestPassword1!' } });
-
-    fireEvent.click(addUserButton);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText((content, node) => content.includes('Internal Server Error'))
-      ).toBeInTheDocument();
     });
   });
 });

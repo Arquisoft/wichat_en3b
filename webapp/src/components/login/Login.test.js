@@ -5,14 +5,15 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Login from './Login';
 import { I18nextProvider } from "react-i18next";
-import i18n from "../utils/i18n";
-import { ThemeProvider } from "../context/ThemeContext";
+import i18n from "../../utils/i18n";
+import { ThemeProvider } from '../../context/ThemeContext';
 
 const mockAxios = new MockAdapter(axios);
 
-jest.mock('../hooks/useAuth', () => ({
+jest.mock('../../hooks/useAuth', () => ({
   __esModule: true,
   default: () => ({
+    auth: { username: null },
     setAuth: jest.fn(),
     persist: false,
     setPersist: jest.fn(),
@@ -39,16 +40,16 @@ describe('Login component', () => {
   };
 
   beforeAll(() => {
-    jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => { });
   });
-  
+
   afterAll(() => {
     console.error.mockRestore();
   });
 
   it('should log in successfully', async () => {
     renderLayout();
-    const {usernameInput, passwordInput, loginButton} = getInputsAndButton();
+    const { usernameInput, passwordInput, loginButton } = getInputsAndButton();
 
     mockAxios.onPost('/login').reply(200, { accessToken: 'fakeAccessToken' });
 
@@ -65,19 +66,19 @@ describe('Login component', () => {
 
   it('should handle error when logging in', async () => {
     renderLayout();
-  
-    const {usernameInput, passwordInput, loginButton} = getInputsAndButton();
-  
+
+    const { usernameInput, passwordInput, loginButton } = getInputsAndButton();
+
     mockAxios.onPost('/login').replyOnce(401, { error: 'Unauthorized' });
-  
+
     fireEvent.change(usernameInput, { target: { value: 'testUser' } });
     fireEvent.change(passwordInput, { target: { value: 'testPassword' } });
     fireEvent.click(loginButton);
-  
+
     await waitFor(() => {
       const alerts = screen.getAllByRole('alert');
       expect(alerts.some(alert => alert.textContent.toLowerCase().includes('error'))).toBe(true);
-    });        
-    
-  });  
+    });
+
+  });
 });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, useTheme, Typography } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 
@@ -57,7 +57,6 @@ const GraphComponent = ({ correctAnswer, distractors }) => {
       >
         📺 Live Poll
       </Typography>
-
 
       {/* Inner TV */}
       <Box sx={{

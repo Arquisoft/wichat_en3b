@@ -13,6 +13,10 @@ const gameSchema = new mongoose.Schema({
       type: Number,
       required: true,
     },
+    gameMode: {
+        type: String,
+        required: true,
+    },
     gameTopic:{
         type: [String],
         required: true,

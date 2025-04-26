@@ -18,6 +18,7 @@ const createHoverGradient = (color1, color2, opacity = 0.8) => ({
 const themes = {
     // light themes
     classic: createTheme({
+        name: "classic",
         palette: {
             mode: "light",
             primary: {
@@ -42,6 +43,7 @@ const themes = {
         },
     }),
     desert: createTheme({
+        name: "desert",
         palette: {
             mode: "light",
             primary: {
@@ -66,6 +68,7 @@ const themes = {
         },
     }),
     temple: createTheme({
+        name: "temple",
         palette: {
             mode: "light",
             primary: {
@@ -90,6 +93,7 @@ const themes = {
         },
     }),
     cherryBlossom: createTheme({
+        name: "cherryBlossom",
         palette: {
             mode: "light",
             primary: {
@@ -114,6 +118,7 @@ const themes = {
         },
     }),
     forest: createTheme({
+        name: "forest",
         palette: {
             mode: "light",
             primary: {
@@ -139,6 +144,7 @@ const themes = {
     }),
     // dark themes
     deepSea: createTheme({
+        name: "deepSea",
         palette: {
             mode: "dark",
             primary: {
@@ -163,6 +169,7 @@ const themes = {
         },
     }),
     night: createTheme({
+        name: "night",
         palette: {
             mode: "dark",
             primary: {
@@ -187,6 +194,7 @@ const themes = {
         },
     }),
     garnet: createTheme({
+        name: "garnet",
         palette: {
             mode: "dark",
             primary: {
@@ -238,7 +246,7 @@ export const ThemeProvider = ({ children }) => {
     const theme = themes[mode] || themes.classic; // Fallback to light theme if mode is somehow invalid
 
     return (
-        <ThemeContext.Provider value={{ theme, themes, selectTheme, currentTheme: mode }}>
+        <ThemeContext.Provider value={{ theme, themes, selectTheme }}>
             <MuiThemeProvider theme={theme}>
                 <CssBaseline enableColorScheme />
                 {children}

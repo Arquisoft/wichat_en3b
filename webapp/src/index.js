@@ -4,20 +4,21 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import './index.css'; // Global css to fix margin
-
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import PersistentLogin from './components/PersistentLogin';
 import PrivateRoute from './components/PrivateRoute';
 
 import Layout from './components/Layout';
 import App from './App';
 import Home from './components/Home';
-import Login from './components/Login';
+import Login from './components/login/Login';
 import SignUp from './components/AddUser';
-import GameTopicSelection from './components/GameTopicSelection';
-import GameModeSelection from './components/GameModeSelection';
-import Game from './components/Game';
+import GameModeSelection from './components/selections/GameModeSelection';
+import RoundsGame from './components/game/RoundsGame';
+import TimeGame from './components/game/TimeGame';
+import GameTopicSelection from './components/selections/GameTopicSelection';
+import PersistentLogin from './components/login/PersistentLogin';
+import HideGame from './components/game/HideGame';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -26,17 +27,19 @@ root.render(
       <ThemeProvider>
         <Routes>
           <Route element={<Layout />}>
+            <Route element={<PersistentLogin />}>
             {/* Routes without authentication */}
             <Route index element={<App />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             {/* Routes with authentication */}
-            <Route element={<PersistentLogin />}>
               <Route element={<PrivateRoute />}>
                 <Route path="/home" element={<Home />} />
                 <Route path="/gamemode" element={<GameModeSelection />} />
                 <Route path="/gametopic" element={<GameTopicSelection />} />
-                <Route path="/game" element={<Game />} />
+                <Route path="/roundsgame" element={<RoundsGame />} />
+                <Route path="/timegame" element={<TimeGame />} />
+                <Route path="/hidegame" element={<HideGame />} />
               </Route>
             </Route>
           </Route>

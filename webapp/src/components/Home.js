@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { alpha, Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
-import { AutoAwesome, BarChart, ChevronRight, FilterAlt, LocationCity, MusicNote, OutlinedFlag, People, SportsBasketball, SportsEsports, TrackChanges } from "@mui/icons-material";
+import { AccessTime, AutoAwesome, BarChart, BlurOn, ChevronRight, FilterAlt, Games, LocationCity, MusicNote, OutlinedFlag, People, SportsBasketball, SportsEsports, TrackChanges } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
@@ -12,7 +12,9 @@ const Home = () => {
     const navigate = useNavigate();
     const { theme } = useTheme();
 
-    const [activeTab, setActiveTab] = useState(0);
+    const [activeMainTab, setactiveMainTab] = useState(0);
+    const [activeModeTab, setActiveModeTab] = useState("rounds");
+    const [mode, setMode] = useState("rounds");
     const [gametopic, setGameTopic] = useState("all");
     const [gametopics, setGameTopics] = useState(["all"]);
     const [stat, setStat] = useState("points");
@@ -26,13 +28,7 @@ const Home = () => {
         // Clear selected topics after finishing the game and navigating back to the home page
         sessionStorage.removeItem("selectedTopics");
 
-        axios.get(`/userstats/${auth.username}/all`)
-            .then((res) => {
-                setUserStats(res.data.stats);
-            }).catch((err) => {
-                console.error("Error fetching user stats:", err);
-            });
-
+        // Get game topics
         axios.get("/getTopics")
             .then((res) => {
                 setGameTopics(["all", ...res.data.topics]);
@@ -40,6 +36,7 @@ const Home = () => {
                 console.error("Error fetching gametopics:", err);
             });
 
+        // Get recent games
         axios.get(`/games/${auth.username}`)
             .then((res) => {
                 setGames(res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
@@ -49,7 +46,18 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-        axios.get(`/userstats/topic/${gametopic}`)
+        // Get user statistics for the selected mode
+        axios.get(`/userstats?username=${auth.username}&mode=${mode}&topic=all`)
+            .then((res) => {
+                setUserStats(res.data.stats[0]);
+            }).catch((err) => {
+                console.error("Error fetching user stats:", err);
+            });
+    }, [mode]);
+
+    // Get all user statistics for the selected game topic and stat
+    useEffect(() => {
+        axios.get(`/userstats?topic=${gametopic}&mode=${mode}`)
             .then((res) => {
                 // sort the ranking based on the selected stat
                 const sortedRanking = res.data.stats.sort((a, b) => {
@@ -61,7 +69,7 @@ const Home = () => {
             }).catch((err) => {
                 console.error("Error fetching user stats:", err);
             });
-    }, [stat, gametopic]);
+    }, [stat, gametopic, mode]);
 
     const getStatLabel = (user, stat) => {
         switch (stat) {
@@ -120,15 +128,29 @@ const Home = () => {
             {/* Main content */}
             <Box>
                 {/* Tab navigation */}
-                <Tabs value={activeTab} onChange={(_, val) => setActiveTab(val)} sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <Tab icon={<BarChart fontSize="small" />} label="Your Stats" iconPosition="start" />
-                    <Tab icon={<People fontSize="small" />} label="Rankings" iconPosition="start" />
-                </Tabs>
+                <Box sx={{ display: "flex", justifyContent: "space-between", borderBottom: 1, borderColor: "divider" }}>
+                    <Tabs value={activeMainTab} onChange={(_, val) => setactiveMainTab(val)}>
+                        <Tab icon={<BarChart fontSize="small" />} label="Your Stats" iconPosition="start" />
+                        <Tab icon={<People fontSize="small" />} label="Rankings" iconPosition="start" />
+                    </Tabs>
+
+                    <Tabs
+                        value={activeModeTab}
+                        onChange={(_, val) => {
+                            setActiveModeTab(val);
+                            setMode(val);
+                        }}
+                    >
+                        <Tab value="rounds" label="Rounds" icon={<Games fontSize="small" />} iconPosition="start" />
+                        <Tab value="time" label="Time" icon={<AccessTime fontSize="small" />} iconPosition="start" />
+                        <Tab value="hide" label="Hide" icon={<BlurOn fontSize="small" />} iconPosition="start" />
+                    </Tabs>
+                </Box>
 
                 {/* Statistics tab */}
-                <Box hidden={activeTab !== 0} mb={4}>
+                <Box hidden={activeMainTab !== 0} mb={4}>
                     {/* User statistics */}
-                    <CardHeader title="Your Statistics" sx={{ p: 0, my: 2 }} />
+                    <CardHeader title={`Your statistics for ${mode.charAt(0).toUpperCase() + mode.slice(1)}`} sx={{ p: 0, my: 2 }} />
                     {userStats?.username ? (
                         <Grid2 container spacing={2}>
                             <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.paper", border: 1, borderColor: "divider" }}>
@@ -154,7 +176,7 @@ const Home = () => {
                             </Grid2>
                         </Grid2>
                     ) : (
-                        <Typography variant="body1" color="text.secondary">No statistics found.</Typography>
+                        <Typography variant="body1" color="text.secondary">No statistics found for this mode.</Typography>
                     )}
 
                     {/* Recent games */}
@@ -175,7 +197,7 @@ const Home = () => {
                                         {getIconForTopics(game.gameTopic)}
                                         <Box>
                                             <Typography variant="body1" fontWeight="bold">
-                                                GAMEMODE - Topics: {game.gameTopic.join(", ")}
+                                                {game.gameMode.toUpperCase()} - Topics: {game.gameTopic.join(", ")}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
                                                 Played on {new Date(game.createdAt).toLocaleDateString("es")}
@@ -187,7 +209,7 @@ const Home = () => {
                                             {game.score} pts
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary">
-                                            {game.correctRate * 100}% accuracy
+                                            {(game.correctRate * 100).toFixed(2)}% accuracy
                                         </Typography>
                                     </Box>
                                 </Box>
@@ -200,9 +222,9 @@ const Home = () => {
                 </Box>
 
                 {/* Rankings tab */}
-                <Box hidden={activeTab !== 1} mb={4}>
+                <Box hidden={activeMainTab !== 1} mb={4}>
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", width: "100%" }}>
-                        <CardHeader title="Leaderboard" subheader={`Top players ranked by ${stat}`} />
+                        <CardHeader title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} Leaderboard`} subheader={`Top players ranked by ${stat}`} />
                         <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
                                 Rank by:
@@ -270,7 +292,7 @@ const Home = () => {
             </Box>
 
             {/* Game topic selection */}
-            <Paper elevation={3} sx={{ p: 2, display: "flex", justifyContent: "space-between", gap: 2 }}>
+            <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", gap: 2, bgcolor: "background.paper", borderRadius: 2 }}>
                 <Box>
                     <Typography variant="h5" fontWeight="bold">
                         Ready to play?
@@ -292,7 +314,7 @@ const Home = () => {
                 >
                     Play A Game Now
                 </Button>
-            </Paper>
+            </Box>
         </Container >
     );
 }

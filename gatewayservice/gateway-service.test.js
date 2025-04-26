@@ -45,12 +45,8 @@ describe('Gateway Service', () => {
                 return Promise.resolve({ data: { accessToken: 'mockedToken' } });
             } else if (url.endsWith('/getTopics')) {
                 return Promise.resolve({ data: { modes: ['city', 'athlete'] } });
-            } else if (url.endsWith('/userstats/user/testuser')) {
-                return Promise.resolve({ data: { message: 'Fetched user statistics for user: testuser' } });
-            } else if (url.endsWith('/userstats/mode/flag')) {
-                return Promise.resolve({ data: { message: 'Fetched statistics for mode: flag' } });
-            } else if (url.endsWith('/userstats/testuser/flag')) {
-                return Promise.resolve({ data: { message: 'Fetched statistics for user testuser in mode flag' } });
+            } else if (url.endsWith('/userstats')) {
+                return Promise.resolve({ data: { message: 'Fetched statistics' } });
             }
         });
     });
@@ -292,27 +288,97 @@ describe('Gateway Service', () => {
         expect(response.body.error).toBe('User service error');
     });
 
-    // Test /userstats/user/:username endpoint
+    // Test /userstats endpoint
     it('should fetch user statistics for a specific user from the user service', async () => {
-        const response = await request(app).get('/userstats/user/testuser').set('Authorization', `Bearer ${token}`);
+        const response = await request(app).get('/userstats').set('Authorization', `Bearer ${token}`);
 
         expect(response.statusCode).toBe(200);
-        expect(response.body.message).toBe('Fetched user statistics for user: testuser');
+        expect(response.body.message).toBe('Fetched statistics');
     });
 
-    // Test /userstats/mode/:mode endpoint
-    it('should fetch user statistics for a specific game mode from the user service', async () => {
-        const response = await request(app).get('/userstats/mode/flag').set('Authorization', `Bearer ${token}`);
+    // Test /usercoins/:username endpoint
+    it('should fetch user coins for a specific user from the user service', async () => {
+        // Mock the axios response for this specific endpoint
+        axios.get.mockImplementationOnce((url) => {
+            if (url.endsWith('/usercoins/testuser')) {
+                return Promise.resolve({ data: { coins: 500 } });
+            }
+        });
+
+        const response = await request(app)
+            .get('/usercoins/testuser')
+            .set('Authorization', `Bearer ${token}`);
 
         expect(response.statusCode).toBe(200);
-        expect(response.body.message).toBe('Fetched statistics for mode: flag');
+        expect(response.body.coins).toBe(500);
     });
 
-    // Test /userstats/:username/:mode endpoint
-    it('should fetch user statistics for a specific user and game mode from the user service', async () => {
-        const response = await request(app).get('/userstats/testuser/flag').set('Authorization', `Bearer ${token}`);
+    // Test usercoins error handling
+    it('should handle errors from usercoins endpoint', async () => {
+        axios.get.mockImplementationOnce((url) => {
+            if (url.endsWith('/usercoins/testuser')) {
+                return Promise.reject({
+                    response: {
+                        status: 404,
+                        data: { error: 'User not found' }
+                    }
+                });
+            }
+        });
+
+        const response = await request(app)
+            .get('/usercoins/testuser')
+            .set('Authorization', `Bearer ${token}`);
+            
+        expect(response.statusCode).toBe(404);
+        expect(response.body.error).toBe('User not found');
+    });
+
+    // Test /updatecoins endpoint
+    it('should forward updatecoins request to the user service', async () => {
+        // Mock the axios response for this specific endpoint
+        axios.post.mockImplementationOnce((url, data) => {
+            if (url.endsWith('/updatecoins')) {
+                return Promise.resolve({ 
+                    data: { 
+                        username: data.username, 
+                        coins: data.coins,
+                        message: 'Coins updated successfully' 
+                    } 
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/updatecoins')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'testuser', coins: 100, operation: 'add' });
 
         expect(response.statusCode).toBe(200);
-        expect(response.body.message).toBe('Fetched statistics for user testuser in mode flag');
+        expect(response.body.message).toBe('Coins updated successfully');
+        expect(response.body.username).toBe('testuser');
+        expect(response.body.coins).toBe(100);
+    });
+
+    // Test updatecoins error handling
+    it('should handle errors from updatecoins endpoint', async () => {
+        axios.post.mockImplementationOnce((url) => {
+            if (url.endsWith('/updatecoins')) {
+                return Promise.reject({
+                    response: {
+                        status: 400,
+                        data: { error: 'Invalid operation' }
+                    }
+                });
+            }
+        });
+
+        const response = await request(app)
+            .post('/updatecoins')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'testuser', coins: -50, operation: 'invalid' });
+            
+        expect(response.statusCode).toBe(400);
+        expect(response.body.error).toBe('Invalid operation');
     });
 });

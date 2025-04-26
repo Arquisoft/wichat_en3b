@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { FormControl, Select, MenuItem, InputAdornment, OutlinedInput } from '@mui/material';
+import PublicIcon from '@mui/icons-material/Public';
 
 const LanguageSelect = () => {
   const { i18n } = useTranslation();
@@ -8,18 +9,26 @@ const LanguageSelect = () => {
   const handleChange = (event) => {
     const selectedLanguage = event.target.value;
     i18n.changeLanguage(selectedLanguage); // This triggers the language change
+
+    localStorage.setItem('language', selectedLanguage); // Store the selected language in local storage
   };
 
   return (
-    <FormControl variant="outlined" size="small" style={{ minWidth: 120, margin: 0, padding: 0 }}>
-      <InputLabel id="language-select-label" color='primary.contrastText'>Language</InputLabel>
+    <FormControl fullWidth variant="outlined" size="small">
       <Select
-        labelId="language-select-label"
-        id="language-select"
-        value={i18n.language} // Current language
+        value={i18n.language}
         onChange={handleChange}
-        label="Language"
-        sx={{ color: "primary.contrastText", "& .MuiSelect-icon": { color: "primary.contrastText" } }}
+        displayEmpty
+        input={
+          <OutlinedInput
+            startAdornment={
+              <InputAdornment position="start">
+                <PublicIcon sx={{ color: 'text.primary' }} />
+              </InputAdornment>
+            }
+          />
+        }
+        sx={{ color: "text.primary", "& .MuiSelect-icon": { color: "text.primary" }, backgroundColor: "background.default" }}
       >
         <MenuItem value="en">English</MenuItem>
         <MenuItem value="es">Español</MenuItem>

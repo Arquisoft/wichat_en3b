@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
 import axios from '../utils/axios';
 import { useTranslation } from 'react-i18next';
-
-
-import { Container, Typography, Button, Snackbar, Box, Paper, Alert, FormHelperText, alpha } from '@mui/material';
+import { Container, Typography, TextField, Button, Snackbar, Box, Paper, FormHelperText, alpha, InputLabel } from '@mui/material';
 import { NavLink, useNavigate } from 'react-router';
 import logInPic from './photos/logInPic.png';
-import CustomTextField from './CustomTextField'; // Import the external CustomTextField
 import { grey } from '@mui/material/colors';
+import useAuth from '../hooks/useAuth';
 
 const AddUser = () => {
+  const { auth } = useAuth();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [_, setError] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const labels = {
     createAccount: "createAccount",
@@ -30,7 +31,9 @@ const AddUser = () => {
     registerTxtBubble: "registerTxtBubble",
   };
 
-  const navigate = useNavigate();
+  // Redirect if already logged in
+  if (auth.username)
+    navigate("/home", { replace: true });
 
   const addUser = async () => {
     setError('');
@@ -59,8 +62,6 @@ const AddUser = () => {
     } else if (errorMsg.toLowerCase().includes('password')) {
       setPasswordError(errorMsg);
     }
-
-
     }
   };
 
@@ -76,42 +77,72 @@ const AddUser = () => {
           <Typography component="h1" variant="h5" textAlign="center" fontWeight="bold" mb={3}>
             {t(labels.createAccount)}
           </Typography>
-
-          <CustomTextField
-            name="username"
-            labelKey={labels.username}
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value);
-              setUsernameError('');
-            }}
-            error={!!usernameError}
-            helperText={usernameError}
-          />
-          <CustomTextField
-            name="password"
-            labelKey={labels.password}
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setPasswordError('');
-            }}
-            error={!!passwordError}
-            helperText={passwordError}
-            type="password"
-          />
-
-          <FormHelperText sx={{ mb: 2, mx: 1 }}>
-            {t(labels.passwordReq)}
-          </FormHelperText>
+          <form onSubmit={(e) => { e.preventDefault(); addUser(); }}>
+          <Box sx={{ mb: 3 }}>
+            <InputLabel 
+              htmlFor="username" 
+              sx={{ 
+                mb: 1, 
+                fontWeight: 500,
+                color: 'text.primary' 
+              }}
+            >
+              {t(labels.username)}
+            </InputLabel>
+            <TextField
+              id="username"
+              name="username"
+              fullWidth
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                setUsernameError('');
+              }}
+              error={!!usernameError}
+              helperText={usernameError}
+              variant="outlined"
+              placeholder="Enter your username"
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <InputLabel 
+              htmlFor="password" 
+              sx={{ 
+                mb: 1, 
+                fontWeight: 500,
+                color: 'text.primary' 
+              }}
+            >
+              {t(labels.password)}
+            </InputLabel>
+            <TextField
+              id="password"
+              name="password"
+              fullWidth
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setPasswordError('');
+              }}
+              error={!!passwordError}
+              helperText={passwordError}
+              type="password"
+              variant="outlined"
+              placeholder="Enter your password"
+            />
+            <FormHelperText sx={{ mt: 1, mx: 1, color: 'text.secondary' }}>
+              {t(labels.passwordReq)}
+            </FormHelperText>
+          </Box>
 
           <Button
             fullWidth
+            type="submit" // Ensure the button is a submit button
             variant="contained"
             color="primary"
-            onClick={addUser}
             sx={{
-              mt: 1,
+              mt: 3,
+              py: 1.5,
               fontWeight: 'bold',
               backgroundColor: 'primary.main',
               color: 'primary.contrastText',
@@ -122,9 +153,11 @@ const AddUser = () => {
           >
             {t(labels.signUp)}
           </Button>
+        </form>
 
-          <Typography component="div" align="center" sx={{ marginTop: 3 }}>
-            <NavLink to={"/login"}>
+
+          <Typography component="div" align="center" sx={{ marginTop: 4 }}>
+            <NavLink to={"/login"} style={{ textDecoration: 'none' }}>
               {t(labels.alreadyAccount)} <strong>{t(labels.loginHere)}</strong>
             </NavLink>
           </Typography>
@@ -176,13 +209,6 @@ const AddUser = () => {
           </Box>
         </Box>
       </Paper>
-
-      {/* General Error Notification */}
-      {error && !usernameError && !passwordError && (
-        <Alert severity="error" sx={{ mt: 2 }}>
-          {error}
-        </Alert>
-      )}
 
       {/* Success Notification */}
       <Snackbar

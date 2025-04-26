@@ -69,6 +69,7 @@ app.post('/adduser', async (req, res) => {
     const newUser = new User({
       username: req.body.username,
       password: hashedPassword,
+      coins: 1000
     });
 
     await newUser.save();
@@ -85,7 +86,7 @@ app.post('/adduser', async (req, res) => {
 //Saves a completed game to the database and updates the user stats
 app.post('/addgame', async (req, res) => {
   try {
-    validateRequiredFields(req, ['username', 'questions']);
+    validateRequiredFields(req, ['username', 'mode', 'questions']);
 
     const MAX_GAMES = 100;
 
@@ -104,15 +105,19 @@ app.post('/addgame', async (req, res) => {
     const score = questions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
     const correctRate = questions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / questions.length;
     const gameTopic = [...new Set(questions.map(question => question.topic))];
+
     const newGame = new Game({
       username: req.body.username,
       score: score,
       correctRate: correctRate,
+      gameMode: req.body.mode,
       gameTopic: gameTopic,
     });
 
     await newGame.save();
+    
     calculateUserStatistics(newGame, questions);
+
     res.json(newGame);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -122,16 +127,15 @@ app.post('/addgame', async (req, res) => {
 //Function only called when a new game is added
 async function calculateUserStatistics(newGame, questions) {
   try {
+
     for (const topic of [...newGame.gameTopic, "all"]) {
       let score;
       let correctRate;
-      let questionsAnswered;
       // Calculate statistics for the current topic
       if (topic === "all") {
         // Get global statistics from the game
         score = newGame.score;
         correctRate = newGame.correctRate;
-        questionsAnswered = questions.length;
       } else {
         // Filter questions for the current topic
         const topicQuestions = questions.filter(question => question.topic === topic);
@@ -139,36 +143,31 @@ async function calculateUserStatistics(newGame, questions) {
         // Calculate partial statistics for the current topic
         score = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
         correctRate = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / topicQuestions.length;
-        questionsAnswered = topicQuestions.length;
       }
 
       // Find existing user statistics for the current topic
-      const userStats = await UserStatistics.findOne({ username: newGame.username, topic: topic });
+      const userStats = await UserStatistics.findOne({ username: newGame.username, mode: newGame.gameMode, topic: topic });
 
       if (!userStats) {
         // Create a new user statistics entry if it doesn't exist
         const newUserStats = new UserStatistics({
           username: newGame.username,
+          mode: newGame.gameMode,
           topic: topic,
           totalScore: score,
           correctRate: correctRate,
-          totalQuestions: questionsAnswered,
           totalGamesPlayed: 1,
         });
         await newUserStats.save();
       } else {
         // Update existing user statistics
-        const oldTotalGamesPlayed = userStats.totalGamesPlayed;
-        const oldTotalScore = userStats.totalScore;
-        const oldCorrectRate = userStats.correctRate;
-
         await UserStatistics.findOneAndUpdate(
-          { username: newGame.username, topic: topic },
+          { username: newGame.username, mode: newGame.gameMode, topic: topic },
           {
-            $inc: { totalGamesPlayed: 1, totalQuestions: questionsAnswered },
+            $inc: { totalGamesPlayed: 1 },
             $set: {
-              totalScore: oldTotalScore + score,
-              correctRate: calculateNewAvg(correctRate, oldTotalGamesPlayed, oldCorrectRate),
+              totalScore: userStats.totalScore + score,
+              correctRate: calculateNewAvg(correctRate, userStats.totalGamesPlayed, userStats.correctRate),
             },
           }
         );
@@ -184,42 +183,77 @@ function calculateNewAvg(newRate, totalGamesPlayed, oldAvg) {
 }
 
 // Find user statistics for a specific user
-app.get('/userstats/user/:username', async (req, res) => {
+app.get('/userstats', async (req, res) => {
   try {
-    const username = req.params.username;
+    const filter = { ...req.query };
 
-    const userStats = await UserStatistics.find({ username: username });
+    const stats = await UserStatistics.find(filter);
 
-    res.json({ message: `Fetched statistics for user: ${username}`, stats: userStats });
+    res.json({ message: `Fetched statistics`, stats });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Find user statistics for a specific topic
-app.get('/userstats/topic/:topic', async (req, res) => {
+// Function to update user coins
+async function updateUserCoins(username, coinsToAdd) {
   try {
-    const topic = req.params.topic;
+    const sanitizedUsername = checkInput(username);
 
-    const userStats = await UserStatistics.find({ topic: topic });
+    const user = await User.findOne({ username: sanitizedUsername });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    
+    user.coins += coinsToAdd;
+    await user.save();
+    return user.coins;
+  } catch (error) {
+    console.error('Error updating user coins:', error);
+    throw error;
+  }
+}
 
-    res.json({ message: `Fetched statistics for topic: ${topic}`, stats: userStats });
+// Endpoint to obtain user coins
+app.get('/usercoins/:username', async (req, res) => {
+  try {
+    const sanitizedUsername = checkInput(req.params.username);
+    
+    const user = await User.findOne({ username: sanitizedUsername }).select('username coins');
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({ 
+      username: user.username,
+      coins: user.coins 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Find user statistics for a specific user and topic
-app.get('/userstats/:username/:topic', async (req, res) => {
+app.post('/updatecoins', async (req, res) => {
   try {
-    const username = req.params.username;
-    const topic = req.params.topic;
-
-    const userStats = await UserStatistics.findOne({ username: username, topic: topic });
-
-    res.json({ message: `Fetched statistics for user ${username} in topic ${topic}`, stats: userStats });
+    validateRequiredFields(req, ['username', 'amount']);
+    
+    const username = req.body.username;
+    const amount = parseInt(req.body.amount);
+    
+    if (isNaN(amount)) {
+      return res.status(400).json({ error: 'Amount must be a number' });
+    }
+    
+    const newCoinsBalance = await updateUserCoins(username, amount);
+    
+    res.json({ 
+      username: username,
+      coinsAdded: amount,
+      newBalance: newCoinsBalance 
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 

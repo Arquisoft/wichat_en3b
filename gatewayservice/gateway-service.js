@@ -28,15 +28,15 @@ if (fs.existsSync(openapiPath)) {
   // Disable the "Try it out" button
   const swaggerOptions = {
     swaggerOptions: {
-      supportedSubmitMethods: [] 
+      supportedSubmitMethods: []
     }
   };
-  
+
   // Serve the Swagger UI documentation at the '/api-doc' endpoint
   // This middleware serves the Swagger UI files and sets up the Swagger UI page
   // It takes the parsed Swagger document as input
   app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
-  
+
 } else {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
@@ -131,15 +131,19 @@ app.post('/askllm', async (req, res) => {
 
 app.get('/getRound', async (req, res) => {
   try {
-    const { topics } = req.query;
+    const { topics, mode, usedImages } = req.query;
 
     const roundResponse = await axios.get(questionServiceUrl + '/getRound', {
-      params:{topics: topics}
+      params: {
+        topics: topics,
+        mode: mode,
+        usedImages: usedImages
+      }
     });
 
     res.json(roundResponse.data);
   } catch (error) {
-    res.status(error.response?.status).json({ error: error.response.data.error });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal server error' });
   }
 });
 
@@ -152,6 +156,15 @@ app.get('/getTopics', async (req, res) => {
   }
 });
 
+app.get('/getAvailableTopics', async (req, res) => {
+  try {
+    const availabilityResponse = await axios.get(questionServiceUrl + '/getAvailableTopics');
+    res.json(availabilityResponse.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Unknown error' });
+  }
+});
+
 app.post('/addgame', async (req, res) => {
   try {
     const gameResponse = await axios.post(userServiceUrl + '/addgame', req.body);
@@ -161,28 +174,33 @@ app.post('/addgame', async (req, res) => {
   }
 });
 
-app.get('/userstats/user/:username', async (req, res) => {
+app.get('/userstats', async (req, res) => {
   try {
-    const statsResponse = await axios.get(userServiceUrl + '/userstats/user/' + req.params.username);
+    const { username, mode, topic } = req.query;
+
+    const statsResponse = await axios.get(userServiceUrl + '/userstats', {
+      params: { username, mode, topic }
+    });
+    
     res.json(statsResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
 
-app.get('/userstats/topic/:topic', async (req, res) => {
+app.get('/usercoins/:username', async (req, res) => {
   try {
-    const usersResponse = await axios.get(userServiceUrl + '/userstats/topic/' + req.params.topic);
-    res.json(usersResponse.data);
+    const coinsResponse = await axios.get(userServiceUrl + '/usercoins/' + req.params.username);
+    res.json(coinsResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
 
-app.get('/userstats/:username/:topic', async (req, res) => {
+app.post('/updatecoins', async (req, res) => {
   try {
-    const statsResponse = await axios.get(userServiceUrl + '/userstats/' + req.params.username + '/' + req.params.topic);
-    res.json(statsResponse.data);
+    const updateResponse = await axios.post(userServiceUrl + '/updatecoins', req.body);
+    res.json(updateResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
   }

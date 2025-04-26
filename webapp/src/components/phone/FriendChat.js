@@ -24,9 +24,11 @@ const FriendChat = ({ selectedContact, roundData, onEndChat }) => {
     setMessages(prev => [...prev, newMessage]);
     setQuestion("");
 
+    const model = localStorage.getItem("llmModel") || "mistral";
+
     try {
       const history = [...messages, newMessage].map(msg => `${msg.sender}: ${msg.text}`).join("\n");
-      const response = await axios.post("/askllm", { question: history, prompt });
+      const response = await axios.post("/askllm", { question: history, model, prompt });
       setMessages(prev => [...prev, { sender: "llm", text: response.data.answer }]);
     } catch (error) {
       console.error(error);
