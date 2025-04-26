@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Typography, Box, Grid } from "@mui/material"
+import { Typography, Grid } from "@mui/material"
+import { AccessTime, BlurOn, Games } from "@mui/icons-material";
 import { useNavigate } from 'react-router';
 import { StyledContainer, SectionPaper, SectionTitle, StyledButton, StyledCard,
   StyledCardContent,
@@ -10,29 +10,26 @@ import { StyledContainer, SectionPaper, SectionTitle, StyledButton, StyledCard,
   ModeDescription } from './SelectionStyles'
 
 function GameModeSelection() {
-  const [selectedMode, setSelectedMode] = useState(null)
-
-  const handleModeChange = (mode) => {
-    setSelectedMode(mode === selectedMode ? null : mode)
-  }
-
   const navigate = useNavigate();
 
   const gameModes = [
     {
       id: "rounds",
+      icon: <Games fontSize="small"/>,
       name: "ROUNDS",
       description: "Play through a set of 10 questions and test your knowledge. Perfect for a quick game session.",
       path: "/roundsgame",
     },
     {
       id: "time",
+      icon: <AccessTime fontSize="small"/>,
       name: "TIME",
       description: "Race against the clock! Answer as many questions as you can before time runs out.",
       path: "/timegame",
     },
     {
       id: "hide",
+      icon: <BlurOn fontSize="small"/>,
       name: "HIDE",
       description:
         "Challenge yourself with hidden images. The picture will get clearer as time goes by, guess it before it is completely revealed!",
@@ -58,9 +55,9 @@ function GameModeSelection() {
               <StyledCard>
                 <StyledCardContent>
                   <ModeTitle variant="h6" component="h2">
-                    {mode.name}
+                    {mode.icon} {mode.name}
                   </ModeTitle>
-                  <ModeDescription variant="body2">{mode.description}</ModeDescription>
+                  <ModeDescription variant="body">{mode.description}</ModeDescription>
                 </StyledCardContent>
                 <StyledCardActions>
                   <StyledButton variant="contained" size="small" onClick={() => goToGame(mode.path)}>
