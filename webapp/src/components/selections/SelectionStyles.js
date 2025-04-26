@@ -1,5 +1,5 @@
 import { styled } from "@mui/material/styles"
-import { Button, Container, Paper, Typography } from "@mui/material"
+import { Button, Card, Container, Paper, Typography, CardContent, CardActions } from "@mui/material"
 
 export const StyledContainer = styled(Container)(({ theme }) => ({
     padding: theme.spacing(4),
@@ -93,4 +93,39 @@ export const TopicButton = styled(Button, {
     "& .MuiButton-startIcon": {
       marginRight: theme.spacing(1),
     },
+}))
+
+export const StyledCard = styled(Card)(({ theme }) => ({
+  height: "100%",
+  display: "flex",
+  flexDirection: "column",
+  transition: "transform 0.2s, box-shadow 0.2s",
+  borderRadius: theme.shape.borderRadius,
+  overflow: "hidden",
+  "&:hover": {
+    transform: "translateY(-5px)",
+    boxShadow: theme.shadows[8],
+  },
+}))
+
+export const StyledCardContent = styled(CardContent)(({ theme }) => ({
+  flexGrow: 1,
+  textAlign: "center",
+  padding: theme.spacing(3),
+}))
+
+export const StyledCardActions = styled(CardActions)(({ theme }) => ({
+  justifyContent: "center",
+  padding: theme.spacing(0, 2, 2, 2),
+}))
+
+export const ModeTitle = styled(Typography)(({ theme }) => ({
+  fontWeight: "bold",
+  color: theme.palette.primary.main,
+  marginBottom: theme.spacing(1.5),
+}))
+
+export const ModeDescription = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  marginBottom: theme.spacing(1),
 }))

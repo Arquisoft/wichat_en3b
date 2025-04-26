@@ -1,9 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Typography, Box } from "@mui/material"
+import { Typography, Box, Grid } from "@mui/material"
 import { useNavigate } from 'react-router';
-import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton } from './SelectionStyles'
+import { StyledContainer, SectionPaper, SectionTitle, StyledButton, StyledCard,
+  StyledCardContent,
+  StyledCardActions,
+  ModeTitle,
+  ModeDescription } from './SelectionStyles'
 
 function GameModeSelection() {
   const [selectedMode, setSelectedMode] = useState(null)
@@ -14,13 +18,30 @@ function GameModeSelection() {
 
   const navigate = useNavigate();
 
-  const goToGame = (mode) => {
-    switch (mode) {
-      case "rounds": navigate("/roundsgame"); break;
-      case "time": navigate("/timegame"); break;
-      case "hide": navigate("/hidegame"); break;
-      default: break;
-    }
+  const gameModes = [
+    {
+      id: "rounds",
+      name: "ROUNDS",
+      description: "Play through a set of 10 questions and test your knowledge. Perfect for a quick game session.",
+      path: "/roundsgame",
+    },
+    {
+      id: "time",
+      name: "TIME",
+      description: "Race against the clock! Answer as many questions as you can before time runs out.",
+      path: "/timegame",
+    },
+    {
+      id: "hide",
+      name: "HIDE",
+      description:
+        "Challenge yourself with hidden images. The picture will get clearer as time goes by, guess it before it is completely revealed!",
+      path: "/hidegame",
+    },
+  ]
+
+  const goToGame = (path) => {
+    navigate(path);
   }
   
   return (
@@ -31,43 +52,26 @@ function GameModeSelection() {
 
       <SectionPaper elevation={3}>
         <SectionTitle variant="h5">SELECT THE MODE</SectionTitle>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "center", mt: 2 }}>
-          <ModeButton
-            fullWidth
-            onClick={() => handleModeChange("rounds")}
-            isSelected={selectedMode === "rounds"}
-            data-selected={selectedMode === "rounds"} // For the test (isSelected is not a valid HTML attribute and therefore is not rendered automatically)
-          >
-            ROUNDS
-          </ModeButton>
-          <ModeButton
-            fullWidth
-            onClick={() => handleModeChange("time")}
-            isSelected={selectedMode === "time"}
-            data-selected={selectedMode === "time"} // For the test (isSelected is not a valid HTML attribute and therefore is not rendered automatically)
-          >
-            TIME
-          </ModeButton>
-          <ModeButton
-            fullWidth
-            onClick={() => handleModeChange("hide")}
-            isSelected={selectedMode === "hide"}
-            data-selected={selectedMode === "hide"} // For the test (isSelected is not a valid HTML attribute and therefore is not rendered automatically)
-          >
-            HIDE
-          </ModeButton>
-        </Box>
+        <Grid container spacing={3}>
+          {gameModes.map((mode) => (
+            <Grid item xs={12} md={4} key={mode.id}>
+              <StyledCard>
+                <StyledCardContent>
+                  <ModeTitle variant="h6" component="h2">
+                    {mode.name}
+                  </ModeTitle>
+                  <ModeDescription variant="body2">{mode.description}</ModeDescription>
+                </StyledCardContent>
+                <StyledCardActions>
+                  <StyledButton variant="contained" size="small" onClick={() => goToGame(mode.path)}>
+                    PLAY {mode.name}
+                  </StyledButton>
+                </StyledCardActions>
+              </StyledCard>
+            </Grid>
+          ))}
+        </Grid>
       </SectionPaper>
-
-      <StyledButton
-        variant="contained"
-        color="primary"
-        size="large"
-        disabled={!selectedMode}
-        onClick={() => goToGame(selectedMode)}
-        fullWidth>
-        NEXT
-      </StyledButton>
     </StyledContainer>
   )
 }
