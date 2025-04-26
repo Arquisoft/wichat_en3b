@@ -17,6 +17,8 @@ import PhoneDialog from "./phone/PhoneDialog";
 
 import useAuth from "../hooks/useAuth"
 import { NavLink , useNavigate} from "react-router";
+import FriendChat from "./phone/FriendChat"
+import { PhoneForwardedIcon } from "lucide-react"
 
 // Custom styled components
 const GameContainer = styled(Container)(({ theme }) => ({
@@ -554,11 +556,7 @@ const endGame = async (questions) => {
 
         {/* Right Side (Chat) */}
         <Grid item xs={12} md={3}>
-          <Card elevation={3} sx={{ height: "100%" }}>
-            <CardContent>
-              {roundData && <Chat key={chatKey} roundData={roundData} />}
-            </CardContent>
-          </Card>
+          {roundData && <PhoneDialog key={chatKey} roundData={roundData} />}
         </Grid>
       </Grid>
 

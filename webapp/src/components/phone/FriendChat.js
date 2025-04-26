@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Button, Dialog, DialogTitle, DialogContent, TextField, Typography, Avatar, Divider, IconButton } from "@mui/material";
+import { Box, Button, TextField, Typography, Divider, IconButton } from "@mui/material";
 import { Typewriter } from "react-simple-typewriter";
+import CloseIcon from "@mui/icons-material/Close";
 import useAxios from "../../hooks/useAxios";
 import useTheme from "../../hooks/useTheme";
-import CloseIcon from "@mui/icons-material/Close"; // Import close icon
+import { Avatar } from "@mui/material"; 
 
-const FriendChat = ({ open, onClose, selectedContact, roundData }) => {
+
+const FriendChat = ({ selectedContact, roundData, onEndChat }) => {
   const axios = useAxios();
   const { theme } = useTheme();
 
@@ -14,191 +16,224 @@ const FriendChat = ({ open, onClose, selectedContact, roundData }) => {
   const [autoScroll, setAutoScroll] = useState(true);
   const [prompt, setPrompt] = useState("");
 
+  const chatContainer = useRef(null);
+
   const sendMessage = async () => {
     if (!question.trim()) return;
 
-    let newMessage = { sender: "user", text: question };
-    setMessages(previous => [...previous, newMessage]);
+    setAutoScroll(true);
+
+    const newMessage = { sender: "user", text: question };
+    setMessages(prev => [...prev, newMessage]);
     setQuestion("");
 
     try {
-      const history = [...messages, newMessage].map(message => `${message.sender}: ${message.text}`).join("\n");
+      const history = [...messages, newMessage].map(msg => `${msg.sender}: ${msg.text}`).join("\n");
       const response = await axios.post("/askllm", { question: history, prompt });
-
-      setMessages(previous => [...previous, { sender: "llm", text: response.data.answer }]);
+      setMessages(prev => [...prev, { sender: "llm", text: response.data.answer }]);
     } catch (error) {
-      console.error("Error sending message to LLM:", error.message || error);
-      setMessages(previous => [...previous, { sender: "llm", text: "An unexpected error has occurred." }]);
+      console.error(error);
+      setMessages(prev => [...prev, { sender: "llm", text: "An unexpected error has occurred." }]);
     }
   };
 
-  const chatContainer = useRef(null);
-  useEffect(() => {
-    if (chatContainer.current)
-      chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
-  }, [messages]);
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage();
+    }
+  };
 
   const handleScroll = () => {
     if (chatContainer.current) {
       const { scrollTop, scrollHeight, clientHeight } = chatContainer.current;
-      setAutoScroll(scrollHeight - scrollTop <= clientHeight + 5);
+      setAutoScroll(scrollHeight - (scrollTop + clientHeight) < 50);
     }
-    
   };
+
 
   useEffect(() => {
-    setPrompt(`YOU HAVE TO BE SHORT ON YOUR REPLIES. You are a language model acting as ${selectedContact.name}, and you are helping the user with a trivia game. 
-    The user will be shown a picture and four options, and they need to guess what the image is.
-    As ${selectedContact.name}, you know about the following topics: ${selectedContact.mainTopic}. 
-    The current round is about: ${roundData.mainTopic}. If asked about something outside your scope, you must be honest and say you're not sure.
-    The user will ask you for clues to help them guess the correct answer. 
-    This round of the game is about ${roundData.topic} and the answer is ${roundData.itemWithImage?.name}. 
-    YOU MUST NEVER SAY THE ANSWER UNDER ANY CIRCUMSTANCE, but you can give vague hints to help them guess the answer.
-    Your job is to provide hints that are helpful but not too revealing. 
-    IMPORTANT: Keep every hint you provide 7 words max. Keep it extremely short, casual, and friendly. 
-    No long explanations — just quick, casual, and friendly hints. If the user asks about something outside the topics you know, be honest and say you're unsure. 
-    Start by saying "Hello" in a way that feels natural for ${selectedContact.name} and sets the friendly, casual tone for the conversation. Say your name at the beginning and make a funny pun reference to your persona. 
-    Wait for the user to ask you a question, 
-    don't go straight to trying to get an answer, don't mention the game until the user asks for help.
-    Ask something casual like how is the user doing or make a joke according to the character.
-    You have to reply always in English. This is the information the user has for ${selectedContact.name}.
-    .`);
-  }, [selectedContact, roundData]);
-  
+    setPrompt(`You are acting as ${selectedContact.name}, a friendly trivia helper.
 
-  // Handle key press to send message
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter" && !event.shiftKey) { // Detect Enter key press without Shift
-      event.preventDefault();  // Prevent default newline behavior
-      sendMessage();  // Call the sendMessage function
+Context:
+- The user is shown an image and must guess the correct answer.
+- You know about: ${selectedContact.mainTopic}.
+- The current topic is: ${roundData.mainTopic}.
+- The correct answer is: ${roundData.itemWithImage?.name}.
+
+Rules:
+
+1. **Language**: Reply only in English.
+2. **Hints**: Keep every hint very short (max 7 words), casual, playful, using emojis.
+3. **Never reveal the correct answer directly** unless the user guesses it.
+4. **When the user asks "Is it X?"**:
+   - If **X is the correct answer**:
+     - Reply clearly YES. (You must say "Yes!" or similar)
+     - Celebrate briefly and naturally. (Example: "Yes! You nailed it!")
+   - If X is not the correct answer*:
+     - Reply clearly No.
+     - Encourage them to try again. (Example: "Nope, not quite! Keep trying!")
+5. If the user asks general questions, give vague hints — never say the answer directly.
+6. If asked about topics you don't know, say you're unsure politely.
+7. Start the chat by greeting as ${selectedContact.name}, with a pun or friendly joke fitting your personality.
+8. Stay in character**: be casual, fun, and text-like. Never sound robotic.
+9. If the user asks about a topic that is NOT in your knowledge (${selectedContact.mainTopic}):
+   - Politely say something like:
+     - "Honestly, that's not really my area! Maybe ask someone into X?"
+     - "I'm not sure, buddy! Try asking an expert on [topic]!"
+
+Additional:
+
+- You must **only say "Yes" or "No"** clearly when the user **specifically asks about an option**.
+- Otherwise, always give vague clues without confirming.
+
+Goal: Help the user guess the answer by themselves, while being supportive, short, and casual.
+
+Example Good Responses:
+- "Hmm you're hot!" (when they guess correctly)
+- "Nope, try again!" (when they guess wrong)
+- "I'm not sure about that!" (if topic is outside your knowledge)
+
+Priority: Really Short hints ➔ Friendly ➔ Helpful ➔ Never reveal the answer.
+`);
+  }, [selectedContact, roundData]);
+
+  useEffect(() => {
+    if (chatContainer.current) {
+      chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
     }
-  };
+  }, [messages]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      PaperProps={{
-        sx: {
-          width: "375px",
-          height: "667px",
-          borderRadius: 4,
-          overflow: "hidden",
-          position: "relative", // Ensure the close button is outside the dialog body
-        },
-      }}
-    >
-      {/* Close Button (X) */}
-      <IconButton
-        onClick={onClose}
-        sx={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-          color: "text.primary",
-        }}
-      >
-        <CloseIcon />
-      </IconButton>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+      {/* Top bar */}
 
-      {/* Dialog Title */}
-      <DialogTitle
+      <Box
         sx={{
-          textAlign: "center",
-          fontWeight: "bold",
-          fontSize: "1.25rem",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
           p: 2,
-          borderBottom: "1px solid #ddd",
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          bgcolor: theme.palette.background.paper,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
         }}
       >
-        📱 Chat with {selectedContact.name}
-      </DialogTitle>
-
-      <DialogContent sx={{ p: 3, height: "100%", overflowY: "auto" }}>
-        {/* Chat messages container */}
-        <Box
-          ref={chatContainer}
-          onScroll={handleScroll}
+        {/* Close Button */}
+        <IconButton
+          onClick={onEndChat}
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            overflowY: "auto",
-            height: "60vh",
-            paddingX: 1,
-            marginBottom: 2,
+            color: theme.palette.text.primary,
+            '&:hover': {
+              bgcolor: theme.palette.action.hover,
+            },
           }}
         >
-          {messages.map((message, index) => (
-            message.sender === "user" ? (
-              <Box
-                key={index}
-                sx={{
-                  maxWidth: "75%",
-                  alignSelf: "flex-end",
-                  padding: 1,
-                  margin: 1,
-                  bgcolor: "#dcf8c6",
-                  color: "black",
-                  borderRadius: 2,
-                  boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                {message.text}
-              </Box>
-            ) : (
-              <Box
-                key={index}
-                sx={{
-                  maxWidth: "75%",
-                  alignSelf: "flex-start",
-                  padding: 1,
-                  margin: 1,
-                  bgcolor: "#f1f1f1",
-                  color: "black",
-                  borderRadius: 2,
-                  boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-                }}
-              >
+          <CloseIcon />
+        </IconButton>
+
+        {/* Avatar + Name */}
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, justifyContent: 'center', gap: 1 }}>
+          <Avatar
+            sx={{ width: 32, height: 32, fontSize: "1rem", bgcolor: theme.palette.primary.main }}
+          >
+            {selectedContact.name.charAt(0)}
+          </Avatar>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 'bold',
+              fontSize: { xs: '1rem', md: '1.2rem' },
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: "160px",
+            }}
+          >
+            {selectedContact.name}
+          </Typography>
+        </Box>
+
+        {/* Right spacer for symmetry */}
+        <Box sx={{ width: '48px' }} />
+      </Box>
+
+
+      {/* Messages */}
+      <Box
+        ref={chatContainer}
+        onScroll={handleScroll}
+        sx={{
+          flexGrow: 1,
+          overflowY: "auto",
+          padding: 2,
+          bgcolor: theme.palette.background.default,
+        }}
+      >
+        {messages.map((message, index) => (
+          <Box
+            key={index}
+            sx={{
+              display: 'flex',
+              justifyContent: message.sender === "user" ? "flex-end" : "flex-start",
+              mb: 1,
+            }}
+          >
+            <Box
+              sx={{
+                maxWidth: "75%",
+                bgcolor: message.sender === "user" ? "#dcf8c6" : "#ffffff",
+                color: "black",
+                p: 1.5,
+                borderRadius: 3,
+                borderTopRightRadius: message.sender === "user" ? 0 : 3,
+                borderTopLeftRadius: message.sender === "user" ? 3 : 0,
+                boxShadow: message.sender === "user"
+                  ? "0px 2px 4px rgba(37, 211, 102, 0.4)"
+                  : "0px 2px 4px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
                 <Typewriter
                   words={[message.text]}
                   typeSpeed={20}
                   onType={() => {
-                    if (chatContainer.current && autoScroll)
+                    if (chatContainer.current && autoScroll) {
                       chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
+                    }
                   }}
                 />
-              </Box>
-            )
-          ))}
-        </Box>
+              </Typography>
+            </Box>
+          </Box>
+        ))}
 
-        <Divider sx={{ marginY: 1 }} />
+      </Box>
 
-        {/* Input area for asking for a hint */}
-        <Box sx={{ display: "flex", gap: 1, padding: 1 }}>
-          <TextField
-            fullWidth
-            multiline
-            placeholder="Ask for a hint"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            onKeyDown={handleKeyDown}  // Add onKeyDown to capture Enter press
-            sx={{ background: "#f1f1f1", borderRadius: 2 }}
-          />
-          <Button
-            onClick={sendMessage}
-            sx={{
-              alignSelf: "flex-end",
-              bgcolor: "#25d366",
-              color: "white",
-              borderRadius: 2,
-            }}
-          >
-            Send
-          </Button>
-        </Box>
-      </DialogContent>
-    </Dialog>
+      {/* Input */}
+      <Divider />
+      <Box sx={{ display: 'flex', p: 2, gap: 1 }}>
+        <TextField
+          fullWidth
+          multiline
+          placeholder="Ask for a hint..."
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={handleKeyDown}
+          sx={{ backgroundColor: "#f1f1f1", borderRadius: 2 }}
+        />
+        <Button
+          onClick={sendMessage}
+          variant="contained"
+          sx={{ bgcolor: "#25d366", color: "white", borderRadius: 2 }}
+        >
+          Send
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

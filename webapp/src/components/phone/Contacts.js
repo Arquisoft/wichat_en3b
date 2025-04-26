@@ -8,20 +8,20 @@ const Contacts = ({ onBack, onCall, roundData }) => {
 
   const contacts = [
     { name: "Fernando Alonso", profession: "F1 driver", mainTopic: "formula one, racing, sports, asturias" },
-    { name: "Fernando de Magallanes", profession: "Explorer", mainTopic: "geography, flags, famous places" },
-    { name: "Jesús Calleja", profession: "Adventurer", mainTopic: "geography, flags, famous places" },
+    { name: "Ángela Pumariega", profession: "Spanish sailor", mainTopic: "geography, sports, famous places, asturias" },
+    { name: "Queen Isabella I", profession: "Queen of Castile", mainTopic: "historical events, historical women" },
+    { name: "The Beatles", profession: "Iconic British rock band", mainTopic: "singers, music" },
+    { name: "Antonio Banderas", profession: "Spanish actor and film producer", mainTopic: "actors, singers, spain, art" },
     { name: "Saúl Craviotto", profession: "Sports Man", mainTopic: "sports, asturias" },
     { name: "Rafa Nadal", profession: "Tennis player", mainTopic: "sports, spain" },
     { name: "Lady Gaga", profession: "Singer and songwriter", mainTopic: "music, singers, historical women" },
-    { name: "The Beatles", profession: "Iconic British rock band", mainTopic: "singers, music" },
     { name: "Usain Bolt", profession: "Sprinter", mainTopic: "sports" },
     { name: "Picasso", profession: "Painter and sculptor", mainTopic: "art, spain" },
     { name: "Hemingway", profession: "The writer", mainTopic: "historical events" },
-    { name: "Queen Isabella I", profession: "Queen of Castile", mainTopic: "historical events, historical women" },
     { name: "Cervantes", profession: "Spanish writer", mainTopic: "spain, historial events" },
     { name: "Frida Kahlo", profession: "Painter", mainTopic: "historical women, art" },
-    { name: "Jovellanos", profession: "Asturian Famous", mainTopic: "spain, asturias, historical events" },
-    { name: "Antonio Banderas", profession: "Spanish actor and film producer", mainTopic: "actors, singers, spain, art" }
+    { name: "Jesús Calleja", profession: "Adventurer", mainTopic: "geography, flags, famous places" },
+    { name: "Jovellanos", profession: "Asturian Famous", mainTopic: "spain, asturias, historical events" }
   ];
 
   function handleContactClick(contact) {
