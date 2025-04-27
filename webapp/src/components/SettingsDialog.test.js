@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SettingsDialog from './SettingsDialog';
 import useTheme from '../hooks/useTheme';
+import { I18nextProvider } from "react-i18next";
+import i18n from "../utils/i18n";
 
 // Mock the useTheme hook
 jest.mock('../hooks/useTheme', () => ({
@@ -28,24 +30,28 @@ describe('SettingsDialog', () => {
 
   const setup = (props = {}) => {
     const onClose = jest.fn();
-    render(<SettingsDialog open={true} onClose={onClose} {...props} />);
+    render(
+      <I18nextProvider i18n={i18n}>
+        <SettingsDialog open={true} onClose={onClose} {...props} />
+      </I18nextProvider>
+      );
     return { onClose };
   };
 
   const openAdvancedSettings = async () => {
-    const advancedSettingsButton = screen.getByRole('button', { name: /advanced settings/i });
+    const advancedSettingsButton = screen.getByTestId("advancedSettings");
     fireEvent.click(advancedSettingsButton);
-    await screen.findByText(/LLM Model/i);
+    await screen.getByTestId("llmModel");
   };
 
   test('renders the dialog with title and all sections', () => {
     setup();
 
-    expect(screen.getByText("Settings")).toBeInTheDocument();
+    expect(screen.getByTestId("settings")).toBeInTheDocument();
     expect(screen.getByTestId('language-select')).toBeInTheDocument();
-    expect(screen.getByText(/Theme/i)).toBeInTheDocument();
-    expect(screen.getByText(/Advanced Settings/i)).toBeInTheDocument();
-    expect(screen.getByText(/LLM Model/i)).toBeInTheDocument();
+    expect(screen.getByTestId("theme")).toBeInTheDocument();
+    expect(screen.getByTestId("advancedSettings")).toBeInTheDocument();
+    expect(screen.getByTestId("llmModel")).toBeInTheDocument();
   });
 
   test('closes dialog when cancel button is clicked', () => {
