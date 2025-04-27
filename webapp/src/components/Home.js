@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { alpha, Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
+import { alpha, Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Select, Tab, Tabs, Typography } from "@mui/material";
 import { AccessTime, AutoAwesome, BarChart, BlurOn, ChevronRight, FilterAlt, Games, LocationCity, MusicNote, OutlinedFlag, People, SportsBasketball, SportsEsports, TrackChanges } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
