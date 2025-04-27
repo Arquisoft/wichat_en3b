@@ -60,15 +60,15 @@ endif::arc42help[]
 
 left to right direction
 
-actor User
+actor User #lightgreen
 
-rectangle "WebApp" {
-    rectangle Frontend
-    rectangle Backend
+rectangle "Docker" #lightblue {
+    rectangle Frontend #pink
+    rectangle Backend #pink
     rectangle Gateway
 }
 
-rectangle "External Services" {
+cloud "External Services" #orange {
     rectangle Wikidata
     rectangle LLM
 }
@@ -114,7 +114,7 @@ endif::arc42help[]
 ----
 @startuml
 
-actor User
+actor User #lightgreen
 
 rectangle WiChat {
     rectangle WebApp
