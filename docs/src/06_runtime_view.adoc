@@ -183,38 +183,39 @@ Seeing the statistics of the round, and general at each category.
 
 [plantuml,"Rankings",png]
 ----
-
-actor User
+actor User #lightgreen
 participant WebApp
+participant Gateway
 participant UserService
 database DataBase
 
 User --> WebApp: Login
 
-WebApp --> UserService: Getting all statistics
-UserService --> DataBase: Get all them
+WebApp --> Gateway: Request statistics
+Gateway --> UserService: Get all statistics
+UserService --> DataBase: Retrieve statistics
 DataBase --> UserService: Response
-UserService --> WebApp: Response
+UserService --> Gateway: Response
+Gateway --> WebApp: Response
 
 WebApp --> WebApp: See /home with rankings for all categories for all users
 WebApp --> User: Allows to go through them or play a game
 
-alt Play a game
-    loop plays all rounds
+alt #lightblue Play a game
+    loop #lightyellow Play all rounds
     
     end
     
     WebApp--> WebApp: Shows the statistics for that concrete game
     
-    alt Return Home
-        WebApp--> WebApp: Goes from the game to again /home
+    alt #red Return Home
+        WebApp--> WebApp: Goes from the game to home
     end
     
-    alt Play Again
+    alt #green Play Again
         WebApp--> WebApp: Play another game
     end
 end
-
 ----
 
 
