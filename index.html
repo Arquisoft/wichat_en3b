@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.23">
-<title>wichat_en3b</title>
+<title>brAIn</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,12 +436,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1><span class="image"><img src="./images/arc42-logo.png" alt="arc42"></span> wichat_en3b</h1>
-<div class="details">
-<span id="revnumber">version 8.2 EN,</span>
-<span id="revdate">January 2023</span>
-<br><span id="revremark">(based upon AsciiDoc version)</span>
-</div>
+<h1><span class="image"><img src="./images/arc42-logo.png" alt="arc42"></span> brAIn</h1>
 <div id="toc" class="toc">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -532,19 +527,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 	.arc42help {display:none;}
 }
 </style>
-<div class="paragraph">
-<p><strong>About arc42</strong></p>
-</div>
-<div class="paragraph lead">
-<p>arc42, the template for documentation of software and system architecture.</p>
-</div>
-<div class="paragraph">
-<p>Template Version 8.2 EN. (based upon AsciiDoc version), January 2023</p>
-</div>
-<div class="paragraph">
-<p>Created, maintained and &#169; by Dr. Peter Hruschka, Dr. Gernot Starke and contributors.
-See <a href="https://arc42.org" class="bare">https://arc42.org</a>.</p>
-</div>
 <hr>
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -1102,22 +1084,22 @@ The title of the table is the name of your system, the three columns contain the
 <td class="tableblock halign-left valign-top"><p class="tableblock">Performs actions on the application such as answering a question, using a wildcard or asking a question to a chatbot.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">WebApp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WebApp (frontend)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Receives user inputs and data from backend services.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updates the interface to show to the user.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Gateway Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gateway Service (backend)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Takes actions from users received from the web application.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sends the requests to the corresponding endpoints.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Question Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Question Service (backend)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Receives a query about a theme or category.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Returns a page corresponding to the given query.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LLM Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LLM Service (backend)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Gets relevant information about the question the user has to answer.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Interacts or answers the user in several ways, depending on the used wildcard.</p></td>
 </tr>
@@ -1145,7 +1127,7 @@ together with a mapping table showing the relationships between channels and inp
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-8187be31f48d3d74ee32558c09b26ab6.png" alt="Diagram" width="592" height="266">
+<img src="./images/diag-plantuml-md5-6875976b26c91822686aa0ec273269eb.png" alt="Diagram" width="595" height="266">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1161,7 +1143,7 @@ together with a mapping table showing the relationships between channels and inp
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">WebApp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WebApp (frontend)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The user can play the game using Internet, via HTTP.</p></td>
 </tr>
 <tr>
@@ -1173,11 +1155,11 @@ together with a mapping table showing the relationships between channels and inp
 <td class="tableblock halign-left valign-top"><p class="tableblock">MongoDB database for storing users information and the required information about the answers and distractors of the question, each of them with an image.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Question Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Question Service (backend)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Data is obtained throught SPARQL queries and stored in the database due to this service. Furthermore, each round of the game, the four options (and the image of the correct one) are requested to this service, which takes them randomly from the database according with the selected topic/s.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LLMService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LLMService (backend)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Gives relevant hints about the question the user has to answer.</p></td>
 </tr>
 </tbody>
@@ -1413,7 +1395,7 @@ In the best case you will get away with examples or simple signatures.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-9012eb70045d466ff95392c243f83111.png" alt="Diagram" width="400px" height="300px">
+<img src="./images/diag-plantuml-md5-f999ff72f4b7e99f938212a55eba8750.png" alt="Diagram" width="400px" height="300px">
 </div>
 </div>
 <div class="dlist">
@@ -1438,7 +1420,7 @@ In the best case you will get away with examples or simple signatures.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>WIChat</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>brAIn</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Central web Application, acts as the primary interface for the user and acts as mediator between external data sources and services.</p></td>
 </tr>
 <tr>
@@ -1525,7 +1507,7 @@ Leave out normal, simple, boring or standardized parts of your system</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/diag-plantuml-md5-8bf2c3b37eec05ba600dc1296a952085.png" alt="Diagram" width="504" height="231">
+<img src="./images/diag-plantuml-md5-8f7e26c6a9f2bc1f68aac38c0cdb0026.png" alt="Diagram" width="502" height="231">
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -1545,7 +1527,7 @@ Leave out normal, simple, boring or standardized parts of your system</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Manages user interaction and presentation.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">**Gateway""</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Gateway</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Manages interaction between frontend and backend.</p></td>
 </tr>
 <tr>
@@ -2741,8 +2723,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 8.2 EN<br>
-Last updated 2025-02-07 11:16:46 +0100
+Last updated 2025-04-27 17:24:50 +0200
 </div>
 </div>
 </body>
