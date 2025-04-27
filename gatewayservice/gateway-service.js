@@ -45,29 +45,42 @@ if (fs.existsSync(openapiPath)) {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
 
-app.use(cors({ origin: [frontendUrl, "http://localhost:8000", "*"], credentials: true }));
+const allowedOrigins = [
+  frontendUrl,
+  `http://localhost:${port}`
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true); // Origin is allowed
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+  allowedHeaders: "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+}));
 
-//Prometheus configuration
-const metricsMiddleware = promBundle({ includeMethod: true });
-app.use(metricsMiddleware);
-
-// Grafana proxy endpoint
-app.use("/admin/monitoring", createProxyMiddleware({
+// Set up a proper reverse proxy with authentication
+app.use('/admin/monitoring', createProxyMiddleware({
   target: grafanaUrl,
   changeOrigin: true,
   ws: true,
-  logLevel: 'info',
-  onError: (err, req, res, target) => {
-    console.error(`Grafana Proxy Error: ${err.message}. Target: ${target.href}`);
-    if (!res.headersSent) {
-      res.status(502).json({ error: 'Bad Gateway', details: `Could not connect to Grafana at ${target.href}` });
-    } else {
-      console.error('Grafana Proxy Error occurred after headers sent.');
+  pathRewrite: {
+    '^/admin/monitoring': '/'
+  },
+  logLevel: 'debug',
+  on: {
+    proxyReq: (proxyReq, req, res) => {
+      proxyReq.removeHeader('Authorization');
+      console.log(`Proxying ${req.method} ${req.originalUrl} to ${grafanaUrl}`);
+    },
+    proxyRes: (proxyRes, req, res) => {
+      // Log response status to help debug
+      console.log(`Grafana response: ${proxyRes.statusCode} for ${req.originalUrl}`);
     }
-  },
-  onProxyReq: (proxyReq, req, res) => {
-    console.log(`Proxying request from ${req.ip} to <span class="math-inline">\{grafanaInternalUrl\}</span>{proxyReq.path}`);
-  },
+  }
 }));
 
 // Define a middleware to check authentication
@@ -93,9 +106,12 @@ app.post('/login', async (req, res) => {
     // Forward the login request to the authentication service
     const authResponse = await axios.post(authServiceUrl + '/login', req.body, { withCredentials: true, headers: { ...req.headers } });
 
-    // Redirect if admin
+    // For admin users, provide a full URL to the monitoring dashboard
     if (authResponse.data.isAdmin) {
-      return res.redirect("/admin/monitoring");
+      return res.json({
+        ...authResponse.data,
+        redirectUrl: "/admin/monitoring" // Direct URL to Grafana
+      });
     }
 
     // Forward the cookie to the client from the authentication service
