@@ -201,27 +201,35 @@ skinparam databaseStyle cylinder
 
 actor "User" as user
 
-node "Browser" as browser {
-  artifact "Webapp (frontend)" as Web
+node "Device" as browser {
+  node "Web browser" as wb
 }
 
-node "Server" as server {
-  node "Backend" as backend {
-    artifact "Authentication Service" as Auth
-    artifact "User Service" as User
-    artifact "Gateway Service" as Gateway
-    artifact "LLM Service" as LLMSvc
-    artifact "Questions Service" as QnA
+cloud "Server" as server {
+  node "Docker" as docker {
+    folder "Frontend" as frontend {
+      node "WebApp (GameService)" as Web
+    }
+    node "GatewayService" as Gateway
+      folder "Backend" as backend {
+        node "Users" as users {
+          artifact "AuthService" as Auth
+          artifact "UserService" as User
+        }
+        artifact "LLMService" as LLMSvc
+        artifact "QuestionsService" as QnA
+      } 
+    database "Database" as DB
   }
-  database "Database" as DB
 }
 
-node "External Services" as ext {
-  artifact "LLM" as LLM
-  artifact "Wikidata" as Wikidata
+cloud "External Services" as ext {
+  node "LLM" as LLM
+  node "Wikidata" as Wikidata
 }
 
-user -right-> Web
+user -right-> wb
+wb --> Web
 Web <--> Gateway
 Auth <--> DB
 Gateway <--> LLMSvc
@@ -231,6 +239,7 @@ Gateway <--> User
 LLMSvc <-- LLM
 QnA <-- Wikidata
 QnA <--> DB
+User <--> DB
 
 @enduml
 ----
@@ -240,7 +249,7 @@ QnA <--> DB
 | **Name** | Responsibility
 | **Authentication Service** | Handles user authentication, login and signup.
 | **User Service** | Retrieves the data of the users as well as their stadistics to generate the ranking.
-| **Game Service** | Manages game state and logic. Uses more concrete services like LLM and Question to divide responsibilities.
+| **WebApp (Game Service)** | Manages game state and logic. Uses more concrete services like LLM and Question to divide responsibilities.
 | **LLM Service** | Provides chat functionality, sending requests to an LLM, receiving and processing responses to show hints to the user.
 | **Question Service** | Creates and provides questions using data obtained from Wikidata.
 | **Gateway Service** | Manages the interaction between the frontend and the backend. Handles the requests, assigning them to the corresponding backend endpoint.
