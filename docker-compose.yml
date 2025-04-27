@@ -134,12 +134,15 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_DISABLE_LOGIN_FORM=true
-      - GF_AUTH_BASIC_ENABLED=false
-      - GF_SERVER_ROOT_URL=http://localhost:8000
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_PROXY_ENABLED=true
+      - GF_AUTH_PROXY_HEADER_NAME=X-WEBAUTH-USER
+      - GF_AUTH_PROXY_HEADER_PROPERTY=username
+      - GF_AUTH_PROXY_AUTO_SIGN_UP=true
+      - GF_SERVER_ROOT_URL=http://localhost:8000/monitoring/
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
-
-    ports:
-      - "9091:9091"
+    expose:
+      - "9091"
     depends_on: 
       - prometheus
 

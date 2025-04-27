@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml')
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const httpProxy = require('http-proxy');
 
 const app = express();
 const port = 8000;
@@ -62,26 +62,25 @@ app.use(cors({
   allowedHeaders: "Content-Type, Authorization, X-Requested-With, Accept, Origin"
 }));
 
-// Set up a proper reverse proxy with authentication
-app.use('/admin/monitoring', createProxyMiddleware({
-  target: grafanaUrl,
-  changeOrigin: true,
-  ws: true,
-  pathRewrite: {
-    '^/admin/monitoring': '/'
-  },
-  logLevel: 'debug',
-  on: {
-    proxyReq: (proxyReq, req, res) => {
-      proxyReq.removeHeader('Authorization');
-      console.log(`Proxying ${req.method} ${req.originalUrl} to ${grafanaUrl}`);
-    },
-    proxyRes: (proxyRes, req, res) => {
-      // Log response status to help debug
-      console.log(`Grafana response: ${proxyRes.statusCode} for ${req.originalUrl}`);
-    }
+const serverProxy = httpProxy.createProxyServer();
+serverProxy.on("proxyReq", (proxyReq, req, res) => {
+  if (req.body) {
+    const bodyData = JSON.stringify(req.body);
+    proxyReq.setHeader("Content-Type", "application/json");
+    proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+    proxyReq.write(bodyData);
   }
-}));
+});
+
+app.all("/monitoring/*", (req, res) => {
+  console.log("Proxying request to Grafana:", req.url);
+  serverProxy.web(req, res, { target: grafanaUrl, prependPath: false });
+});
+
+serverProxy.on("error", (err, req, res) => {
+  console.error("Proxy error:", err);
+  res.status(500).json({ error: "Proxy error" });
+});
 
 // Define a middleware to check authentication
 const verifyJWT = (req, res, next) => {
@@ -110,7 +109,7 @@ app.post('/login', async (req, res) => {
     if (authResponse.data.isAdmin) {
       return res.json({
         ...authResponse.data,
-        redirectUrl: "/admin/monitoring" // Direct URL to Grafana
+        redirectUrl: "/monitoring/" // Direct URL to Grafana
       });
     }
 
