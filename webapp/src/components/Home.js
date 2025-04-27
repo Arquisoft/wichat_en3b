@@ -131,7 +131,7 @@ const Home = () => {
                 justifyContent: "space-between",
                 pb: 2
             }}>
-                <Box>
+                <Box data-testid="dashboard-welcomeMsg">
                     <Typography variant="h4" component="h1" fontWeight="bold">
                         {t("welcomeBack")} {auth.username}!
                     </Typography>
@@ -329,7 +329,7 @@ const Home = () => {
 
             {/* Game topic selection */}
             <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", gap: 2, bgcolor: "background.paper", borderRadius: 2 }}>
-                <Box>
+                <Box data-testid="dashboard-readyToPlay">
                     <Typography variant="h5" fontWeight="bold">
                         {t("readyToPlay")}
                     </Typography>

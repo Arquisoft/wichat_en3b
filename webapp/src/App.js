@@ -131,7 +131,7 @@ function App() {
   return (
     <Container maxWidth="sm">
       <ZoomInPaper elevation={3}>
-        <Box sx={{ textAlign: "center", mb: 4 }}>
+        <Box data-testid="app-name-div" sx={{ textAlign: "center", mb: 4 }}>
           <TitleTypography component="h1" variant="h4">
             WICHAT
           </TitleTypography>

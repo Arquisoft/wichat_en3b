@@ -57,6 +57,7 @@ const Layout = () => {
                 <StyledNavlink to="/home" label={t("home")} icon={<HomeIcon />} theme={theme} />
 
                 <IconButton
+                    data-testid="settings-button"
                     onClick={() => setSettingsOpen(true)}
                     sx={{ color: "primary.contrastText" }}
                 >

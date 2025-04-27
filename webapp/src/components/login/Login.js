@@ -116,7 +116,7 @@ const Login = () => {
   </form>
 
           <Typography component="div" align="center" sx={{ marginTop: 3 }}>
-            <NavLink to="/signup">
+            <NavLink to="/signup" data-testid="register-link">
               {t(labels.noAccount)} <strong>{t(labels.registerHere)}</strong>
             </NavLink>
           </Typography>

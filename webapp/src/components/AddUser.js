@@ -141,9 +141,10 @@ const AddUser = () => {
 
           <Button
             fullWidth
-            type="submit" // Ensure the button is a submit button
+            type="submit" 
             variant="contained"
             color="primary"
+            data-testid="add-user-button"
             sx={{
               mt: 3,
               py: 1.5,
