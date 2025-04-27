@@ -27,12 +27,12 @@ root.render(
       <ThemeProvider>
         <Routes>
           <Route element={<Layout />}>
+            <Route element={<PersistentLogin />}>
             {/* Routes without authentication */}
             <Route index element={<App />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             {/* Routes with authentication */}
-            <Route element={<PersistentLogin />}>
               <Route element={<PrivateRoute />}>
                 <Route path="/home" element={<Home />} />
                 <Route path="/gamemode" element={<GameModeSelection />} />

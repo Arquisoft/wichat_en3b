@@ -10,6 +10,7 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
   const [isCallFriendOpen, setIsCallFriendOpen] = useState(false);
   const [hiddenOptions, setHiddenOptions] = useState([]);
   const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
 
   const handleFiftyFifty = () => {
     if (fiftyFiftyUsed || !roundData || !spendCoins(100)) return
@@ -43,10 +44,11 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
     if (askAudience || !roundData || !spendCoins(150)) return
 
     setAskAudience(true)
+    
     setShowGraph(true); // Make the graph visible when the audience call is used
   }
 
-  const handlePhoneOut = () => {
+  const handlePhoneOut = (roundData) => {
     if (phoneOut || !roundData) return;
     setPhoneOut(true);
   };
@@ -63,6 +65,13 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
     alert("Chat is now available to help you!")
     setUseChatUsed(true)
   }
+
+  const handleSelectCharacter = (character) => {
+    if (!roundData || !spendCoins(character.price)) return false;
+    
+    setSelectedCharacter(character);
+    return true;
+  };
 
   const isTrue = (lifeLine) => {
     switch(lifeLine) {
@@ -84,10 +93,11 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
     setAskAudience(false);
     setUseChatUsed(false);
     setHiddenOptions([]);
+    setSelectedCharacter(null);
   }
 
   return { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, handlePhoneOut, handlePhoneOutClose, handleUseChat, 
-    hiddenOptions, setHiddenOptions, isTrue, setShowGraph, newGame }
+    handleSelectCharacter, hiddenOptions, setHiddenOptions, isTrue, setShowGraph, selectedCharacter, newGame }
 }
 
 export default useLifeLinesHandler;

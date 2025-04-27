@@ -76,34 +76,70 @@ export const LifelineButton = styled(Button, {
 }));
 
 export const OptionButton = styled(Button, {
-  shouldForwardProp: (prop) => prop !== "isHidden",
+  shouldForwardProp: (prop) => prop !== "isHidden" && prop !== "isCorrect" && prop !== "isSelected" && prop !== "hasSelectedAnswer",
 })(({ theme, isHidden, hasSelectedAnswer, isSelected, isCorrect }) => ({
   padding: theme.spacing(2),
   fontSize: "1.5rem",
   fontWeight: "bold",
   visibility: isHidden ? "hidden" : "visible",
   backgroundColor:
-    isCorrect && hasSelectedAnswer // If it's the correct answer, always green
+    isCorrect && hasSelectedAnswer
       ? theme.palette.success.main
-      : isSelected // If it's the selected answer
-        ? theme.palette.error.main // Incorrect selection turns red
-        : theme.palette.primary.main, // Default color
+      : isSelected
+      ? theme.palette.error.main
+      : theme.palette.primary.main,
 
   color: theme.palette.common.white,
-  "&:hover": {
-    backgroundColor:
-      isCorrect && hasSelectedAnswer
-        ? theme.palette.success.dark
-        : isSelected
-          ? theme.palette.error.dark
-          : theme.palette.primary.dark,
-    transform: "scale(1.03)",
-    boxShadow: theme.shadows[4],
+  border: `2px solid ${
+    isCorrect && hasSelectedAnswer
+      ? theme.palette.success.light
+      : isSelected
+      ? theme.palette.error.light
+      : "transparent"
+  }`,
+  boxShadow: hasSelectedAnswer
+    ? isCorrect
+      ? `0 0 15px ${theme.palette.success.light}`
+      : isSelected
+      ? `0 0 15px ${theme.palette.error.light}`
+      : "none"
+    : "none",
+
+  transform: hasSelectedAnswer
+    ? isCorrect
+      ? "scale(1.05)"
+      : isSelected
+      ? "rotate(-2deg)"
+      : "none"
+    : "none",
+
+  animation: hasSelectedAnswer
+    ? isCorrect
+      ? "correctBounce 0.5s ease"
+      : isSelected
+      ? "incorrectShake 0.5s ease"
+      : "none"
+    : "none",
+
+  transition: theme.transitions.create(
+    ["background-color", "transform", "box-shadow", "border"],
+    { duration: theme.transitions.duration.short }
+  ),
+
+  "@keyframes correctBounce": {
+    "0%": { transform: "scale(1)" },
+    "50%": { transform: "scale(1.15)" },
+    "100%": { transform: "scale(1.05)" },
   },
-  transition: theme.transitions.create(["background-color", "transform", "box-shadow"], {
-    duration: theme.transitions.duration.short,
-  }),
-}))
+  "@keyframes incorrectShake": {
+    "0%": { transform: "translateX(0)" },
+    "20%": { transform: "translateX(-5px)" },
+    "40%": { transform: "translateX(5px)" },
+    "60%": { transform: "translateX(-5px)" },
+    "80%": { transform: "translateX(5px)" },
+    "100%": { transform: "translateX(0)" },
+  },
+}));
 
 export const ImageContainer = styled(Box)(({ theme }) => ({
   display: "flex",

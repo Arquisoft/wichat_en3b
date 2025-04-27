@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, Button, Snackbar, Checkbox, FormControlLabel, Box, Paper, alpha } from '@mui/material';
 import { NavLink, useLocation, useNavigate } from 'react-router';
@@ -10,7 +10,7 @@ import CustomTextField from '../CustomTextField'; // Import the external CustomT
 import { grey } from '@mui/material/colors';
 
 const Login = () => {
-  const { setAuth, persist, setPersist } = useAuth();
+  const { auth, setAuth, persist, setPersist } = useAuth();
   const axios = useAxios();
   const navigate = useNavigate();
   const from = useLocation().state?.from.pathname || "/home";
@@ -33,6 +33,12 @@ const Login = () => {
     registerHere: "registerHere",
     loginQuestion: "loginQuestion",
   };
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (auth.username)
+      navigate("/home", { replace: true });
+  }, [auth, navigate]);
 
   const loginUser = async () => {
     try {

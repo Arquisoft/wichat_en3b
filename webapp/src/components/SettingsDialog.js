@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, Container, DialogActions, Button, IconButton, Typo
 import { Check, Close, ExpandMore } from '@mui/icons-material';
 import LanguageSelect from './LanguageSelect';
 import useTheme from '../hooks/useTheme';
-
+import { useTranslation } from "react-i18next"
 const SettingsDialog = ({ open, onClose }) => {
   const [llmModel, setLlmModel] = useState(localStorage.getItem('llmModel') || 'mistral');
   const { theme, themes, selectTheme } = useTheme();
@@ -14,10 +14,12 @@ const SettingsDialog = ({ open, onClose }) => {
     onClose();
   };
 
+  const { t } = useTranslation();
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        Settings
+      <DialogTitle data-testid = "settings" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {t("settings")}
         <IconButton onClick={onClose} size="small" aria-label="Close">
           <Close />
         </IconButton>
@@ -28,13 +30,13 @@ const SettingsDialog = ({ open, onClose }) => {
       <Container sx={{ py: 2, display: "flex", flexDirection: "column", gap: 2 }}>
         {/* Language */}
         <Box>
-          <Typography variant="subtitle1" sx={{ mb: 1 }}>🌐 Language</Typography>
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>🌐 {t("language")}</Typography>
           <LanguageSelect />
         </Box>
 
         {/* Theme */}
         <Box>
-          <Typography variant="subtitle1">🎨 Theme</Typography>
+          <Typography variant="subtitle1" data-testid = "theme">🎨 {t("theme")}</Typography>
           <Box sx={{ display: 'flex', overflowX: 'auto', gap: 2, p: 1 }}>
             {Object.keys(themes).map((themeOption) => {
               const primaryColor = themes[themeOption].palette.primary.main;
@@ -89,13 +91,13 @@ const SettingsDialog = ({ open, onClose }) => {
       {/* Advanced Settings */}
       <Accordion disableGutters elevation={0} sx={{ backgroundColor: 'transparent' }}>
         <AccordionSummary expandIcon={<ExpandMore />}>
-          <Typography variant="subtitle1">⚙️ Advanced Settings</Typography>
+          <Typography variant="subtitle1" data-testid="advancedSettings">⚙️ {t("advancedSettings")}</Typography>
         </AccordionSummary>
         <Divider />
         <Container sx={{ py: 2, display: "flex", flexDirection: "column", gap: 2 }}>
           {/* LLM Model */}
           <Box>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>🧠 LLM Model</Typography>
+            <Typography variant="subtitle2" data-testid = "llmModel" sx={{ mb: 1 }}>🧠 {t("llmModel")}</Typography>
             <FormControl fullWidth size="small">
               <Select
                 value={llmModel}
@@ -104,6 +106,7 @@ const SettingsDialog = ({ open, onClose }) => {
               >
                 <MenuItem value="mistral">Mistral</MenuItem>
                 <MenuItem value="qwen">Qwen</MenuItem>
+                <MenuItem value="gemini">Gemini</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -113,10 +116,10 @@ const SettingsDialog = ({ open, onClose }) => {
       <Divider />
       <DialogActions>
         <Button onClick={onClose} color="text.primary">
-          Cancel
+          {t("cancel")}
         </Button>
         <Button onClick={handleSave} variant="contained" color="primary">
-          Save
+          {t("save")}
         </Button>
       </DialogActions>
     </Dialog>
