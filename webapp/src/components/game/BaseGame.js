@@ -294,6 +294,20 @@ const BaseGame = React.forwardRef(({
                 Audience Call - 150 🪙 {isTrue("AskAudience") && "(Used)"}
               </LifelineButton>
 
+              <LifelineButton
+                variant="contained"
+                startIcon={<InterpreterMode />}
+                onClick={() => {
+                  console.log("CallFriend");
+                  handleCallFriend();
+                }}
+                disabled={isTrue("CallFriend")}
+                isUsed={isTrue("CallFriend")}
+                colorVariant="red"
+              >
+                Call a Friend {isTrue("CallFriend") && "(Used)"}
+              </LifelineButton>
+
               {isTrue("CallFriend") && (<CallFriend
                 open={isTrue("CallFriendOpen")}
                 onClose={handleCloseCallFriend}
