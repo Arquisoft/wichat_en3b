@@ -7,6 +7,9 @@ import Home from "./Home";
 import useAxios from "../hooks/useAxios";
 import useAuth from "../hooks/useAuth";
 import { ThemeProvider } from "../context/ThemeContext";
+import { I18nextProvider } from "react-i18next";
+import i18n from "../utils/i18n";
+
 
 // Mock the hooks
 jest.mock("../hooks/useAxios", () => jest.fn());
@@ -43,9 +46,11 @@ describe("Home component", () => {
   it("should render the home and show the welcome message", async () => {
     render(
       <ThemeProvider>
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
+        <I18nextProvider i18n={i18n}>
+          <MemoryRouter>
+            <Home />
+          </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
 
@@ -57,13 +62,15 @@ describe("Home component", () => {
   it("should navigate to the game topic page when 'Play A Game Now' is clicked", async () => {
     render(
       <ThemeProvider>
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
+        <I18nextProvider i18n={i18n}>
+          <MemoryRouter>
+            <Home />
+          </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
 
-    const playButton = screen.getByText(/Play A Game Now/i);
+    const playButton = screen.getByTestId("play-button");
     fireEvent.click(playButton);
 
     expect(mockNavigate).toHaveBeenCalledWith("/gametopic");
@@ -72,14 +79,16 @@ describe("Home component", () => {
   it("should render the tabs and allow switching between them", async () => {
     render(
       <ThemeProvider>
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
+        <I18nextProvider i18n={i18n}>
+          <MemoryRouter>
+            <Home />
+          </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
 
     const statsTab = screen.getByText(/Your Stats/i);
-    const rankingsTab = screen.getByText(/Rankings/i);
+    const rankingsTab = screen.getByTestId("ranking");
 
     expect(statsTab).toBeInTheDocument();
     expect(rankingsTab).toBeInTheDocument();
@@ -113,14 +122,16 @@ describe("Home component", () => {
   
     render(
       <ThemeProvider>
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
+        <I18nextProvider i18n={i18n}>
+          <MemoryRouter>
+            <Home />
+          </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
   
     // Navigate to the rankings tab
-    const rankingsTab = screen.getByText(/Rankings/i);
+    const rankingsTab = screen.getByTestId("ranking");
     fireEvent.click(rankingsTab);
   
     await waitFor(() => {
@@ -137,9 +148,9 @@ describe("Home component", () => {
     });
   
     // Find the gamesPlayed tab specifically among all tabs
-    const gamesPlayedTab = screen.getAllByRole('tab').find(tab => /gamesPlayed/i.test(tab.textContent));
+    const gamesPlayedTab = screen.getAllByRole('tab').find(tab => tab.getAttribute('data-testid') === 'gamesPlayed');
     fireEvent.click(gamesPlayedTab);
-    
+
     await waitFor(() => {
       expect(screen.getByText(/20 games/i)).toBeInTheDocument();
     });

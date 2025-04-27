@@ -107,7 +107,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
         workdir: llmservice
-        buildargs: LLM_API_KEY=${{ secrets.LLM_API_KEY }}
+        buildargs: LLM_API_KEY=${{ secrets.LLM_API_KEY }}, GEMINI_LLM_API_KEY=${{ secrets.GEMINI_LLM_API_KEY }}
         platforms: linux/arm64
 
   docker-push-questionservice:

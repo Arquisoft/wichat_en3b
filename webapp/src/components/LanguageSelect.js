@@ -9,6 +9,8 @@ const LanguageSelect = () => {
   const handleChange = (event) => {
     const selectedLanguage = event.target.value;
     i18n.changeLanguage(selectedLanguage); // This triggers the language change
+
+    localStorage.setItem('language', selectedLanguage); // Store the selected language in local storage
   };
 
   return (

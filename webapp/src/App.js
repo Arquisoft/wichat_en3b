@@ -2,7 +2,7 @@
 
 import { Container, Typography, Button, Box, Paper, Grid } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { Outlet, NavLink } from "react-router"
+import { Outlet, useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import logInPic from "./components/photos/homeLogo.png";
@@ -82,12 +82,12 @@ const LoginButton = styled(ActionButton)(({ theme }) => ({
   },
 }))
 
-const StyledNavLink = styled(NavLink)({
+const StyledForm = styled('form')({
   textDecoration: "none",
   width: "100%",
   display: "flex",
-  justifyContent: "center",
-})
+  justifyContent: "center"
+});
 
 const SpeechBubble = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -109,7 +109,6 @@ const SpeechBubble = styled(Box)(({ theme }) => ({
     borderStyle: "solid",
     borderColor: `${theme.palette.primary.main} transparent transparent transparent`,
   },
-
 }));
 
 const TitleTypography = styled(Typography)(({ theme }) => ({
@@ -122,6 +121,12 @@ const TitleTypography = styled(Typography)(({ theme }) => ({
 
 function App() {
   const {t} = useTranslation();
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate("/login");
+  };
 
   return (
     <Container maxWidth="sm">
@@ -130,7 +135,7 @@ function App() {
           <TitleTypography component="h1" variant="h4">
             WICHAT
           </TitleTypography>
-          <SpeechBubble variant="h5" color="textSecondary" gutterBottom>
+          <SpeechBubble variant="h5" color="textSecondary">
             {t("welcomeMsg")}
           </SpeechBubble>
           <BouncingImage src={logInPic} alt="Bouncing Icon" />
@@ -138,11 +143,11 @@ function App() {
         
         <Grid container sx={{ mt: 2 }}>
           <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
-            <StyledNavLink to="/login">
-              <LoginButton variant="contained" startIcon={<CelebrationIcon />}>
-                Start the fun!
+            <StyledForm onSubmit={handleSubmit}> 
+              <LoginButton type ="submit" variant="contained" startIcon={<CelebrationIcon />}>
+                {t("welcomeButton")}
               </LoginButton>
-            </StyledNavLink>
+            </StyledForm>
           </Grid>
         </Grid>
         

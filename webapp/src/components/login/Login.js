@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, Button, Snackbar, Checkbox, FormControlLabel, Box, Paper, alpha } from '@mui/material';
 import { NavLink, useLocation, useNavigate } from 'react-router';
@@ -10,7 +10,7 @@ import CustomTextField from '../CustomTextField'; // Import the external CustomT
 import { grey } from '@mui/material/colors';
 
 const Login = () => {
-  const { setAuth, persist, setPersist } = useAuth();
+  const { auth, setAuth, persist, setPersist } = useAuth();
   const axios = useAxios();
   const navigate = useNavigate();
   const from = useLocation().state?.from.pathname || "/home";
@@ -33,6 +33,12 @@ const Login = () => {
     registerHere: "registerHere",
     loginQuestion: "loginQuestion",
   };
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (auth.username)
+      navigate("/home", { replace: true });
+  }, [auth, navigate]);
 
   const loginUser = async () => {
     try {
@@ -69,43 +75,45 @@ const Login = () => {
             {t(labels.loginStartMsg)}
           </Typography>
 
-          <CustomTextField
-            name="username"
-            labelKey={labels.username}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <CustomTextField
-            name="password"
-            labelKey={labels.password}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-          />
+          <form onSubmit={(e) => { e.preventDefault(); loginUser(); }}> {/* Wrap inputs and button in a form */}
+    <CustomTextField
+      name="username"
+      labelKey={labels.username}
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+    />
+    <CustomTextField
+      name="password"
+      labelKey={labels.password}
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      type="password"
+    />
 
-          <FormControlLabel
-            control={<Checkbox onChange={togglePersist} checked={persist} />}
-            label={t(labels.rememberMe)}
-            sx={{ mb: 2 }}
-          />
+    <FormControlLabel
+      control={<Checkbox onChange={togglePersist} checked={persist} />}
+      label={t(labels.rememberMe)}
+      sx={{ mb: 2 }}
+    />
 
-          <Button
-            fullWidth
-            variant="contained"
-            onClick={loginUser}
-            data-testid="login-submit"
-            sx={{
-              mt: 1,
-              fontWeight: 'bold',
-              backgroundColor: 'primary.main',
-              color: 'primary.contrastText',
-              '&:hover': {
-                backgroundColor: 'primary.dark', 
-              },
-            }}
-          >
-            🔓 {t(labels.login)}
-          </Button>
+    <Button
+      fullWidth
+      type="submit" // Ensure the button is a submit button
+      variant="contained"
+      data-testid="login-submit"
+      sx={{
+        mt: 1,
+        fontWeight: 'bold',
+        backgroundColor: 'primary.main',
+        color: 'primary.contrastText',
+        '&:hover': {
+          backgroundColor: 'primary.dark',
+        },
+      }}
+    >
+      🔓 {t(labels.login)}
+    </Button>
+  </form>
 
           <Typography component="div" align="center" sx={{ marginTop: 3 }}>
             <NavLink to="/signup" data-testid="register-link">
