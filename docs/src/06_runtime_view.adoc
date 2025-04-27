@@ -46,7 +46,6 @@ Data must be valid and not collide with some account that already exists.
 
 [plantuml,"SignUp",png]
 ----
-
 actor User #lightgreen
 participant WebApp
 participant Gateway
@@ -72,8 +71,6 @@ loop #lightblue Until a new user is added or going back to Login
         WebApp --> User: Show errors and retry filling the fields
     end
 end
-
-
 ----
 
 
@@ -83,33 +80,33 @@ The user wants to log in with an account that has already been created.
 
 [plantuml,"LogIn",png]
 ----
-actor User
+actor User #lightgreen
 participant WebApp
+participant Gateway
 participant AuthService
 database DataBase
 
 User --> WebApp: Select to log in
 
-loop Until user enters valid credentials and exists
+loop #lightblue Until user enters valid credentials and exists
 
     WebApp --> User: Show login fields
-    User --> WebApp: Fill login fields and press LogIn
-    WebApp --> AuthService: Validate credentials
+    User --> WebApp: Fill login fields and press Login
+    WebApp --> Gateway: Request log in
+    Gateway --> AuthService: Send credentials
     AuthService --> DataBase: Validate credentials
     DataBase --> DataBase: Validate
     DataBase --> AuthService: Response
-    AuthService --> WebApp: Response
+    AuthService --> Gateway: Response
+    Gateway --> WebApp: Response
     
-    
-    alt Credentials are incorrect or user does not exist
+    alt #red Credentials are incorrect or user does not exist
         WebApp --> User: Show errors and try again
     end
     
-    alt Credentials are authenticated
+    alt #green Credentials are authenticated
         WebApp --> WebApp: Goes to the home page for users
-    end
-    
-    
+    end    
 end
 ----
 
