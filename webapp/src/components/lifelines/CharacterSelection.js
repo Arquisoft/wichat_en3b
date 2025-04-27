@@ -1,73 +1,101 @@
+import React, { useMemo } from "react";
+import { Box, Avatar, Typography, Card, CardActionArea, useTheme } from "@mui/material";
 
-import React from 'react';
-import { Button, Box, Typography, Card, CardContent, CardActions } from '@mui/material';
-import { green, blue, purple, red } from '@mui/material/colors';
+// Big pool of characters
+const sampleCharacters = [
+  { name: "Alex", confidence: 0.9, price: 200 },
+  { name: "Hannah", confidence: 0.8, price: 180 },
+  { name: "Jamie", confidence: 0.6, price: 140 },
+  { name: "Gracie", confidence: 0.3, price: 100 },
+  { name: "Charlie", confidence: 0.95, price: 220 },
+  { name: "Taylor", confidence: 0.75, price: 170 },
+  { name: "Jordan", confidence: 0.5, price: 130 },
+  { name: "Morgan", confidence: 0.4, price: 120 },
+  { name: "Skyler", confidence: 0.2, price: 90 },
+  { name: "Riley", confidence: 0.85, price: 190 },
+  { name: "Quinn", confidence: 0.65, price: 150 },
+  { name: "Casey", confidence: 0.55, price: 135 },
+  { name: "Peyton", confidence: 0.35, price: 110 },
+  { name: "Finley", confidence: 0.25, price: 95 },
+  { name: "Avery", confidence: 0.15, price: 80 },
+];
 
 const CharacterSelection = ({ onSelectCharacter }) => {
-  const characters = [
-    { name: "Alex", confidence: 0.8, price: 1000, color: green[400] },
-    { name: "Casey", confidence: 0.6, price: 750, color: blue[400] },
-    { name: "Taylor", confidence: 0.4, price: 500, color: purple[400] },
-    { name: "Dave", confidence: 0.2, price: 350, color: red[400] },
-  ];
+  const theme = useTheme();
+
+  // Pick 4 different confidence ranges
+  const displayedCharacters = useMemo(() => {
+    const high = sampleCharacters.filter(c => c.confidence >= 0.8);
+    const mediumHigh = sampleCharacters.filter(c => c.confidence >= 0.6 && c.confidence < 0.8);
+    const mediumLow = sampleCharacters.filter(c => c.confidence >= 0.4 && c.confidence < 0.6);
+    const low = sampleCharacters.filter(c => c.confidence < 0.4);
+
+    const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    return [
+      pickRandom(high),
+      pickRandom(mediumHigh),
+      pickRandom(mediumLow),
+      pickRandom(low)
+    ];
+  }, []);
 
   return (
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "repeat(2, 1fr)", // Creates 2 columns
-        gap: 3, // Adds space between the cards
+        gridTemplateColumns: "1fr 1fr",
+        gap: 2,
         p: 2,
-        justifyContent: "center",
-        alignItems: "center",
       }}
     >
-      {characters.map((character) => (
+      {displayedCharacters.map((character, index) => (
         <Card
-          key={character.name}
+          key={index}
+          elevation={3}
           sx={{
-            width: 250,
-            textAlign: "center",
-            bgcolor: character.color,
-            borderRadius: 2,
-            boxShadow: 3, // Adds a subtle shadow to the card for a more elevated look
-            transition: "transform 0.3s ease, box-shadow 0.3s ease", // Smooth hover transition for the card
+            borderRadius: 4,
+            background: `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.background.default})`,
+            transition: "transform 0.2s",
             "&:hover": {
-              transform: "scale(1.05)", // Scales up the card on hover
-              boxShadow: 6, // Adds a more prominent shadow on hover
-            },
+              transform: "scale(1.05)",
+              boxShadow: theme.shadows[6],
+            }
           }}
         >
-          <CardContent sx={{ color: "white", p: 3 }}>
-            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
-              {character.name}
-            </Typography>
-            <Typography variant="body2" sx={{ fontStyle: "italic", mb: 1 }}>
-              Confidence: {Math.round(character.confidence * 100)}%
-            </Typography>
-            <Typography variant="body2" sx={{ fontWeight: "bold", color: "gold" }}>
-              Price: {character.price}🪙
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ justifyContent: "center", pb: 3 }}>
-            <Button
-              size="small"
+          <CardActionArea onClick={() => onSelectCharacter(character)} sx={{ p: 2 }}>
+            <Box
               sx={{
-                color: "white",
-                borderColor: "white",
-                "&:hover": {
-                  bgcolor: "rgba(255, 255, 255, 0.2)",
-                  borderColor: "white",
-                },
-                fontWeight: "bold",
-                paddingX: 3,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 1,
               }}
-              variant="outlined"
-              onClick={() => onSelectCharacter(character)}
             >
-              Select
-            </Button>
-          </CardActions>
+              <Avatar
+                src={character.avatar}
+                alt={character.name}
+                sx={{
+                  width: 64,
+                  height: 64,
+                  bgcolor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                  fontSize: "1.5rem",
+                }}
+              >
+                {!character.avatar && character.name.charAt(0)}
+              </Avatar>
+              <Typography variant="body1" fontWeight="bold" color="text.primary">
+                {character.name}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Confidence: {(character.confidence * 100).toFixed(0)}%
+              </Typography>
+              <Typography variant="body1" fontWeight="bold" color="secondary" mt={1}>
+                💰 {character.price} coins
+              </Typography>
+            </Box>
+          </CardActionArea>
         </Card>
       ))}
     </Box>
