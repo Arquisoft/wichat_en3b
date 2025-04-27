@@ -72,9 +72,9 @@ endif::arc42help[]
 @startuml
 
 storage {
-  actor user
-  rectangle Wikidata
-  rectangle LLM
+  actor user #lightgreen
+  rectangle Wikidata #orange
+  rectangle LLM #orange
   node WIChat
 }
 
