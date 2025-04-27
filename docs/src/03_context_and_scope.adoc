@@ -86,10 +86,10 @@ Backend ..> LLM : Asks for hints
 |===
 |Communication Partners | Input | Output
 |User | The user sees the web application in real time and makes decisions accordingly.|Performs actions on the application such as answering a question, using a wildcard or asking a question to a chatbot.
-|WebApp |Receives user inputs and data from backend services.|Updates the interface to show to the user.
-|Gateway Service |Takes actions from users received from the web application.|Sends the requests to the corresponding endpoints.
-|Question Service|Receives a query about a theme or category.|Returns a page corresponding to the given query.
-|LLM Service|Gets relevant information about the question the user has to answer.|Interacts or answers the user in several ways, depending on the used wildcard.
+|WebApp (frontend) |Receives user inputs and data from backend services.|Updates the interface to show to the user.
+|Gateway Service (backend) |Takes actions from users received from the web application.|Sends the requests to the corresponding endpoints.
+|Question Service (backend) |Receives a query about a theme or category.|Returns a page corresponding to the given query.
+|LLM Service (backend) |Gets relevant information about the question the user has to answer.|Interacts or answers the user in several ways, depending on the used wildcard.
 |===
 
 === Technical Context
@@ -117,7 +117,7 @@ endif::arc42help[]
 actor User #lightgreen
 
 rectangle Docker #lightblue {
-    rectangle WebApp #pink
+    rectangle Frontend #pink
     rectangle Gateway
     rectangle Backend #pink
     database Database
@@ -128,8 +128,8 @@ cloud "External services" #orange {
     rectangle LLM
 }
 
-User <-> WebApp : HTTP
-WebApp <-> Gateway
+User <-> Frontend : HTTP
+Frontend <-> Gateway
 Gateway <-> Backend
 Backend <-> Database : MongoDB
 Backend <..> Wikidata : SPARQL
@@ -141,9 +141,9 @@ Backend <..> LLM
 [options="header",cols="1,2"]
 |===
 |Communication Partners|Explanation
-|WebApp |The user can play the game using Internet, via HTTP.
+|WebApp (frontend) |The user can play the game using Internet, via HTTP.
 |Gateway Service |Manages the requests and redirects them to the respective APIs.
 |Database |MongoDB database for storing users information and the required information about the answers and distractors of the question, each of them with an image.
-|Question Service |Data is obtained throught SPARQL queries and stored in the database due to this service. Furthermore, each round of the game, the four options (and the image of the correct one) are requested to this service, which takes them randomly from the database according with the selected topic/s.
-|LLMService |Gives relevant hints about the question the user has to answer.
+|Question Service (backend) |Data is obtained throught SPARQL queries and stored in the database due to this service. Furthermore, each round of the game, the four options (and the image of the correct one) are requested to this service, which takes them randomly from the database according with the selected topic/s.
+|LLMService (backend) |Gives relevant hints about the question the user has to answer.
 |===
