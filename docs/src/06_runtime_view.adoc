@@ -47,25 +47,28 @@ Data must be valid and not collide with some account that already exists.
 [plantuml,"SignUp",png]
 ----
 
-actor User
+actor User #lightgreen
 participant WebApp
+participant Gateway
 participant UserService
 database DataBase
 
 
 User --> WebApp: Select to sign up
 
-loop Until a new user is added or going back to LogIn
+loop #lightblue Until a new user is added or going back to Login 
     WebApp --> User: Show sign up fields
     User --> WebApp: Fill sign up fields and press add user
-    WebApp --> UserService: Validate sign up fields
+    WebApp --> Gateway: Request sign up
+    Gateway --> UserService: Validate and process sign up
     UserService --> DataBase: Check that user does not exist
     DataBase --> DataBase: Save the new user
     DataBase --> UserService: Response 
-    UserService --> WebApp: Response
+    UserService --> Gateway: Response
+    Gateway --> WebApp: Response
     WebApp --> User: Informs that the user is correctly added
 
-    alt Validations are incorrect or user already exists
+    alt #red Validations are incorrect or user already exists
         WebApp --> User: Show errors and retry filling the fields
     end
 end
