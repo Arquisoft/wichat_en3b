@@ -58,7 +58,7 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
   };
 
   const handleUseChat = () => {
-    if (useChatUsed || !roundData || !spendCoins(200)) return
+    if (useChatUsed || !roundData || !spendCoins(25)) return
     
     // Implement logic to use the chat
 

@@ -303,7 +303,7 @@ const BaseGame = React.forwardRef(({
                 }}
                 disabled={isTrue("CallFriend")}
                 isUsed={isTrue("CallFriend")}
-                colorVariant="red"
+                colorVariant="green"
               >
                 Call a Friend {isTrue("CallFriend") && "(Used)"}
               </LifelineButton>
@@ -386,7 +386,8 @@ const BaseGame = React.forwardRef(({
 
         {/* Right Side (Chat) */}
         <Grid item xs={12} md={3}>
-          {roundData && <PhoneDialog key={chatKey} roundData={roundData} />}
+
+          {roundData && <PhoneDialog key={chatKey} roundData={roundData} coins = {coins}/>}
         </Grid>
       </Grid>
 

@@ -8,7 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import FriendChat from "./FriendChat"; 
 import lockedBackgroundImage from "../photos/lockedPic.png";
 
-const PhoneDialog = ({ onClose, chatKey, roundData }) => {
+const PhoneDialog = ({ onClose, chatKey, roundData , coins}) => {
   const [view, setView] = useState("locked");
   const [selectedContact, setSelectedContact] = useState(null);
   const [calling, setCalling] = useState(false);
@@ -55,6 +55,11 @@ const PhoneDialog = ({ onClose, chatKey, roundData }) => {
   }, []);
 
   const handleUnlock = () => {
+    coins -= 25; // Deduct coins for unlocking
+    if (coins < 0) {
+      alert("Not enough coins to unlock the phone.");
+      return;
+    }
     setView("contacts");
   };
 
@@ -143,7 +148,7 @@ const PhoneDialog = ({ onClose, chatKey, roundData }) => {
             Your phone is locked now
           </Typography>
           <Typography variant="subtitle1" sx={{ opacity: 0.8 }}>
-            Tap the button below to unlock and access your contacts. Unlocking will cost you X coins.
+            Tap the button below to unlock and access your contacts. Unlocking will cost you 25 coins.
           </Typography>
           <Button
             variant="contained"
