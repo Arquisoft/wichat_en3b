@@ -145,7 +145,7 @@ const BaseGame = React.forwardRef(({
       const endGame = async () => {
         try {
           // Calculate earned coins based on score
-          const earnedCoins = Math.round(score * 0.3);
+          const earnedCoins = Math.round(score * 0.5);
           await updateUserCoins(earnedCoins);
           await axios.post("/addgame", { username: auth.username, mode, questions });
         } catch (error) {
