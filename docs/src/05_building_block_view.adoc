@@ -199,19 +199,19 @@ skinparam nodeStyle rectangle
 skinparam artifactStyle rectangle
 skinparam databaseStyle cylinder
 
-actor "User" as user
+actor "User" as user #lightgreen
 
-node "Device" as browser {
+node "Device" as browser #lightgreen {
   node "Web browser" as wb
 }
 
-cloud "Server" as server {
-  node "Docker" as docker {
-    folder "Frontend" as frontend {
+cloud "Server" as server #lightyellow {
+  node "Docker" as docker #lightblue {
+    folder "Frontend" as frontend #pink {
       node "WebApp (GameService)" as Web
     }
     node "GatewayService" as Gateway
-      folder "Backend" as backend {
+      folder "Backend" as backend #pink {
         node "Users" as users {
           artifact "AuthService" as Auth
           artifact "UserService" as User
@@ -223,7 +223,7 @@ cloud "Server" as server {
   }
 }
 
-cloud "External Services" as ext {
+cloud "External Services" as ext #orange {
   node "LLM" as LLM
   node "Wikidata" as Wikidata
 }
