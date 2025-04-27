@@ -73,8 +73,10 @@ endif::arc42help[]
 
 storage {
   actor user #lightgreen
-  rectangle Wikidata #orange
-  rectangle LLM #orange
+  cloud "External services" #orange {
+      rectangle Wikidata 
+      rectangle LLM 
+  }
   node WIChat
 }
 
@@ -159,8 +161,10 @@ rectangle Docker #lightblue {
     database Database
 }
 
-rectangle Wikidata #orange
-rectangle LLM #orange
+cloud "External services" #orange {
+    rectangle Wikidata 
+    rectangle LLM 
+}
 
 User <-> Web
 Web <-> Gateway
