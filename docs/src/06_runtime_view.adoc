@@ -155,23 +155,26 @@ The application has a chatbot which can give hints during a round in the game, u
 
 [plantuml,"Hints",png]
 ----
-
-actor User
+actor User #lightgreen
 participant WebApp
+participant Gateway
 participant LLMService
 
 User --> WebApp: Ask for a Hint on the ChatBot
-WebApp --> LLMService: Send the initial prompt
-LLMService --> WebApp: Returns an answer and is printed
-loop Maintain a conversation
+WebApp --> Gateway: Send the initial prompt
+Gateway --> LLMService: Pass the prompt to the LLM
+LLMService --> Gateway: Returns an answer 
+Gateway --> WebApp: The answer is printed
+
+loop #lightblue Maintain a conversation
     User --> WebApp: Ask more hints
-    WebApp --> LLMService: Sends the message by the user
-    LLMService --> WebApp: Send an answer
+    WebApp --> Gateway: Send message from the user
+    Gateway --> LLMService: Pass the message to the LLM
+    LLMService --> Gateway: Returns an answer
+    Gateway --> WebApp: Send the answer to the user
     WebApp --> User: Show the hint from the LLM
 end
-
 ----
-
 
 
 === Show statistics
