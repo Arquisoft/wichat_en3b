@@ -3,9 +3,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('./auth-model');
-const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const { check, matchedData, validationResult } = require('express-validator');
+const { check, validationResult } = require('express-validator');
 const app = express();
 const port = 8002;
 
@@ -16,6 +15,9 @@ app.use(cookieParser());
 // Connect to MongoDB
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
 mongoose.connect(mongoUri);
+
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "accessTokenSecret";
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "refreshTokenSecret";
 
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
@@ -48,8 +50,8 @@ app.post('/login', [
     }
 
     // Generate JWT tokens
-    const accessToken = jwt.sign({ userId: user._id, username: username, role: user.role }, "accessTokenSecret", { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ userId: user._id, username: username, role: user.role }, "refreshTokenSecret", { expiresIn: '7d' });
+    const accessToken = jwt.sign({ userId: user._id, username: username, role: user.role }, accessTokenSecret, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ userId: user._id, username: username, role: user.role }, refreshTokenSecret, { expiresIn: '7d' });
 
     user.refreshToken = refreshToken;
     await user.save();
@@ -72,7 +74,7 @@ app.post("/logout", async (req, res) => {
 // Used to check the validity of the token
 app.get("/refresh", async (req, res) => {
   const cookies = req.cookies;
-  if (!cookies.jwt) return res.status(401).json({ error: "Unauthorized" });
+  if (!cookies.jwt) return res.status(403).json({ error: "Forbidden" });
   const refreshToken = cookies.jwt;
 
   const user = await User.findOne({ refreshToken }).exec();
@@ -83,7 +85,7 @@ app.get("/refresh", async (req, res) => {
     (err, decoded) => {
       if (err || user.username !== decoded.username) return res.status(403).json({ error: "Forbidden" });
 
-      const accessToken = jwt.sign({ userId: user._id, username: user.username }, "accessTokenSecret", { expiresIn: '15m' });
+      const accessToken = jwt.sign({ userId: user._id, username: user.username, role: user.role }, accessTokenSecret, { expiresIn: '15m' });
       res.status(200).json({ username: user.username, accessToken });
     }
   );

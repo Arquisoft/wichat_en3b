@@ -55,7 +55,6 @@
     "gameTopic": "Game Topic",
     "readyToPlay": "Ready to play?",
     "chooseGameTopicMsg": "Choose the type of game you want and start playing!",
-    "playNow": "Play a game now"
-
-    
+    "playNow": "Play a game now",
+    "rankingBy": "Ranking by"    
 }

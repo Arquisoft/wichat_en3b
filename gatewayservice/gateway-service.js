@@ -16,6 +16,7 @@ const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost
 const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
+const grafanaUrl = process.env.GRAFANA_URL || 'http://localhost:9091';
 
 // Read the OpenAPI YAML file synchronously
 openapiPath = './openapi.yaml'
@@ -53,7 +54,7 @@ const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
   if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
   const token = authHeader.split(' ')[1];
-  jwt.verify(token, "accessTokenSecret", (err, decoded) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "accessTokenSecret", (err, decoded) => {
     if (err) return res.status(403).json({ error: 'Invalid token' });
     req.user = decoded.username;
     req.role = decoded.role;
@@ -77,6 +78,7 @@ app.post('/login', async (req, res) => {
 
     res.json(authResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -92,6 +94,7 @@ app.post('/logout', async (req, res) => {
 
     res.json(authResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -102,6 +105,7 @@ app.get("/refresh", async (req, res) => {
     const authResponse = await axios.get(authServiceUrl + '/refresh', { withCredentials: true, headers: { ...req.headers } });
     res.json(authResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -112,6 +116,7 @@ app.post('/adduser', async (req, res) => {
     const userResponse = await axios.post(userServiceUrl + '/adduser', req.body);
     res.json(userResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -125,6 +130,7 @@ app.post('/askllm', async (req, res) => {
     const llmResponse = await axios.post(llmServiceUrl + '/ask', req.body);
     res.json(llmResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -143,6 +149,7 @@ app.get('/getRound', async (req, res) => {
 
     res.json(roundResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal server error' });
   }
 });
@@ -152,6 +159,7 @@ app.get('/getTopics', async (req, res) => {
     const topicsResponse = await axios.get(questionServiceUrl + '/getTopics');
     res.json(topicsResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -161,6 +169,7 @@ app.get('/getAvailableTopics', async (req, res) => {
     const availabilityResponse = await axios.get(questionServiceUrl + '/getAvailableTopics');
     res.json(availabilityResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Unknown error' });
   }
 });
@@ -170,6 +179,7 @@ app.post('/addgame', async (req, res) => {
     const gameResponse = await axios.post(userServiceUrl + '/addgame', req.body);
     res.json(gameResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -184,6 +194,7 @@ app.get('/userstats', async (req, res) => {
 
     res.json(statsResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -193,6 +204,7 @@ app.get('/usercoins/:username', async (req, res) => {
     const coinsResponse = await axios.get(userServiceUrl + '/usercoins/' + req.params.username);
     res.json(coinsResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -202,6 +214,7 @@ app.post('/updatecoins', async (req, res) => {
     const updateResponse = await axios.post(userServiceUrl + '/updatecoins', req.body);
     res.json(updateResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -211,6 +224,7 @@ app.get('/games/:username', async (req, res) => {
     const gamesResponse = await axios.get(userServiceUrl + '/games/' + req.params.username);
     res.json(gamesResponse.data);
   } catch (error) {
+    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
