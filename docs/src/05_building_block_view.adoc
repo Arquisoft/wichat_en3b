@@ -150,19 +150,21 @@ endif::arc42help[]
 ----
 @startuml
 
-actor User
+actor User #lightgreen
 
-rectangle WiChat {
-    rectangle "Frontend" as Web
-    rectangle "Backend" as Backend
+rectangle Docker #lightblue {
+    rectangle "Frontend" as Web #pink
+    rectangle "GateWay" as Gateway 
+    rectangle "Backend" as Backend #pink
     database Database
 }
 
-rectangle Wikidata
-rectangle LLM
+rectangle Wikidata #orange
+rectangle LLM #orange
 
 User <-> Web
-Web <-> Backend
+Web <-> Gateway
+Gateway <-> Backend
 Backend <-> Database
 Backend ..> Wikidata
 Backend ..> LLM
@@ -174,6 +176,7 @@ Backend ..> LLM
 |===
 | **Name** | **Responsibility**
 | **Frontend** | Manages user interaction and presentation.
+| **Gateway"" | Manages interaction between frontend and backend.
 | **Backend** | Handles logic, coordination, and communication between the frontend, database, and external services.
 | **Database Layer** | Provides secure and efficient storage and retrieval of data for the application.
 |===
