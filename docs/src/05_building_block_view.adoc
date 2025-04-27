@@ -85,11 +85,10 @@ skinparam node {
   FontSize 18
 }
 
-user -right-> WIChat : Interacts
+user -right-> brAIn : Interacts
 
-Wikidata -down-> WIChat : Asks for\ninfo
-WIChat -up-> Wikidata : Retrieves\ninfo
-LLM <-left-> WIChat : Chat
+brAIn <--> Wikidata: Ask/retrieve \ninfo
+LLM <--> brAIn : Chat
 
 @enduml
 ----
@@ -182,7 +181,7 @@ Backend ..> LLM
 | **Frontend** | Manages user interaction and presentation.
 | **Gateway** | Manages interaction between frontend and backend.
 | **Backend** | Handles logic, coordination, and communication between the frontend, database, and external services.
-| **Database Layer** | Provides secure and efficient storage and retrieval of data for the application.
+| **Database** | Provides secure and efficient storage and retrieval of data for the application.
 |===
 
 === Level 3

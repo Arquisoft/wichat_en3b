@@ -128,16 +128,16 @@ The web app, gateway, and services run within Docker containers, all hosted on a
 
 [options="header"]
 |===
-| Component          | Description  
-| Web App            | User interface that interacts with the rest of the application.  
-| Gateway            | Manages communication between the web app and various services.  
-| User Service       | Manages user data and statistics, providing some functions for API consumers.  
-| Auth Service       | Handles user authentication.  
-| LLM Service        | Provides hints to the user while playing.
-| Question Service   | Manages pictures and data for the questions.
-| Database (MongoDB) | Stores user data and game history.   
-| Empathy            | External LLM used to obtain the hints.
-| WikiData           | External API used to retrieve information from WikiData.  
+| Component              | Description  
+| WebApp (Game Service)  | User interface that interacts with the rest of the application.  
+| Gateway                | Manages communication between the web app and various services.  
+| User Service           | Manages user data and statistics, providing some functions for API consumers.  
+| Authentication Service | Handles user authentication.  
+| LLM Service            | Provides hints to the user while playing.
+| Question Service       | Manages pictures and data for the questions.
+| Database (MongoDB)     | Stores user data and game history.   
+| LLM (Empathy)          | External LLM used to obtain the hints.
+| WikiData               | External API used to retrieve information from WikiData.  
 |===
 
 ifdef::arc42help[]
