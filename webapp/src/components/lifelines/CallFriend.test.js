@@ -46,6 +46,7 @@ describe('CallFriend Component', () => {
         onClose={onClose}
         correctAnswer={correctAnswer}
         possibleAnswers={possibleAnswers}
+        handleSelectCharacter={() => true}
       />
     );
     userEvent.click(screen.getByTestId('select-john-button'));
@@ -73,6 +74,7 @@ describe('CallFriend Component', () => {
         onClose={onClose}
         correctAnswer={correctAnswer}
         possibleAnswers={possibleAnswers}
+        handleSelectCharacter={() => true}
       />
     );
 
