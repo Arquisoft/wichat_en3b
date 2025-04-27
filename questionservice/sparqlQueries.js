@@ -355,13 +355,25 @@ ORDER BY DESC(?sitelinks)
 LIMIT 200
 `,
 
-  euroleaguePlayer: `SELECT ?euroleaguePlayer ?euroleaguePlayerLabel ?image WHERE {
-?euroleaguePlayer wdt:P106 wd:Q3665646;    # occupation: basketball player
-                  wdt:P118 wd:Q185982;     # league: EuroLeague
-                  wdt:P18 ?image;          # image
-                  wikibase:sitelinks ?sitelinks.
+    spanishMaleBasketballPlayer: `SELECT ?spanishMaleBasketballPlayer ?spanishMaleBasketballPlayerLabel ?image WHERE {
+  ?spanishMaleBasketballPlayer wdt:P106 wd:Q3665646;     # occupation: basketball player
+          wdt:P27 wd:Q29;           # country of citizenship: Spain
+          wdt:P21 wd:Q6581097;      # gender: male
+          wdt:P18 ?image;           # image
+          wikibase:sitelinks ?sitelinks.
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY DESC(?sitelinks)
+LIMIT 200
+`,
 
-SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+    spanishFemaleBasketballPlayer: `SELECT ?spanishFemaleBasketballPlayer ?spanishFemaleBasketballPlayerLabel ?image ?sitelinks WHERE {
+  ?spanishFemaleBasketballPlayer wdt:P106 wd:Q3665646;     # occupation: basketball player
+          wdt:P27 wd:Q29;           # country of citizenship: Spain
+          wdt:P21 wd:Q6581072;      # gender: female
+          wdt:P18 ?image;           # image
+          wikibase:sitelinks ?sitelinks.
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
 ORDER BY DESC(?sitelinks)
 LIMIT 200
