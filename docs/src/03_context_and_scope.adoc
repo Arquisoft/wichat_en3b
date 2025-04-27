@@ -116,17 +116,21 @@ endif::arc42help[]
 
 actor User #lightgreen
 
-rectangle WiChat {
-    rectangle WebApp
-    rectangle Backend
+rectangle Docker #lightblue {
+    rectangle WebApp #pink
+    rectangle Gateway
+    rectangle Backend #pink
     database Database
 }
 
-rectangle Wikidata
-rectangle LLM
+cloud "External services" #orange {
+    rectangle Wikidata
+    rectangle LLM
+}
 
 User <-> WebApp : HTTP
-WebApp <-> Backend
+WebApp <-> Gateway
+Gateway <-> Backend
 Backend <-> Database : MongoDB
 Backend <..> Wikidata : SPARQL
 Backend <..> LLM
