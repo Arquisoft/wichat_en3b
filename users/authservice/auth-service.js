@@ -49,6 +49,13 @@ app.post('/login', [
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    // Differentiate between admin and regular user
+    if (user.role === "admin")
+      return res.json({
+        isAdmin: true,
+        messge: "Admin login successful",
+      });
+      
     // Generate JWT tokens
     const accessToken = jwt.sign({ userId: user._id, username: username, role: user.role }, accessTokenSecret, { expiresIn: '15m' });
     const refreshToken = jwt.sign({ userId: user._id, username: username, role: user.role }, refreshTokenSecret, { expiresIn: '7d' });

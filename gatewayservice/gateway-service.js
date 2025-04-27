@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml')
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 const port = 8000;
@@ -18,8 +19,10 @@ const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const grafanaUrl = process.env.GRAFANA_URL || 'http://localhost:9091';
 
+app.use(express.json());
+
 // Read the OpenAPI YAML file synchronously
-openapiPath = './openapi.yaml'
+const openapiPath = './openapi.yaml'
 if (fs.existsSync(openapiPath)) {
   const file = fs.readFileSync(openapiPath, 'utf8');
 
@@ -42,12 +45,30 @@ if (fs.existsSync(openapiPath)) {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
 
-app.use(cors({ origin: frontendUrl, credentials: true }));
-app.use(express.json());
+app.use(cors({ origin: [frontendUrl, "http://localhost:8000", "*"], credentials: true }));
 
 //Prometheus configuration
 const metricsMiddleware = promBundle({ includeMethod: true });
 app.use(metricsMiddleware);
+
+// Grafana proxy endpoint
+app.use("/admin/monitoring", createProxyMiddleware({
+  target: grafanaUrl,
+  changeOrigin: true,
+  ws: true,
+  logLevel: 'info',
+  onError: (err, req, res, target) => {
+    console.error(`Grafana Proxy Error: ${err.message}. Target: ${target.href}`);
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'Bad Gateway', details: `Could not connect to Grafana at ${target.href}` });
+    } else {
+      console.error('Grafana Proxy Error occurred after headers sent.');
+    }
+  },
+  onProxyReq: (proxyReq, req, res) => {
+    console.log(`Proxying request from ${req.ip} to <span class="math-inline">\{grafanaInternalUrl\}</span>{proxyReq.path}`);
+  },
+}));
 
 // Define a middleware to check authentication
 const verifyJWT = (req, res, next) => {
@@ -72,13 +93,17 @@ app.post('/login', async (req, res) => {
     // Forward the login request to the authentication service
     const authResponse = await axios.post(authServiceUrl + '/login', req.body, { withCredentials: true, headers: { ...req.headers } });
 
+    // Redirect if admin
+    if (authResponse.data.isAdmin) {
+      return res.redirect("/admin/monitoring");
+    }
+
     // Forward the cookie to the client from the authentication service
     if (authResponse.headers && authResponse.headers["set-cookie"])
       res.setHeader("Set-Cookie", authResponse.headers["set-cookie"]);
 
     res.json(authResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -94,7 +119,6 @@ app.post('/logout', async (req, res) => {
 
     res.json(authResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -105,7 +129,6 @@ app.get("/refresh", async (req, res) => {
     const authResponse = await axios.get(authServiceUrl + '/refresh', { withCredentials: true, headers: { ...req.headers } });
     res.json(authResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -116,7 +139,6 @@ app.post('/adduser', async (req, res) => {
     const userResponse = await axios.post(userServiceUrl + '/adduser', req.body);
     res.json(userResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -130,7 +152,6 @@ app.post('/askllm', async (req, res) => {
     const llmResponse = await axios.post(llmServiceUrl + '/ask', req.body);
     res.json(llmResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -149,7 +170,6 @@ app.get('/getRound', async (req, res) => {
 
     res.json(roundResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal server error' });
   }
 });
@@ -159,7 +179,6 @@ app.get('/getTopics', async (req, res) => {
     const topicsResponse = await axios.get(questionServiceUrl + '/getTopics');
     res.json(topicsResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -169,7 +188,6 @@ app.get('/getAvailableTopics', async (req, res) => {
     const availabilityResponse = await axios.get(questionServiceUrl + '/getAvailableTopics');
     res.json(availabilityResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Unknown error' });
   }
 });
@@ -179,7 +197,6 @@ app.post('/addgame', async (req, res) => {
     const gameResponse = await axios.post(userServiceUrl + '/addgame', req.body);
     res.json(gameResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -194,7 +211,6 @@ app.get('/userstats', async (req, res) => {
 
     res.json(statsResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -204,7 +220,6 @@ app.get('/usercoins/:username', async (req, res) => {
     const coinsResponse = await axios.get(userServiceUrl + '/usercoins/' + req.params.username);
     res.json(coinsResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -214,7 +229,6 @@ app.post('/updatecoins', async (req, res) => {
     const updateResponse = await axios.post(userServiceUrl + '/updatecoins', req.body);
     res.json(updateResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
@@ -224,7 +238,6 @@ app.get('/games/:username', async (req, res) => {
     const gamesResponse = await axios.get(userServiceUrl + '/games/' + req.params.username);
     res.json(gamesResponse.data);
   } catch (error) {
-    console.error(error);
     res.status(error.response.status).json({ error: error.response.data.error });
   }
 });

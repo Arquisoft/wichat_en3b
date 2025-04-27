@@ -20,11 +20,9 @@ const checkInput = (input) => {
 };
 
 function validateRequiredFields(req, requiredFields) {
-  for (const field of requiredFields) {
-    if (!(field in req.body)) {
+  for (const field of requiredFields)
+    if (!(field in req.body))
       throw new Error(`Missing required field: ${field}`);
-    }
-  }
 }
 
 // Function to validate required fields in the request body
@@ -273,6 +271,9 @@ app.get('/games/:username', async (req, res) => {
 const server = app.listen(port, async () => {
   console.log(`User Service listening at http://localhost:${port}`);
 
+  if (await User.findOne({ username: "admin" }))
+    return console.log("Admin user already exists");
+  
   await new User({
     username: "admin",
     password: await bcrypt.hash("admin", 10),

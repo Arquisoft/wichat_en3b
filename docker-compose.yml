@@ -134,6 +134,8 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_SERVER_ROOT_URL=http://localhost:8000/admin/monitoring
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     ports:
       - "9091:9091"
     depends_on: 
