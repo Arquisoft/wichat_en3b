@@ -91,6 +91,7 @@ services:
       USER_SERVICE_URL: http://userservice:8001
       LLM_SERVICE_URL: http://llmservice:8003
       QUESTION_SERVICE_URL: http://questionservice:8004
+      GRAFANA_URL: http://grafana:9091
 
   webapp:
     container_name: webapp-wichat_en3b

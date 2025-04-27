@@ -56,9 +56,9 @@ const verifyJWT = (req, res, next) => {
   jwt.verify(token, "accessTokenSecret", (err, decoded) => {
     if (err) return res.status(403).json({ error: 'Invalid token' });
     req.user = decoded.username;
+    req.role = decoded.role;
     next();
-  }
-  );
+  });
 }
 
 // Health check endpoint
@@ -181,7 +181,7 @@ app.get('/userstats', async (req, res) => {
     const statsResponse = await axios.get(userServiceUrl + '/userstats', {
       params: { username, mode, topic }
     });
-    
+
     res.json(statsResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });

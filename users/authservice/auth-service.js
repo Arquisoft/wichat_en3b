@@ -19,11 +19,9 @@ mongoose.connect(mongoUri);
 
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
-  for (const field of requiredFields) {
-    if (!(field in req.body)) {
+  for (const field of requiredFields)
+    if (!(field in req.body))
       throw new Error(`Missing required field: ${field}`);
-    }
-  }
 }
 
 // Route for user login
@@ -50,8 +48,8 @@ app.post('/login', [
     }
 
     // Generate JWT tokens
-    const accessToken = jwt.sign({ userId: user._id, username: username }, "accessTokenSecret", { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ userId: user._id, username: username }, "refreshTokenSecret", { expiresIn: '7d' });
+    const accessToken = jwt.sign({ userId: user._id, username: username, role: user.role }, "accessTokenSecret", { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ userId: user._id, username: username, role: user.role }, "refreshTokenSecret", { expiresIn: '7d' });
 
     user.refreshToken = refreshToken;
     await user.save();
