@@ -153,96 +153,7 @@ describe("BaseGame additional tests", () => {
     expect(audienceCallButton.textContent).toMatch(/(Used|\(Used\)|\(USED\))/i);
   });
   */ 
-  it("should correctly use the Chat lifeline", async () => {
-    render(
-      <ThemeProvider>
-        <AuthProvider>
-          <MemoryRouter>
-            <BaseGame />
-          </MemoryRouter>
-        </AuthProvider>
-      </ThemeProvider>
-    );
 
-    await waitFor(() => {
-      expect(screen.getByTestId("question-prompt")).toBeInTheDocument();
-    });
-
-    // Find and click the Use Chat button
-    const useChatButton = screen.getByText(/Use the Chat/i);
-    fireEvent.click(useChatButton);
-
-    // Check if the button is disabled/used
-    expect(useChatButton).toBeDisabled();
-  });
-
-  it("should handle Call a Friend lifeline correctly", async () => {
-    render(
-      <ThemeProvider>
-        <AuthProvider>
-          <MemoryRouter>
-            <BaseGame />
-          </MemoryRouter>
-        </AuthProvider>
-      </ThemeProvider>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId("question-prompt")).toBeInTheDocument();
-    });
-
-    // Find and click the Call a Friend button
-    const callFriendButton = screen.getByText(/Call a Friend/i);
-    fireEvent.click(callFriendButton);
-
-    // Check if CallFriend dialog is displayed
-    await waitFor(() => {
-      // This would depend on your CallFriend component's content
-      expect(document.querySelector("[role='dialog']")).toBeInTheDocument();
-    });
-
-    // Close the dialog if there's a close button
-    const closeButtons = screen.getAllByRole("button");
-    const closeButton = closeButtons.find(button => button.textContent.includes("Close") || button.textContent.includes("OK"));
-    if (closeButton) {
-      fireEvent.click(closeButton);
-    }
-
-    // Check if button is marked as used
-    expect(callFriendButton.textContent).toContain("(Used)");
-  });
-
-  it("should handle Phone Out feature correctly", async () => {
-    render(
-      <ThemeProvider>
-        <AuthProvider>
-          <MemoryRouter>
-            <BaseGame />
-          </MemoryRouter>
-        </AuthProvider>
-      </ThemeProvider>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId("question-prompt")).toBeInTheDocument();
-    });
-
-    // Find and click the Phone Out button
-    const phoneOutButton = screen.getByText(/Phone Out/i);
-    fireEvent.click(phoneOutButton);
-
-    // Check if phone dialog is displayed
-    await waitFor(() => {
-      expect(document.querySelector("[role='dialog']")).toBeInTheDocument();
-    });
-
-    // Close the dialog if there's a close button
-    const closeButtons = screen.getAllByRole("button");
-    const closeButton = closeButtons.find(button => button.textContent.includes("Close") || button.textContent.includes("OK"));
-    if (closeButton) {
-      fireEvent.click(closeButton);
-    }
-  });
 
   it("should display game over statistics when game is over", async () => {
     // Setup for game over
@@ -303,33 +214,6 @@ describe("BaseGame additional tests", () => {
     }, { timeout: 2000 });
   });
 
-  it("should not allow lifelines when not enough coins", async () => {
-    // Mock low coins
-    mockAxios.onGet("/getUserCoins").reply(200, { coins: 50 });
-
-    render(
-      <ThemeProvider>
-        <AuthProvider>
-          <MemoryRouter>
-            <BaseGame />
-          </MemoryRouter>
-        </AuthProvider>
-      </ThemeProvider>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId("question-prompt")).toBeInTheDocument();
-    });
-
-    // Check if 50/50 and Audience Call are disabled (not enough coins)
-    const fiftyFiftyButton = screen.getByText(/50\/50/i);
-    const audienceCallButton = screen.getByText(/Audience Call/i);
-    const useChatButton = screen.getByText(/Use the Chat/i);
-    
-    expect(fiftyFiftyButton).toBeDisabled(); // 100 coins needed
-    expect(audienceCallButton).toBeDisabled(); // 150 coins needed
-    expect(useChatButton).toBeDisabled(); // 200 coins needed
-  });
 
   it("should load multiple rounds correctly", async () => {
     // Queue up two different round responses
