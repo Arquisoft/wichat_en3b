@@ -14,6 +14,8 @@ import useAuth from "../../hooks/useAuth";
 import useCoinHandler from "../../handlers/CoinHandler";
 import useLifeLinesHandler from "../../handlers/LifeLinesHandler";
 import { TOPIC_QUESTION_MAP } from "../../utils/topicQuestionMap";
+import { motion } from "framer-motion";
+
 
 const BaseGame = React.forwardRef(({
   children,
@@ -40,7 +42,9 @@ const BaseGame = React.forwardRef(({
   const answerTimer = useRef(null); // Holds the timer for the answer selection
 
   const { coins, spentCoins, setSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins } = useCoinHandler(axios, auth);
-  const { handleFiftyFifty, handleCloseCallFriend, handleAudienceCall, hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame } = useLifeLinesHandler(roundData, spendCoins);
+  const { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, handlePhoneOut, handlePhoneOutClose, handleUseChat,
+    handleSelectCharacter, hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame } = useLifeLinesHandler(roundData, spendCoins);
+
 
   // Load rounds every time the roundsPlayed changes and on start up
   useEffect(() => {
@@ -138,7 +142,7 @@ const BaseGame = React.forwardRef(({
       const endGame = async () => {
         try {
           // Calculate earned coins based on score
-          const earnedCoins = Math.round(score * 0.3);
+          const earnedCoins = Math.round(score * 0.5);
           await updateUserCoins(earnedCoins);
           await axios.post("/addgame", { username: auth.username, mode, questions });
         } catch (error) {
@@ -295,6 +299,7 @@ const BaseGame = React.forwardRef(({
                 onClose={handleCloseCallFriend}
                 correctAnswer={roundData.itemWithImage.name}
                 possibleAnswers={roundData.items.map(item => item.name)}
+                handleSelectCharacter={handleSelectCharacter}
               />)}
 
               {isTrue("ShowGraph") && (
