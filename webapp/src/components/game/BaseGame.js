@@ -3,8 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router";
 import { Toolbar, Typography, Button, Card, CardContent, Grid, Box, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Container } from "@mui/material";
-import { HelpOutline, Phone, Chat, InterpreterMode, EmojiEvents, MonetizationOn } from "@mui/icons-material";
-import LLMChat from "../LLMChat";
+import { HelpOutline, InterpreterMode, EmojiEvents, MonetizationOn } from "@mui/icons-material";
 import GraphComponent from '../lifelines/GraphComponent';
 import CallFriend from "../lifelines/CallFriend";
 import PhoneDialog from "../phone/PhoneDialog";
@@ -15,7 +14,6 @@ import useAuth from "../../hooks/useAuth";
 import useCoinHandler from "../../handlers/CoinHandler";
 import useLifeLinesHandler from "../../handlers/LifeLinesHandler";
 import { TOPIC_QUESTION_MAP } from "../../utils/topicQuestionMap";
-
 
 const BaseGame = React.forwardRef(({
   children,
@@ -39,13 +37,10 @@ const BaseGame = React.forwardRef(({
   const [roundsPlayed, setRoundsPlayed] = useState(0);
   const [usedImages, setUsedImages] = useState([]);
 
-
-
   const answerTimer = useRef(null); // Holds the timer for the answer selection
 
   const { coins, spentCoins, setSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins } = useCoinHandler(axios, auth);
-  const { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, handlePhoneOut, handlePhoneOutClose, handleUseChat,
-    hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame } = useLifeLinesHandler(roundData, spendCoins);
+  const { handleFiftyFifty, handleCloseCallFriend, handleAudienceCall, hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame } = useLifeLinesHandler(roundData, spendCoins);
 
   // Load rounds every time the roundsPlayed changes and on start up
   useEffect(() => {
@@ -220,7 +215,7 @@ const BaseGame = React.forwardRef(({
     // Clear the current round data to force a reload
     setRoundData(null);
     setLoading(true);
-    
+
     // Mode specific round complete
     onRoundComplete();
   }
@@ -283,43 +278,16 @@ const BaseGame = React.forwardRef(({
 
               <LifelineButton
                 variant="contained"
-                startIcon={<Phone />}
-                onClick={handleCallFriend}
-                disabled={isTrue("CallFriend")}
-                isUsed={isTrue("CallFriend")}
-                colorVariant="green"
-              >
-                Call a Friend {isTrue("CallFriend") && "(Used)"}
-              </LifelineButton>
-
-              <LifelineButton
-                variant="contained"
                 startIcon={<InterpreterMode />}
-                onClick={handleAudienceCall}
+                onClick={() => {
+                  console.log("Audience Call");
+                  handleAudienceCall();
+                }}
                 disabled={isTrue("AskAudience") || !canAfford(150)}
                 isUsed={isTrue("AskAudience")}
                 colorVariant="red"
               >
                 Audience Call - 150 🪙 {isTrue("AskAudience") && "(Used)"}
-              </LifelineButton>
-
-              <LifelineButton
-                variant="contained"
-                startIcon={<Chat />}
-                onClick={handleUseChat}
-                disabled={isTrue("UseChat") || !canAfford(200)}
-                isUsed={isTrue("UseChat")}
-                colorVariant="purple"
-              >
-                Use the Chat - 200 🪙 {isTrue("UseChat") && "(Used)"}
-              </LifelineButton>
-
-              <LifelineButton
-                variant="contained"
-                onClick={handlePhoneOut}
-                colorVariant="purple"
-              >
-                Phone Out
               </LifelineButton>
 
               {isTrue("CallFriend") && (<CallFriend
@@ -328,33 +296,14 @@ const BaseGame = React.forwardRef(({
                 correctAnswer={roundData.itemWithImage.name}
                 possibleAnswers={roundData.items.map(item => item.name)}
               />)}
-              {isTrue("PhoneOut") && (<PhoneDialog
-                open={isTrue("PhoneOut")}
-                onClose={handlePhoneOutClose}
-                key={chatKey} roundData={roundData}
-              />)}
 
               {isTrue("ShowGraph") && (
-              <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
-                <CardContent>
-                <Typography data-testid="audience-response" variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
-                   The audience says...
-                </Typography>
-                  {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name}
-                    distractors={roundData.items
-                      .filter(item => item.name !== roundData.itemWithImage.name)
-                      .map(item => item.name)
-                    }
-                  />}
-
-                  <Typography variant="h4" component="h2" color="primary" sx={{ fontSize: '1.5rem' }}>
-                    The audience says...
-                  </Typography>
-                  {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name} distractors={distractors} />}
-
-                </CardContent>
-              </Card>
-            )}
+                <Card elevation={3} sx={{ marginTop: 2, paddingTop: 3 }}>
+                  <CardContent>
+                    {roundData && <GraphComponent correctAnswer={roundData.itemWithImage.name} distractors={distractors} />}
+                  </CardContent>
+                </Card>
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -418,11 +367,7 @@ const BaseGame = React.forwardRef(({
 
         {/* Right Side (Chat) */}
         <Grid item xs={12} md={3}>
-          <Card elevation={3} sx={{ height: "100%" }}>
-            <CardContent>
-              {roundData && <LLMChat key={chatKey} roundData={roundData} />}
-            </CardContent>
-          </Card>
+          {roundData && <PhoneDialog key={chatKey} roundData={roundData} />}
         </Grid>
       </Grid>
 

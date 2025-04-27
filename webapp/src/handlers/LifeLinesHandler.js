@@ -47,7 +47,7 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
     setShowGraph(true); // Make the graph visible when the audience call is used
   }
 
-  const handlePhoneOut = () => {
+  const handlePhoneOut = (roundData) => {
     if (phoneOut || !roundData) return;
     setPhoneOut(true);
   };
