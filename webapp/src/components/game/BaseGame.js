@@ -47,7 +47,7 @@ const BaseGame = React.forwardRef(({
 
   const { coins, spentCoins, setSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins } = useCoinHandler(axios, auth);
   const { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, handlePhoneOut, handlePhoneOutClose, handleUseChat,
-    hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame } = useLifeLinesHandler(roundData, spendCoins);
+    handleSelectCharacter, hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame } = useLifeLinesHandler(roundData, spendCoins);
 
   // Load rounds every time the roundsPlayed changes and on start up
   useEffect(() => {
@@ -329,6 +329,7 @@ const BaseGame = React.forwardRef(({
                 onClose={handleCloseCallFriend}
                 correctAnswer={roundData.itemWithImage.name}
                 possibleAnswers={roundData.items.map(item => item.name)}
+                handleSelectCharacter={handleSelectCharacter}
               />)}
               {isTrue("PhoneOut") && (<PhoneDialog
                 open={isTrue("PhoneOut")}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Avatar, CircularProgress, useTheme } from "@mui/material";
 import CharacterSelection from "./CharacterSelection";
 
-const CallFriend = ({ open, onClose, correctAnswer, possibleAnswers }) => {
+const CallFriend = ({ open, onClose, correctAnswer, possibleAnswers, handleSelectCharacter  }) => {
   const theme = useTheme();
   const [step, setStep] = useState(1);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
@@ -11,10 +11,15 @@ const CallFriend = ({ open, onClose, correctAnswer, possibleAnswers }) => {
   const [feelingText, setFeelingText] = useState("");
   const [isThinking, setIsThinking] = useState(false);
 
-  const handleSelectCharacter = (character) => {
-    setSelectedCharacter(character);
-    setStep(2);
-    setIsThinking(true);
+  const onCharacterSelect = (character) => {
+    
+    const success = handleSelectCharacter(character);
+    
+    if (success) {
+      setSelectedCharacter(character);
+      setStep(2);
+      setIsThinking(true);
+    }
   };
 
   useEffect(() => {
@@ -37,8 +42,18 @@ const CallFriend = ({ open, onClose, correctAnswer, possibleAnswers }) => {
     }
   }, [step, selectedCharacter, correctAnswer, possibleAnswers]);
 
+  const handleClose = () => {
+    setStep(1);
+    setSelectedCharacter(null);
+    setFriendAnswer("");
+    setConfidenceText("");
+    setFeelingText("");
+    setIsThinking(false);
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth
+    <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth
       PaperProps={{
         sx: {
           borderRadius: 4,
@@ -61,7 +76,7 @@ const CallFriend = ({ open, onClose, correctAnswer, possibleAnswers }) => {
             Choose a Friend to Call
           </DialogTitle>
           <DialogContent>
-            <CharacterSelection onSelectCharacter={handleSelectCharacter} />
+            <CharacterSelection onSelectCharacter={onCharacterSelect} />
           </DialogContent>
         </>
       )}
@@ -136,7 +151,7 @@ const CallFriend = ({ open, onClose, correctAnswer, possibleAnswers }) => {
 
           <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
             <Button
-              onClick={onClose}
+              onClick={handleClose}
               variant="contained"
               color="secondary"
               sx={{
