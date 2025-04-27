@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { alpha, Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from "@mui/material";
+import { alpha, Avatar, Box, Button, CardHeader, Chip, Container, Divider, FormControl, Grid2, InputLabel, MenuItem, Select, Tab, Tabs, Typography } from "@mui/material";
 import { AccessTime, AutoAwesome, BarChart, BlurOn, ChevronRight, FilterAlt, Games, LocationCity, MusicNote, OutlinedFlag, People, SportsBasketball, SportsEsports, TrackChanges } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
 import useTheme from "../hooks/useTheme";
+import {useTranslation} from "react-i18next";
 
 const Home = () => {
     const axios = useAxios();
@@ -76,7 +77,9 @@ const Home = () => {
             case "accuracy":
                 return (user.correctRate * 100).toFixed(2) + " %";
             case "gamesPlayed":
-                return user.totalGamesPlayed + " games";
+                return user.totalGamesPlayed == 1? 
+                `${user.totalGamesPlayed} ${t("game")}`:
+                `${user.totalGamesPlayed} ${t("games")}`;
             case "points":
                 return user.totalScore + " pts";
         }
@@ -92,6 +95,25 @@ const Home = () => {
         }
 
         return topics.length > 1 ? icons["all"] : icons[topics[0]];
+    }
+
+    const getMsg2 = (num) => {
+        if(num === 1) {
+            return t("game");
+        }else{
+            return t("games");
+        }
+    }
+
+    const { t, i18n } = useTranslation();
+
+    const formatGameTopics = (topics) => {
+        const maxLength = 3;
+        if(topics.length <= maxLength) {
+            return topics.join(", ");
+        }else{
+            return topics.slice(0, maxLength).join(", ") + "... " + t("and") + (topics.length - maxLength) +  t("more");
+        }
     }
 
     return (
@@ -111,10 +133,10 @@ const Home = () => {
             }}>
                 <Box>
                     <Typography variant="h4" component="h1" fontWeight="bold">
-                        Welcome back, {auth.username}!
+                        {t("welcomeBack")} {auth.username}!
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                        Ready for your next trivia challenge?
+                        {t("ready")}
                     </Typography>
                 </Box>
                 <Avatar src={auth.avatar || "/placeholder.svg"} alt={auth.username} sx={{
@@ -130,8 +152,8 @@ const Home = () => {
                 {/* Tab navigation */}
                 <Box sx={{ display: "flex", justifyContent: "space-between", borderBottom: 1, borderColor: "divider" }}>
                     <Tabs value={activeMainTab} onChange={(_, val) => setactiveMainTab(val)}>
-                        <Tab icon={<BarChart fontSize="small" />} label="Your Stats" iconPosition="start" />
-                        <Tab icon={<People fontSize="small" />} label="Rankings" iconPosition="start" />
+                        <Tab icon={<BarChart fontSize="small" />} label={t("stats")} iconPosition="start" />
+                        <Tab icon={<People fontSize="small" />} data-testid="ranking" label={t("ranking")} iconPosition="start" />
                     </Tabs>
 
                     <Tabs
@@ -141,46 +163,53 @@ const Home = () => {
                             setMode(val);
                         }}
                     >
-                        <Tab value="rounds" label="Rounds" icon={<Games fontSize="small" />} iconPosition="start" />
-                        <Tab value="time" label="Time" icon={<AccessTime fontSize="small" />} iconPosition="start" />
-                        <Tab value="hide" label="Hide" icon={<BlurOn fontSize="small" />} iconPosition="start" />
+                        <Tab value="rounds" label={t("rounds")} icon={<Games fontSize="small" />} iconPosition="start" />
+                        <Tab value="time" label={t("time")} icon={<AccessTime fontSize="small" />} iconPosition="start" />
+                        <Tab value="hide" label={t("hide")} icon={<BlurOn fontSize="small" />} iconPosition="start" />
                     </Tabs>
                 </Box>
 
                 {/* Statistics tab */}
                 <Box hidden={activeMainTab !== 0} mb={4}>
                     {/* User statistics */}
-                    <CardHeader title={`Your statistics for ${mode.charAt(0).toUpperCase() + mode.slice(1)}`} sx={{ p: 0, my: 2 }} />
+                    <CardHeader 
+                        title={
+                            <Typography variant="h5">
+                                {t("statsFor")} <Typography component="span" variant="h5" fontWeight="bold">{t(mode)}</Typography>
+                            </Typography>
+                        } 
+                        sx={{ p: 0, my: 2 }} 
+                    />
                     {userStats?.username ? (
                         <Grid2 container spacing={2}>
                             <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.paper", border: 1, borderColor: "divider" }}>
                                 <SportsEsports fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: alpha(theme.palette.primary.main, 0.2), borderRadius: "100%" }} />
                                 <Box>
-                                    <Typography variant="body2" color="text.secondary">Total score</Typography>
+                                    <Typography variant="body2" color="text.secondary">{t("totalScore")}</Typography>
                                     <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "points")}</Typography>
                                 </Box>
                             </Grid2>
                             <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.paper", border: 1, borderColor: "divider" }}>
                                 <TrackChanges fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: alpha(theme.palette.primary.main, 0.2), borderRadius: "100%" }} />
                                 <Box>
-                                    <Typography variant="body2" color="text.secondary">Accuracy rate</Typography>
+                                    <Typography variant="body2" color="text.secondary">{t("accuracyRate")}</Typography>
                                     <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "accuracy")}</Typography>
                                 </Box>
                             </Grid2>
                             <Grid2 size={4} sx={{ display: "flex", alignItems: "center", gap: 2, p: 4, borderRadius: 2, bgcolor: "background.paper", border: 1, borderColor: "divider" }}>
                                 <AutoAwesome fontSize="large" sx={{ p: 1, color: "primary.main", bgcolor: alpha(theme.palette.primary.main, 0.2), borderRadius: "100%" }} />
                                 <Box>
-                                    <Typography variant="body2" color="text.secondary">Games played</Typography>
+                                    <Typography variant="body2" color="text.secondary">{t("gamesPlayed")}</Typography>
                                     <Typography variant="h5" fontWeight="bold">{getStatLabel(userStats, "gamesPlayed")}</Typography>
                                 </Box>
                             </Grid2>
                         </Grid2>
                     ) : (
-                        <Typography variant="body1" color="text.secondary">No statistics found for this mode.</Typography>
+                        <Typography variant="body1" color="text.secondary">{t("noStats")}</Typography>
                     )}
 
                     {/* Recent games */}
-                    <CardHeader title="Recent Games" subheader={`Your last ${games.length} games`} sx={{ p: 0, my: 2 }} />
+                    <CardHeader title={t("recentGames")} subheader={`${t("recentMsg1")} ${games.length} ${getMsg2(games.length)}`} sx={{ p: 0, my: 2 }} />
                     <Box sx={{ display: "flex", flexDirection: "column", bgcolor: "background.paper", borderRadius: 2, maxHeight: "25vh", overflowY: "auto" }}>
                         {games.length > 0 ? games.map((game, index) => (
                             <>
@@ -197,10 +226,10 @@ const Home = () => {
                                         {getIconForTopics(game.gameTopic)}
                                         <Box>
                                             <Typography variant="body1" fontWeight="bold">
-                                                {game.gameMode.toUpperCase()} - Topics: {game.gameTopic.join(", ")}
+                                                {t(game.gameMode).toUpperCase()} - {t("topics")}: {formatGameTopics(game.gameTopic)}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                Played on {new Date(game.createdAt).toLocaleDateString("es")}
+                                                {t("playedAt")}{new Date(game.createdAt).toLocaleDateString(i18n.language)}
                                             </Typography>
                                         </Box>
                                     </Box>
@@ -209,14 +238,14 @@ const Home = () => {
                                             {game.score} pts
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary">
-                                            {(game.correctRate * 100).toFixed(2)}% accuracy
+                                            {(game.correctRate * 100).toFixed(2)}% {t("accuracy")}
                                         </Typography>
                                     </Box>
                                 </Box>
                                 {index < games.length - 1 && <Divider />}
                             </>
                         )) : (
-                            <Typography variant="body1" color="text.secondary">No recent games found.</Typography>
+                            <Typography variant="body1" color="text.secondary">{t("noRecentGames")}</Typography>
                         )}
                     </Box>
                 </Box>
@@ -224,10 +253,17 @@ const Home = () => {
                 {/* Rankings tab */}
                 <Box hidden={activeMainTab !== 1} mb={4}>
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", width: "100%" }}>
-                        <CardHeader title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} Leaderboard`} subheader={`Top players ranked by ${stat}`} />
+                    <CardHeader 
+                        title={`${t(mode)}: ${t("leaderboard")}`} 
+                        subheader={
+                            <Typography variant="subtitle2" color="text.secondary">
+                                {t("topBy")} <Typography component="span" fontWeight="bold">{t(stat)}</Typography>
+                            </Typography>
+                        }
+                    />
                         <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
-                                Rank by:
+                                ":
                             </Typography>
                             <Tabs
                                 value={stat}
@@ -236,11 +272,11 @@ const Home = () => {
                                 scrollButtons="auto"
                                 sx={{ bgcolor: "background.paper", borderRadius: 2, gap: 1 }}
                             >
-                                {stats.map((stat) => <Tab key={stat} value={stat} label={stat} />)}
+                                {stats.map((stat) => <Tab key={stat} value={stat} label={t(stat)} data-testid={stat} />)}
                             </Tabs>
                         </Box>
                         <FormControl variant="outlined" size="small" sx={{ justifySelf: "end", minWidth: 150 }}>
-                            <InputLabel>Game topic</InputLabel>
+                            <InputLabel>{t("gameTopic")}</InputLabel>
                             <Select
                                 value={gametopic}
                                 onChange={(e) => setGameTopic(e.target.value)}
@@ -295,16 +331,17 @@ const Home = () => {
             <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", gap: 2, bgcolor: "background.paper", borderRadius: 2 }}>
                 <Box>
                     <Typography variant="h5" fontWeight="bold">
-                        Ready to play?
+                        {t("readyToPlay")}
                     </Typography>
                     <Typography variant="body1" sx={{ opacity: 0.8 }}>
-                        Choose a game topic and test your knowledge!
+                        {t("chooseGameTopicMsg")}
                     </Typography>
                 </Box>
                 <Button
                     variant="contained"
                     color="secondary"
                     size="large"
+                    data-testid="play-button"
                     endIcon={<ChevronRight />}
                     onClick={() => navigate("/gametopic")}
                     sx={{
@@ -312,7 +349,7 @@ const Home = () => {
                         whiteSpace: "nowrap"
                     }}
                 >
-                    Play A Game Now
+                    {t("playNow")}
                 </Button>
             </Box>
         </Container >

@@ -61,6 +61,10 @@ services:
       context: ./llmservice
       args:
         LLM_API_KEY: ${LLM_API_KEY}
+        GEMINI_LLM_API_KEY: ${GEMINI_LLM_API_KEY}
+    environment:
+      LLM_API_KEY: ${LLM_API_KEY}
+      GEMINI_LLM_API_KEY: ${GEMINI_LLM_API_KEY}
     ports:
       - "8003:8003"
     networks:

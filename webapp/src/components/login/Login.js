@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, Button, Snackbar, Checkbox, FormControlLabel, Box, Paper, alpha } from '@mui/material';
 import { NavLink, useLocation, useNavigate } from 'react-router';
@@ -35,8 +35,10 @@ const Login = () => {
   };
 
   // Redirect if already logged in
-  if (auth.username)
-    navigate("/home", { replace: true });
+  useEffect(() => {
+    if (auth.username)
+      navigate("/home", { replace: true });
+  }, [auth, navigate]);
 
   const loginUser = async () => {
     try {
