@@ -117,34 +117,35 @@ Selecting the game mode and playing it.
 
 [plantuml,"Playing",png]
 ----
-
-actor User
+actor User #lightgreen
 participant WebApp
+participant Gateway
 participant QuestionService
 database DataBase
 
 User --> WebApp: Choose Category
 User --> WebApp: Choose way of playing
 WebApp --> WebApp: Show the game screen
-loop For each round (10 rounds)
-    WebApp --> QuestionService: Get an image and 4 options
+
+loop #lightblue For each round
+    WebApp --> Gateway: Request image and options
+    Gateway --> QuestionService: Get an image and 4 options
     QuestionService --> DataBase: Get 4 rows and one of them with its image
     DataBase --> QuestionService: Response in a JSON
-    QuestionService --> WebApp: Response in a JSON
+    QuestionService --> Gateway: Response in a JSON
+    Gateway --> WebApp: Response in a JSON
     WebApp --> User: Presents the round to the user
     User --> WebApp: Choose the an answer
     WebApp --> WebApp: Checks if it is the correct one or not
     
-    alt Is the correct one
+    alt #green Is the correct one
         WebApp--> WebApp: Marks it on green
     end
     
-    alt Is the not the correct one
+    alt #red Is the not the correct one
         WebApp--> WebApp: Marks the correct on green and the miss on red
     end
-    
 end
-
 ----
 
 
