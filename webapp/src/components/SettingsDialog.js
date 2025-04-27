@@ -104,6 +104,7 @@ const SettingsDialog = ({ open, onClose }) => {
               >
                 <MenuItem value="mistral">Mistral</MenuItem>
                 <MenuItem value="qwen">Qwen</MenuItem>
+                <MenuItem value="gemini">Gemini</MenuItem>
               </Select>
             </FormControl>
           </Box>

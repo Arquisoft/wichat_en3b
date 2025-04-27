@@ -12,6 +12,7 @@ describe('LLM Service', () => {
         // Reset environment variables before each test
         process.env = { ...originalEnv };
         process.env.LLM_API_KEY = "test-api-key";
+        process.env.GEMINI_LLM_API_KEY = "test-gemini-api-key";
     });
 
     afterEach(() => {
