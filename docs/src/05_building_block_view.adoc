@@ -77,7 +77,7 @@ storage {
       rectangle Wikidata 
       rectangle LLM 
   }
-  node WIChat
+  node brAIn
 }
 
 skinparam node {
@@ -104,7 +104,7 @@ Contained Building Blocks::
 [cols="1,2" options="header"]
 |===
 | **Name** | **Responsibility**
-| **WIChat** | Central web Application, acts as the primary interface for the user and acts as mediator between external data sources and services. 
+| **brAIn** | Central web Application, acts as the primary interface for the user and acts as mediator between external data sources and services. 
 | **Wikidata** | Repository of factual, well-organized, and machine-readable data that can be queried and leveraged to support the system’s functionality.
 | **LLM** | Will generate appropiate hints in response to user queries, will also process data from Wikidata to generate said hints. 
 |===
@@ -156,7 +156,7 @@ actor User #lightgreen
 
 rectangle Docker #lightblue {
     rectangle "Frontend" as Web #pink
-    rectangle "GateWay" as Gateway 
+    rectangle "Gateway" as Gateway 
     rectangle "Backend" as Backend #pink
     database Database
 }
@@ -180,7 +180,7 @@ Backend ..> LLM
 |===
 | **Name** | **Responsibility**
 | **Frontend** | Manages user interaction and presentation.
-| **Gateway"" | Manages interaction between frontend and backend.
+| **Gateway** | Manages interaction between frontend and backend.
 | **Backend** | Handles logic, coordination, and communication between the frontend, database, and external services.
 | **Database Layer** | Provides secure and efficient storage and retrieval of data for the application.
 |===
