@@ -115,12 +115,18 @@ async function fetchAndStoreData() {
 
             console.log(`🔎 ​${items.length} items for topic: ${topic}`);
 
+            await WikidataObject.deleteMany({ topic }); // Clear old data for the topic
+
             if (items.length > 0) {
                 const bulkOps = items.map(item => ({
                     updateOne: { filter: { id: item.id }, update: { $set: item }, upsert: true }
                 }));
                 await WikidataObject.bulkWrite(bulkOps);
             }
+
+            // Check in the database the number of items stored
+            const count = await WikidataObject.countDocuments({ topic });
+            console.log(`📈​ ${count} items stored for topic: ${topic}`);
 
             await TopicUpdate.findOneAndUpdate(
                 { topic },
