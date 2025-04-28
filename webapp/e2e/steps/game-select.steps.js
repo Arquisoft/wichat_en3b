@@ -11,7 +11,7 @@ defineFeature(feature, test => {
   beforeAll(async () => {
     browser = process.env.GITHUB_ACTIONS
       ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
-      : await puppeteer.launch({ headless: false, slowMo: 10 });
+      : await puppeteer.launch({ headless: false, slowMo: 30 });
     page = await browser.newPage();
     //Way of setting up the timeout
     setDefaultOptions({ timeout: 1000 })
@@ -87,7 +87,8 @@ defineFeature(feature, test => {
 
 
     then('They can choose that topic and go to the next screen', async () => {
-      
+      // Click on the accordion with the text "Geography"
+      await expect(page).toClick("[data-testid='Geography']");
       //Click on the topic
       await expect(page).toClick("button", { text: "CITIES" });
       //Click on the next button

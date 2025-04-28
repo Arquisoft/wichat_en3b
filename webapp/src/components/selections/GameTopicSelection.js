@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Typography, Box, Grid, TextField, Collapse, Divider } from "@mui/material"
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router"
 import {
   LocationCity, Flag, SportsBasketball, MusicNote, Public, Sports, Map, Event, PushPin,
@@ -10,6 +11,10 @@ import {
 } from "@mui/icons-material"
 import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton, TopicButton } from './SelectionStyles'
 import useAxios from "../../hooks/useAxios";
+import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+
 
 const CATEGORY_MAP = {
   "Geography": [
@@ -135,21 +140,35 @@ const GameTopicSelection = () => {
     }).filter(item => item !== null); // Remove null entries
   };
 
+  const formatSelectedMessage = (selectedTopics, allTopics, isWild) => {
+    let topicsNumber = selectedTopics.length;
+    let returnvalue = "";
+
+    if (isWild) returnvalue += t("all") + " ";
+    returnvalue += topicsNumber + " " + t("topic");
+    if (topicsNumber === 1) returnvalue += t("selected singular");
+    else returnvalue += t("selected plural");
+
+    return returnvalue;
+  }
+
+  const {t} = useTranslation();
+
 
   return (
     <StyledContainer maxWidth="md" data-testid="game-topic-selection">
       <Typography variant="h3" align="center" fontWeight="bold" color="primary.main">
-        TRIVIA GAME
+        {t("triviaGame").toUpperCase()}
       </Typography>
 
       <SectionPaper>
-        <SectionTitle variant="h5">CHOOSE YOUR TOPICS</SectionTitle>
+        <SectionTitle variant="h5">{t("chooseTopics").toUpperCase()}</SectionTitle>
 
         <TextField
           fullWidth
           margin="normal"
           variant="outlined"
-          label="Search topics..."
+          label= {t("searchBar")}
           data-testid="search-input"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -191,7 +210,7 @@ const GameTopicSelection = () => {
               color: isWild ? "#7e57c2" : "#fff",
             }}
           >
-            🎯 Custom
+            🎯 {t("custom")}
           </StyledButton>
 
           <StyledButton
@@ -205,7 +224,7 @@ const GameTopicSelection = () => {
               color: !isWild ? "#3f51b5" : "#fff",
             }}
           >
-            🌀 Wild Mode
+            🌀 {t("wild")}
           </StyledButton>
         </Box>
 
@@ -213,26 +232,37 @@ const GameTopicSelection = () => {
         <Collapse in={!isWild}>
           {filterBySearch(CATEGORY_MAP, searchTerm).map(({ category, topics }) => {
             return (
-              <Box key={category} sx={{ mt: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: "bold", color: "#5e35b1", mb: 1 }}>
-                  {category}
-                </Typography>
-                <Grid container spacing={2}>
-                  {topics.map(({ key, label, icon }) => (
-                    <Grid item xs={6} sm={4} md={3} key={key}>
-                      <TopicButton
-                        startIcon={icon}
-                        onClick={() => handleTopicChange(key)}
-                        isSelected={selectedTopics.includes(key)}
-                        disabled={!isWild && (!Array.isArray(availableTopics) || !availableTopics.includes(key))}
+              <Accordion data-testid={category} key={category} sx={{ mt: 2 }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls={`${category}-content`}
+                  id={`${category}-header`}
+                  sx={{
+                    backgroundColor: "#f0f4ff",
+                    "&.Mui-expanded": { backgroundColor: "#e8f0fe" },
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "#5e35b1" }}>
+                    {t(category)}
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={2}>
+                    {topics.map(({ key, label, icon }) => (
+                      <Grid item xs={6} sm={4} md={3} key={key}>
+                        <TopicButton
+                          startIcon={icon}
+                          onClick={() => handleTopicChange(key)}
+                          isSelected={selectedTopics.includes(key)}
+                          disabled={!isWild && (!Array.isArray(availableTopics) || !availableTopics.includes(key))}
                         >
-                        {label}
-                      </TopicButton>
-                    </Grid>
-                  ))}
-                </Grid>
-                <Divider sx={{ mt: 2 }} />
-              </Box>
+                          {t(label)}
+                        </TopicButton>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
             );
           })}
         </Collapse>
@@ -240,9 +270,7 @@ const GameTopicSelection = () => {
 
 
         <Typography variant="subtitle1" color="primary" sx={{ textAlign: "center", mt: 2 }}>
-          {isWild
-            ? `All ${ALL_TOPICS.length} topics selected`
-            : `${selectedTopics.length} topic${selectedTopics.length !== 1 ? "s" : ""} selected`}
+          {formatSelectedMessage(selectedTopics, ALL_TOPICS, isWild)}
         </Typography>
 
         <StyledButton
@@ -254,7 +282,7 @@ const GameTopicSelection = () => {
           disabled={isNextDisabled}
           fullWidth
         >
-          NEXT
+          {t("next")}
         </StyledButton>
 
         <StyledButton
@@ -270,7 +298,7 @@ const GameTopicSelection = () => {
             }
           }}
         >
-          BACK HOME
+          {t("backHome")}
         </StyledButton>
       </SectionPaper>
     </StyledContainer>
