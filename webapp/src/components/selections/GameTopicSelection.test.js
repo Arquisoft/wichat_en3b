@@ -357,6 +357,8 @@ describe("GameTopicSelection Component", () => {
     fireEvent.click(historyAccordion);
     const geographyAccordion = screen.getByText(/Geography/i);
     fireEvent.click(geographyAccordion);
+    const miscAccordeon = screen.getByText(/Miscellaneous/i);
+    fireEvent.click(miscAccordeon);
 
 
     
