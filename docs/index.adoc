@@ -6,10 +6,10 @@
 // configure EN settings for asciidoc
 include::src/config.adoc[]
 
-= image:arc42-logo.png[arc42] wichat_en3b
-:revnumber: 8.2 EN
-:revdate: January 2023
-:revremark: (based upon AsciiDoc version)
+= image:brain_logo.jpg[arc42] Documentation
+:revnumber: 1.0.8 EN
+:revdate: April 2025
+//:revremark: (based upon AsciiDoc version)
 // toc-title definition MUST follow document title without blank line!
 :toc-title: Table of Contents
 
@@ -29,10 +29,10 @@ ifdef::backend-html5[]
 endif::backend-html5[]
 
 
-include::src/about-arc42.adoc[]
+//include::src/about-arc42.adoc[]
 
 // horizontal line
-***
+//***
 
 ifdef::arc42help[]
 [role="arc42help"]
