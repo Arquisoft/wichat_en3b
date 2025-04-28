@@ -56,7 +56,8 @@ app.post('/login', [
     user.refreshToken = refreshToken;
     await user.save();
 
-    // Set the token in a cookie
+    // Set the tokens in cookies
+    res.cookie("accessToken", accessToken, { httpOnly: true, maxAge: 15 * 60 * 1000 });
     res.cookie("jwt", refreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
     // Respond with the token and user information
@@ -67,6 +68,7 @@ app.post('/login', [
 });
 
 app.post("/logout", async (req, res) => {
+  res.clearCookie("accessToken");
   res.clearCookie("jwt");
   res.json({ message: "Logged out successfully" });
 });

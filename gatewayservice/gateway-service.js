@@ -81,11 +81,6 @@ serverProxy.on("proxyReq", (proxyReq, req, res) => {
   }
 });
 
-app.all("/admin/monitoring/*", (req, res) => {
-  console.log("Proxying request to Grafana:", req.url);
-  serverProxy.web(req, res, { target: grafanaUrl, prependPath: false, headers: { ...req.headers } });
-});
-
 serverProxy.on("error", (err, req, res) => {
   console.error("Proxy error:", err);
   res.status(500).json({ error: "Proxy error" });
@@ -93,10 +88,17 @@ serverProxy.on("error", (err, req, res) => {
 
 // Define a middleware to check authentication
 const verifyJWT = (req, res, next) => {
+  let token = null;
   const authHeader = req.headers.authorization || req.headers.Authorization;
-  if (!authHeader?.startsWith('Bearer '))
+  if (authHeader?.startsWith('Bearer '))
+    token = authHeader.split(' ')[1];
+  else if (req.cookies?.accessToken)
+    token = req.cookies.accessToken;
+
+  console.log("Cookies:", req.cookies, "Token:", token);
+
+  if (!token)
     return res.status(401).json({ error: 'Unauthorized' });
-  const token = authHeader.split(' ')[1];
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "accessTokenSecret", (err, decoded) => {
     if (err) return res.status(403).json({ error: 'Invalid token' });
@@ -145,6 +147,11 @@ app.get("/refresh", async (req, res) => {
   try {
     // Forward the logout request to the authentication service
     const authResponse = await axios.get(authServiceUrl + '/refresh', { withCredentials: true, headers: { ...req.headers } });
+
+    // Forward the cookie to the client from the authentication service
+    if (authResponse.headers && authResponse.headers["set-cookie"])
+      res.setHeader("Set-Cookie", authResponse.headers["set-cookie"]);
+    
     res.json(authResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
@@ -163,6 +170,16 @@ app.post('/adduser', async (req, res) => {
 
 // Add the verifyJWT middleware to private endpoints
 app.use(verifyJWT);
+
+// Proxy requests to Grafana
+app.all("/admin/monitoring/*", (req, res) => {
+  // Verify if the user has admin role
+  if (req.role !== 'admin')
+    return res.status(403).json({ error: 'Forbidden' });
+
+  console.log("Proxying request to Grafana:", req.url);
+  serverProxy.web(req, res, { target: grafanaUrl, prependPath: false, headers: { ...req.headers } });
+});
 
 app.get('/isAdmin/:username', async (req, res) => {
   try {
