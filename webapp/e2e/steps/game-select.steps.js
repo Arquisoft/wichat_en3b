@@ -14,7 +14,7 @@ defineFeature(feature, test => {
       : await puppeteer.launch({ headless: false, slowMo: 10 });
     page = await browser.newPage();
     //Way of setting up the timeout
-    setDefaultOptions({ timeout: 10000 })
+    setDefaultOptions({ timeout: 1000 })
 
     await page
       .goto("http://localhost:3000", {
@@ -29,49 +29,91 @@ defineFeature(feature, test => {
     let password;
 
     given('The user is on the dashboard', async () => {
-      username = "username"
-      password = "1zSlB3rGK401ZFPBhEWR4rV4Fg62VsaTKazUh3Yh"
+      username = "GameSelUsr"
+      password = "GameSelectPass123$"
+      await new Promise((resolve) => setTimeout(resolve, 500)); 
       //Go from landing page to login page
       await expect(page).toClick("button", { text: "Login" }); 
+      await new Promise((resolve) => setTimeout(resolve, 500)); 
       //Go to the register page to add the user credentials to the database
-      await expect(page).toClick("a", { text: "Don't have an account? Register here." });
+      await expect(page).toClick("a", { text: "Don’t have an account? Sign up here" });
       //Fill the register form with the user credentials
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button', { text: 'Add User' })
-      //Go back to the login page
-      await expect(page).toClick("a", { text: "Already have an account? Login here." });
+      await expect(page).toClick('button[data-testid="add-user-button"]');
+      //You are redirected to the login page
+      await expect(page).toMatchElement("div", { text: "Ready to test your knowledge? Log in and let's go!" });
       //Fill the register form with the user credentials
+      await new Promise((resolve) => setTimeout(resolve, 500)); 
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
       await expect(page).toClick('[data-testid="login-submit"]')
+      await new Promise((resolve) => setTimeout(resolve, 500)); 
       //Check if the user arrived to the dashboard
-      await expect(page).toMatchElement("div", { text: "Home" });
+      await expect(page).toMatchElement('div[data-testid="dashboard-welcomeMsg"]');
 
     });
 
     when('They Click on "Play a game now"', async () => {
-      await expect(page).toClick("button", { text: "Play A Game Now" });
+      await expect(page).toMatchElement('div[data-testid="dashboard-readyToPlay"]');
+      await expect(page).toClick('[data-testid="play-button"]')
+      await new Promise((resolve) => setTimeout(resolve, 500)); 
     });
 
     then('They can choose the gamemode they want to play', async () => {
+        //Check if the user arrived to the game mode selection page
+        await expect(page).toMatchElement('div[data-testid="game-topic-selection"]');
+        await new Promise((resolve) => setTimeout(resolve, 500)); 
         //Click on wild
-        await expect(page).toClick('input[type="radio"][value="wild"]');
+        await expect(page).toClick('[data-testid="wild-button"]');
         //Click back on custom
-        await expect(page).toClick('input[type="radio"][value="custom"]');
-        //Select the different game modes under custom
-        await expect(page).toClick('button', { text: 'CITIES' });
-        await expect(page).toClick('button', { text: 'FLAGS' });
-        await expect(page).toClick('button', { text: 'ATHLETES' });
-        await expect(page).toClick('button', { text: 'SINGERS' });
-        //Click on next to select game type
-        await expect(page).toClick('button', { text: 'NEXT' });
-        //Select rounds
-        await expect(page).toClick('input[type="checkbox"][name="rounds"]');
-        //Click on next
-        await expect(page).toClick('button', { text: 'NEXT' });
+        await expect(page).toClick('[data-testid="custom-button"]');
     });
   })
+
+  test('User in the game topic selection window', ({given,when,then}) => {
+    
+    given('The user is on the game topic selection window and has chosen Custom', async () => {
+       //Click on custom
+       await expect(page).toClick('[data-testid="custom-button"]')
+       await new Promise((resolve) => setTimeout(resolve, 500)); 
+    });
+
+    when('They search for specific topics', async () => {
+      let searchInput = "cities";
+      await page.waitForSelector("[data-testid='search-input'] input");
+      await expect(page).toFill("[data-testid='search-input'] input", searchInput);
+    });
+
+
+    then('They can choose that topic and go to the next screen', async () => {
+      
+      //Click on the topic
+      await expect(page).toClick("button", { text: "CITIES" });
+      //Click on the next button
+      await expect(page).toClick("button", { text: "NEXT" });
+    });
+  })
+
+  test('User in the game mode screen', ({given,when,then}) => {
+    
+    given('The user is the the game mode selection screen', async () => {
+        await expect(page).toMatchElement('div[data-testid="game-mode-selection"]');
+    });
+
+    when('They choose any game mode', async () => {
+      await expect(page).toClick("button[data-testid='TIME']");
+    });
+
+
+    then('They are able to play a game of that gamemode', async () => {
+      await page.waitForNavigation({ waitUntil: "networkidle0" });
+      const currentUrl = page.url();
+      expect(currentUrl).toContain("/timegame");
+    });
+  })
+
+
 
   
 

@@ -30,21 +30,21 @@ defineFeature(feature, test => {
 
     given('An unregistered user', async () => {
       username = "newUser"
-      password = "newUserPassword"
+      password = "newUserPassword123$"
       //Go from landing page to login page
       await expect(page).toClick("button", { text: "Login" }); 
       //Go from login page to register page
-      await expect(page).toClick("a", { text: "Don't have an account? Register here." });
+      await expect(page).toClick("a", { text: "Don’t have an account? Sign up here" });
     });
 
     when('I fill the data in the form and press submit', async () => {
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button', { text: 'Add User' })
+      await expect(page).toClick('button[data-testid="add-user-button"]');
     });
 
-    then('A confirmation message should be shown in the screen', async () => {
-        await expect(page).toMatchElement("div", { text: "User added successfully" });
+    then('I am redirected to the login page', async () => {
+      await expect(page).toMatchElement("div", { text: "Ready to test your knowledge? Log in and let's go!" });
     });
   })
 

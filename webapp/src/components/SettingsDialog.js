@@ -29,9 +29,9 @@ const SettingsDialog = ({ open, onClose }) => {
 
       <Container sx={{ py: 2, display: "flex", flexDirection: "column", gap: 2 }}>
         {/* Language */}
-        <Box>
+        <Box data-testid = "language-div">
           <Typography variant="subtitle1" sx={{ mb: 1 }}>🌐 {t("language")}</Typography>
-          <LanguageSelect />
+          <LanguageSelect/>
         </Box>
 
         {/* Theme */}
@@ -53,6 +53,7 @@ const SettingsDialog = ({ open, onClose }) => {
                   }}
                 >
                   <Button
+                    data-testid={themeOption.name}
                     onClick={() => selectTheme(themeOption)}
                     aria-label={`Select ${themeOption} theme`}
                     sx={{
@@ -90,7 +91,7 @@ const SettingsDialog = ({ open, onClose }) => {
 
       {/* Advanced Settings */}
       <Accordion disableGutters elevation={0} sx={{ backgroundColor: 'transparent' }}>
-        <AccordionSummary expandIcon={<ExpandMore />}>
+        <AccordionSummary expandIcon={<ExpandMore />} data-testid="advanced-settings-button">
           <Typography variant="subtitle1" data-testid="advancedSettings">⚙️ {t("advancedSettings")}</Typography>
         </AccordionSummary>
         <Divider />
@@ -100,6 +101,7 @@ const SettingsDialog = ({ open, onClose }) => {
             <Typography variant="subtitle2" data-testid = "llmModel" sx={{ mb: 1 }}>🧠 {t("llmModel")}</Typography>
             <FormControl fullWidth size="small">
               <Select
+                data-testid="ai-model-selector"
                 value={llmModel}
                 onChange={(e) => setLlmModel(e.target.value)}
                 sx={{ backgroundColor: 'background.default' }}

@@ -42,13 +42,13 @@ function GameModeSelection() {
   }
   
   return (
-    <StyledContainer maxWidth="md">
+    <StyledContainer data-testid="game-mode-selection" maxWidth="md">
       <Typography variant="h3" component="h1" align="center" gutterBottom sx={{ fontWeight: "bold", color: "#3f51b5" }}>
         TRIVIA GAME
       </Typography>
 
       <SectionPaper elevation={3}>
-        <SectionTitle variant="h5">SELECT THE MODE</SectionTitle>
+        <SectionTitle variant="h5" >SELECT THE MODE</SectionTitle>
         <Grid container spacing={3}>
           {gameModes.map((mode) => (
             <Grid item xs={12} md={4} key={mode.id}>
@@ -60,7 +60,7 @@ function GameModeSelection() {
                   <ModeDescription variant="body">{mode.description}</ModeDescription>
                 </StyledCardContent>
                 <StyledCardActions>
-                  <StyledButton variant="contained" size="small" onClick={() => goToGame(mode.path)}>
+                  <StyledButton variant="contained" data-testid={mode.name} size="small" onClick={() => goToGame(mode.path)}>
                     PLAY {mode.name}
                   </StyledButton>
                 </StyledCardActions>
