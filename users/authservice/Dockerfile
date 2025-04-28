@@ -4,6 +4,9 @@ FROM node:22
 # Set the working directory in the container
 WORKDIR /usr/src/authservice
 
+ENV ACCESS_TOKEN_SECRET="accessTokenSecret"
+ENV REFRESH_TOKEN_SECRET="refreshTokenSecret"
+
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 

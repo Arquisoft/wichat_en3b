@@ -81,14 +81,16 @@ describe('Auth Service', () => {
     
     
     expect(response.headers['set-cookie']).toBeDefined();
-    const cookieHeader = response.headers['set-cookie'][0];
+    let cookieHeader = response.headers['set-cookie'][0];
+    expect(cookieHeader).toContain('accessToken=;');
+    cookieHeader = response.headers['set-cookie'][1];
     expect(cookieHeader).toContain('jwt=;');
   });
 
   it('Should return 401 when refreshing without token', async () => {
     const response = await request(app).get('/refresh');
-    expect(response.status).toBe(401);
-    expect(response.body).toHaveProperty('error', 'Unauthorized');
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty('error', 'Forbidden');
   });
 
   it('Should return 403 when refreshing with invalid token', async () => {

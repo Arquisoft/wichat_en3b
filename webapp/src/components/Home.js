@@ -263,7 +263,7 @@ const Home = () => {
                     />
                         <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
-                                ":
+                                {t("rankingBy")}:
                             </Typography>
                             <Tabs
                                 value={stat}

@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml')
+const httpProxy = require('http-proxy');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const port = 8000;
@@ -16,9 +18,13 @@ const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost
 const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
+const grafanaUrl = process.env.GRAFANA_URL || 'http://localhost:9091';
+
+app.use(express.json());
+app.use(cookieParser());
 
 // Read the OpenAPI YAML file synchronously
-openapiPath = './openapi.yaml'
+const openapiPath = './openapi.yaml'
 if (fs.existsSync(openapiPath)) {
   const file = fs.readFileSync(openapiPath, 'utf8');
 
@@ -41,24 +47,63 @@ if (fs.existsSync(openapiPath)) {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
 
-app.use(cors({ origin: frontendUrl, credentials: true }));
-app.use(express.json());
+// CORS configuration
+const allowedOrigins = [
+  frontendUrl,
+  `http://localhost:${port}`
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true); // Origin is allowed
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+  allowedHeaders: "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+}));
 
 //Prometheus configuration
 const metricsMiddleware = promBundle({ includeMethod: true });
 app.use(metricsMiddleware);
 
+// Set up a proxy server for Grafana
+// This proxy server will forward requests to the Grafana service
+const serverProxy = httpProxy.createProxyServer();
+serverProxy.on("proxyReq", (proxyReq, req, res) => {
+  if (req.body) {
+    const bodyData = JSON.stringify(req.body);
+    proxyReq.setHeader("Content-Type", "application/json");
+    proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+    proxyReq.write(bodyData);
+  }
+});
+
+serverProxy.on("error", (err, req, res) => {
+  console.error("Proxy error:", err);
+  res.status(500).json({ error: "Proxy error" });
+});
+
 // Define a middleware to check authentication
 const verifyJWT = (req, res, next) => {
+  let token = null;
   const authHeader = req.headers.authorization || req.headers.Authorization;
-  if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
-  const token = authHeader.split(' ')[1];
-  jwt.verify(token, "accessTokenSecret", (err, decoded) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
+  if (authHeader?.startsWith('Bearer '))
+    token = authHeader.split(' ')[1];
+  else if (req.cookies?.accessToken)
+    token = req.cookies.accessToken;
+
+  if (!token)
+    return res.status(401).json({ error: 'Unauthorized' });
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "accessTokenSecret", (err, decoded) => {
+    if (err) return res.status(403).json({ error: 'Invalid token. Please log in again.' });
     req.user = decoded.username;
+    req.role = decoded.role;
     next();
-  }
-  );
+  });
 }
 
 // Health check endpoint
@@ -100,6 +145,11 @@ app.get("/refresh", async (req, res) => {
   try {
     // Forward the logout request to the authentication service
     const authResponse = await axios.get(authServiceUrl + '/refresh', { withCredentials: true, headers: { ...req.headers } });
+
+    // Forward the cookie to the client from the authentication service
+    if (authResponse.headers && authResponse.headers["set-cookie"])
+      res.setHeader("Set-Cookie", authResponse.headers["set-cookie"]);
+    
     res.json(authResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
@@ -118,6 +168,26 @@ app.post('/adduser', async (req, res) => {
 
 // Add the verifyJWT middleware to private endpoints
 app.use(verifyJWT);
+
+// Proxy requests to Grafana
+app.all("/admin/monitoring/*", (req, res) => {
+  // Verify if the user has admin role
+  if (req.role !== 'admin')
+    return res.status(403).json({ error: 'Forbidden' });
+
+  console.log("Proxying request to Grafana:", req.url);
+  serverProxy.web(req, res, { target: grafanaUrl, prependPath: false, headers: { ...req.headers } });
+});
+
+app.get('/isAdmin/:username', async (req, res) => {
+  try {
+    // Forward the isAdmin request to the user service
+    const userResponse = await axios.get(userServiceUrl + '/isAdmin/' + req.params.username);
+    res.json(userResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
 
 app.post('/askllm', async (req, res) => {
   try {
@@ -181,7 +251,7 @@ app.get('/userstats', async (req, res) => {
     const statsResponse = await axios.get(userServiceUrl + '/userstats', {
       params: { username, mode, topic }
     });
-    
+
     res.json(statsResponse.data);
   } catch (error) {
     res.status(error.response.status).json({ error: error.response.data.error });
