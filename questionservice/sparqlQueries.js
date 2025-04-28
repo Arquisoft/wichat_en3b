@@ -10,12 +10,13 @@ ORDER BY DESC(?sitelinks)
 LIMIT 200
 `,
 
-  flag: `SELECT ?flag ?flagLabel ?image WHERE {
+  flag: `SELECT ?flag ?flagLabel (SAMPLE(?image) AS ?image) WHERE {
 ?flag wdt:P31 wd:Q6256;  # The entity is a country
          wikibase:sitelinks ?sitelinks;  # Number of Wikipedia links
          wdt:P41 ?image.  # Country flag image
 SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
+GROUP BY ?flag ?flagLabel
 ORDER BY DESC(?sitelinks)  # Order by popularity
 LIMIT 200
 `,
@@ -48,17 +49,6 @@ LIMIT 200
 SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
 ORDER BY DESC(?sitelinks)
-LIMIT 200
-`,
-
-  country: `SELECT ?country ?countryLabel ?image WHERE {
-?country wdt:P31 wd:Q6256;  # The entity is a country
-         wikibase:sitelinks ?sitelinks;  # Number of Wikipedia links
-         wdt:P242 ?image.  # Image of the territory's silhouette
-
-SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-}
-ORDER BY DESC(?sitelinks)  # Sort by popularity
 LIMIT 200
 `,
 
@@ -355,13 +345,25 @@ ORDER BY DESC(?sitelinks)
 LIMIT 200
 `,
 
-  euroleaguePlayer: `SELECT ?euroleaguePlayer ?euroleaguePlayerLabel ?image WHERE {
-?euroleaguePlayer wdt:P106 wd:Q3665646;    # occupation: basketball player
-                  wdt:P118 wd:Q185982;     # league: EuroLeague
-                  wdt:P18 ?image;          # image
-                  wikibase:sitelinks ?sitelinks.
+    spanishMaleBasketballPlayer: `SELECT ?spanishMaleBasketballPlayer ?spanishMaleBasketballPlayerLabel ?image WHERE {
+  ?spanishMaleBasketballPlayer wdt:P106 wd:Q3665646;     # occupation: basketball player
+          wdt:P27 wd:Q29;           # country of citizenship: Spain
+          wdt:P21 wd:Q6581097;      # gender: male
+          wdt:P18 ?image;           # image
+          wikibase:sitelinks ?sitelinks.
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY DESC(?sitelinks)
+LIMIT 200
+`,
 
-SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+    spanishFemaleBasketballPlayer: `SELECT ?spanishFemaleBasketballPlayer ?spanishFemaleBasketballPlayerLabel ?image ?sitelinks WHERE {
+  ?spanishFemaleBasketballPlayer wdt:P106 wd:Q3665646;     # occupation: basketball player
+          wdt:P27 wd:Q29;           # country of citizenship: Spain
+          wdt:P21 wd:Q6581072;      # gender: female
+          wdt:P18 ?image;           # image
+          wikibase:sitelinks ?sitelinks.
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
 ORDER BY DESC(?sitelinks)
 LIMIT 200
@@ -458,19 +460,20 @@ ORDER BY DESC(?sitelinks)
 LIMIT 200
 `,
 
- actor: `SELECT ?actor ?actorLabel (SAMPLE(?image) AS ?image) ?sitelinks WHERE {
-?actor wdt:P31 wd:Q5;           # Human
-       wdt:P21 wd:Q6581097;     # Male
-       wdt:P106 wd:Q33999;      # Actor
-       wdt:P18 ?image.          # Has image
-
-?actor wikibase:sitelinks ?sitelinks. # Popularity measure
-
-SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+ actor: `SELECT ?actor ?actorLabel ?image WHERE {
+  {
+    SELECT ?actor WHERE {
+      ?actor wdt:P31 wd:Q5;            # human
+             wdt:P21 wd:Q6581097;      # male
+             wdt:P106 wd:Q33999;       # actor
+             wikibase:sitelinks ?sitelinks.
+    }
+    ORDER BY DESC(?sitelinks)
+    LIMIT 200
+  }
+  ?actor wdt:P18 ?image.              # only for those 200, fetch image
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
-GROUP BY ?actor ?actorLabel ?sitelinks
-ORDER BY DESC(?sitelinks)
-LIMIT 200
 `,
 
  actress: `SELECT ?actress ?actressLabel (SAMPLE(?image) AS ?image) ?sitelinks WHERE {

@@ -19,7 +19,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 const CATEGORY_MAP = {
   "Geography": [
     { key: "city", label: "CITIES", icon: <LocationCity /> },
-    { key: "country", label: "COUNTRIES", icon: <Public /> },
     { key: "spanishProvince", label: "SPANISH PROVINCES", icon: <Map /> },
     { key: "spanishCity", label: "SPANISH CITIES", icon: <LocationCity /> },
     { key: "famousPlace", label: "FAMOUS PLACES", icon: <PushPin /> },
@@ -48,7 +47,8 @@ const CATEGORY_MAP = {
     { key: "atleticoMadridPlayer", label: "ATLETICO MADRID PLAYERS", icon: <SportsSoccer /> },
     { key: "nbaPlayer", label: "NBA PLAYERS", icon: <SportsBasketball /> },
     { key: "wnbaPlayer", label: "WNBA PLAYERS", icon: <SportsBasketball /> },
-    { key: "euroleaguePlayer", label: "EUROLEAGUE PLAYERS", icon: <SportsBasketball /> },
+    { key: "spanishMaleBasketballPlayer", label: "SPANISH MALE BASKETBALL PLAYERS", icon: <SportsBasketball /> },
+    { key: "spanishFemaleBasketballPlayer", label: "SPANISH FEMALE BASKETBALL PLAYERS", icon: <SportsBasketball /> },
     { key: "atpPlayer", label: "ATP PLAYERS", icon: <SportsTennis /> },
     { key: "wtaPlayer", label: "WTA PLAYERS", icon: <SportsTennis /> },
     { key: "f1Driver", label: "F1 DRIVERS", icon: <SportsMotorsports /> },

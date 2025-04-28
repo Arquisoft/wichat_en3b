@@ -18,7 +18,7 @@ jest.mock("../../hooks/useAxios", () => ({
   default: () => ({
     get: jest.fn().mockResolvedValue({
       data: {
-        availableTopics: ["city", "country", "flag", "sport", "singer", "athlete", "language", "historicalWoman", "famousPlace"]
+        availableTopics: ["city", "flag", "sport", "singer", "athlete", "language", "historicalWoman", "famousPlace"]
       }
     })
   })
@@ -357,21 +357,23 @@ describe("GameTopicSelection Component", () => {
     fireEvent.click(historyAccordion);
     const geographyAccordion = screen.getByText(/Geography/i);
     fireEvent.click(geographyAccordion);
+    const miscAccordeon = screen.getByText(/Miscellaneous/i);
+    fireEvent.click(miscAccordeon);
 
 
     
     // Wait for topics to be loaded
     await waitFor(() => {
       expect(screen.getByText(/HISTORICAL WOMEN/i)).toBeInTheDocument();
-      expect(screen.getByText(/COUNTRIES/i)).toBeInTheDocument();
+      expect(screen.getByText(/FOODS/i)).toBeInTheDocument();
     });
     
     // Check that HISTORICAL WOMEN is clickable (available)
     const historicalWomenTopic = screen.getByRole('button', { name: /HISTORICAL WOMEN/i });
     expect(historicalWomenTopic).not.toBeDisabled();
     
-    // Check that COUNTRIES is disabled (unavailable)
-    const countryTopic = screen.getByRole('button', { name: /COUNTRIES/i });
-    expect(countryTopic).toBeDisabled();
+    // Check that FOODS is disabled (unavailable)
+    const foodTopic = screen.getByRole('button', { name: /FOODS/i });
+    expect(foodTopic).toBeDisabled();
   });
 });
