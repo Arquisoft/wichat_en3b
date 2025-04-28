@@ -8,13 +8,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import FriendChat from "./FriendChat"; 
 import lockedBackgroundImage from "../photos/lockedPic.png";
 
-const PhoneDialog = ({ onClose, chatKey, roundData , coins}) => {
+const PhoneDialog = ({ roundData, spendCoins, canAfford }) => {
   const [view, setView] = useState("locked");
   const [selectedContact, setSelectedContact] = useState(null);
   const [calling, setCalling] = useState(false);
   const [callingContact, setCallingContact] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLocked, setIsLocked] = useState(true);
 
   const theme = useTheme();
 
@@ -54,13 +55,14 @@ const PhoneDialog = ({ onClose, chatKey, roundData , coins}) => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleUnlock = () => {
-    coins -= 25; // Deduct coins for unlocking
-    if (coins < 0) {
-      alert("Not enough coins to unlock the phone.");
-      return;
+  const handleUnlock = async () => {
+    if (!isLocked)
+      return setView("contacts");
+    
+    if (await spendCoins(25)) {
+      setView("contacts");
+      setIsLocked(false);
     }
-    setView("contacts");
   };
 
   const handleLock = () => {
@@ -107,7 +109,7 @@ const PhoneDialog = ({ onClose, chatKey, roundData , coins}) => {
       {/* Status Bar */}
       <Box
         sx={{
-          background: theme.palette.grey[300],
+          backgroundColor: alpha(theme.palette.text.primary, 0.15),
           color: theme.palette.text.secondary,
           p: 1,
           display: "flex",
@@ -148,12 +150,14 @@ const PhoneDialog = ({ onClose, chatKey, roundData , coins}) => {
             Your phone is locked now
           </Typography>
           <Typography variant="subtitle1" sx={{ opacity: 0.8 }}>
-            Tap the button below to unlock and access your contacts. Unlocking will cost you 25 coins.
+            Tap the button below to unlock and access your contacts.
+            {isLocked && "Unlocking will cost you 25 coins."}
           </Typography>
           <Button
             variant="contained"
             color="primary"
             onClick={handleUnlock}
+            disabled={!canAfford(25)}
             sx={{
               padding: "12px 24px",
               fontSize: "1rem",
