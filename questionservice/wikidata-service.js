@@ -28,7 +28,6 @@ async function startUp() {
         await mongoose.connect(mongoDB);
         console.log("Connected to MongoDB");
 
-        await clearDatabase(); // Clear the database (for development purposes)
         await fetchAndStoreData(); // Fetch data and store it in MongoDB when the service starts
     } catch (err) {
         console.error("❌ Error connecting to the DB:", err);
@@ -36,6 +35,7 @@ async function startUp() {
 }
 
 // Function to clear the database (just for development)
+/**
 async function clearDatabase() {
     try {
         console.log("Clearing the database...");
@@ -45,6 +45,7 @@ async function clearDatabase() {
         console.error("Error clearing the database:", error);
     }
 }
+*/
 
 // Function to pause execution
 function sleep(ms) {
@@ -68,10 +69,9 @@ async function fetchAndStoreData() {
     const topicsToUpdate = [];
     for (const topic of Object.keys(QUERIES)) {
         const update = topicUpdateMap[topic];
-        // Uncomment freshness check if desired:
-        // if (!update || (now - new Date(update.lastUpdated) > FRESHNESS_THRESHOLD)) {
+        if (!update || (now - new Date(update.lastUpdated) > FRESHNESS_THRESHOLD)) {
             topicsToUpdate.push(topic);
-        // }
+        }
     }
 
     if (topicsToUpdate.length === 0) {

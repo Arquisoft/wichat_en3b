@@ -1,7 +1,6 @@
 export const TOPIC_QUESTION_MAP = {
   // Geography
   "city": { key: "city", wh: "What", name: "CITY" },
-  "country": { key: "country", wh: "Which", name: "COUNTRY" },
   "spanishProvince": { key: "spanishProvince", wh: "Which", name: "SPANISH PROVINCE" },
   "spanishCity": { key: "spanishCity", wh: "Which", name: "SPANISH CITY" },
   "famousPlace": { key: "famousPlace", wh: "What", name: "FAMOUS PLACE" },

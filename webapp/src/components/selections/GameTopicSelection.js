@@ -14,7 +14,6 @@ import useAxios from "../../hooks/useAxios";
 const CATEGORY_MAP = {
   "Geography": [
     { key: "city", label: "CITIES", icon: <LocationCity /> },
-    { key: "country", label: "COUNTRIES", icon: <Public /> },
     { key: "spanishProvince", label: "SPANISH PROVINCES", icon: <Map /> },
     { key: "spanishCity", label: "SPANISH CITIES", icon: <LocationCity /> },
     { key: "famousPlace", label: "FAMOUS PLACES", icon: <PushPin /> },
