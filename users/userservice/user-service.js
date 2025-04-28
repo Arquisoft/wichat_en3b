@@ -16,15 +16,13 @@ const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
 mongoose.connect(mongoUri);
 
 const checkInput = (input) => {
-  return  String(input).replace(/[^a-zA-Z0-9_]/g, '');
+  return String(input).replace(/[^a-zA-Z0-9_]/g, '');
 };
 
 function validateRequiredFields(req, requiredFields) {
-  for (const field of requiredFields) {
-    if (!(field in req.body)) {
+  for (const field of requiredFields)
+    if (!(field in req.body))
       throw new Error(`Missing required field: ${field}`);
-    }
-  }
 }
 
 // Function to validate required fields in the request body
@@ -42,9 +40,9 @@ function validateUser(req) {
     throw new Error(`Password must have at least one capital letter, one digit and one special character.`);
   }
 
-  if(!req.body.password || req.body.password.length < 8)
-    throw new Error(`The length of the password must be of 8 characters or more. `); 
-  
+  if (!req.body.password || req.body.password.length < 8)
+    throw new Error(`The length of the password must be of 8 characters or more. `);
+
   if (req.body.username.length < 3) {
     throw new Error(`The length of the username is not valid.`);
   }
@@ -56,11 +54,11 @@ app.post('/adduser', async (req, res) => {
     validateUser(req);
 
     // Sanitize username to prevent MongoDB injection attacks
-    const checkedUsername  = checkInput(req.body.username);
+    const checkedUsername = checkInput(req.body.username);
 
     const existingUsers = await User.find({ username: checkedUsername }).lean();
     if (existingUsers.length > 0) {
-        return res.status(400).json({ error: 'Username already taken' });
+      return res.status(400).json({ error: 'Username already taken' });
     }
 
     // Encrypt the password before saving it
@@ -69,6 +67,7 @@ app.post('/adduser', async (req, res) => {
     const newUser = new User({
       username: req.body.username,
       password: hashedPassword,
+      role: "user",
       coins: 1000
     });
 
@@ -77,9 +76,22 @@ app.post('/adduser', async (req, res) => {
   } catch (error) {
     if (error.code === 11000 && error.keyPattern && error.keyPattern.username) {
       res.status(400).json({ error: "Username already taken" });
-    } 
+    }
     res.status(400).json({ error: error.message });
+  }
+});
 
+app.get("/isAdmin/:username", async (req, res) => {
+  try {
+    const sanitizedUsername = checkInput(req.params.username);
+    const user = await User.findOne({ username: sanitizedUsername }).select('role');
+
+    if (!user)
+      return res.status(404).json({ error: 'User not found' });
+    
+    res.json({ isAdmin: user.role === 'admin' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -115,7 +127,7 @@ app.post('/addgame', async (req, res) => {
     });
 
     await newGame.save();
-    
+
     calculateUserStatistics(newGame, questions);
 
     res.json(newGame);
@@ -139,7 +151,7 @@ async function calculateUserStatistics(newGame, questions) {
       } else {
         // Filter questions for the current topic
         const topicQuestions = questions.filter(question => question.topic === topic);
-        
+
         // Calculate partial statistics for the current topic
         score = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? question.pointsIncrement : 0), 0);
         correctRate = topicQuestions.reduce((acc, question) => acc + (question.isCorrect ? 1 : 0), 0) / topicQuestions.length;
@@ -204,7 +216,7 @@ async function updateUserCoins(username, coinsToAdd) {
     if (!user) {
       throw new Error('User not found');
     }
-    
+
     user.coins += coinsToAdd;
     await user.save();
     return user.coins;
@@ -218,16 +230,16 @@ async function updateUserCoins(username, coinsToAdd) {
 app.get('/usercoins/:username', async (req, res) => {
   try {
     const sanitizedUsername = checkInput(req.params.username);
-    
+
     const user = await User.findOne({ username: sanitizedUsername }).select('username coins');
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    
-    res.json({ 
+
+    res.json({
       username: user.username,
-      coins: user.coins 
+      coins: user.coins
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -237,20 +249,20 @@ app.get('/usercoins/:username', async (req, res) => {
 app.post('/updatecoins', async (req, res) => {
   try {
     validateRequiredFields(req, ['username', 'amount']);
-    
+
     const username = req.body.username;
     const amount = parseInt(req.body.amount);
-    
+
     if (isNaN(amount)) {
       return res.status(400).json({ error: 'Amount must be a number' });
     }
-    
+
     const newCoinsBalance = await updateUserCoins(username, amount);
-    
-    res.json({ 
+
+    res.json({
       username: username,
       coinsAdded: amount,
-      newBalance: newCoinsBalance 
+      newBalance: newCoinsBalance
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -270,8 +282,18 @@ app.get('/games/:username', async (req, res) => {
   }
 });
 
-const server = app.listen(port, () => {
+const server = app.listen(port, async () => {
   console.log(`User Service listening at http://localhost:${port}`);
+
+  if (await User.findOne({ username: "admin" }))
+    return console.log("Admin user already exists");
+
+  await new User({
+    username: "admin",
+    password: await bcrypt.hash("admin", 10),
+    role: "admin",
+  }).save();
+  console.log("Admin user created");
 });
 
 // Listen for the 'close' event on the Express.js server

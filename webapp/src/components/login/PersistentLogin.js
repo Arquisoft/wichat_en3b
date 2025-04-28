@@ -22,7 +22,7 @@ const PersistentLogin = () => {
             }
         }
 
-        !auth.accessToken ? verifyRefreshToken() : setLoading(false);
+        !auth.accessToken && persist ? verifyRefreshToken() : setLoading(false);
 
         return () => isMounted = false;
     }, []);
