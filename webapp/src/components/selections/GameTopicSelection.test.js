@@ -3,6 +3,8 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import GameTopicSelection from "./GameTopicSelection";
 import { ThemeProvider } from '../../context/ThemeContext';
+import { I18nextProvider } from "react-i18next";
+import i18n from "../../utils/i18n";
 
 // Mock the useNavigate hook
 jest.mock("react-router", () => ({
@@ -50,9 +52,11 @@ describe("GameTopicSelection Component", () => {
   test("renders correctly with title and selection options", async () => {
     render(
       <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
         <MemoryRouter>
           <GameTopicSelection />
         </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
 
@@ -71,9 +75,11 @@ describe("GameTopicSelection Component", () => {
   test("NEXT button is disabled initially", async () => {
     render(
       <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
         <MemoryRouter>
           <GameTopicSelection />
         </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
     
@@ -84,9 +90,11 @@ describe("GameTopicSelection Component", () => {
   test("NEXT button enables when topics are selected", async () => {
     render(
       <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
         <MemoryRouter>
           <GameTopicSelection />
         </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
     
@@ -95,6 +103,10 @@ describe("GameTopicSelection Component", () => {
       expect(screen.getByText(/CHOOSE YOUR TOPICS/i)).toBeInTheDocument();
       expect(screen.getByText(/HISTORICAL WOMEN/i)).toBeInTheDocument();
     });
+
+    // Click on the accordion with the text "History"
+    const historyAccordion = screen.getByText(/History/i);
+    fireEvent.click(historyAccordion);
     
     // Select HISTORICAL WOMEN topic
     const historicalWomenTopic = screen.getByRole('button', { name: /HISTORICAL WOMEN/i });
@@ -108,9 +120,11 @@ describe("GameTopicSelection Component", () => {
   test("Topic selection updates count correctly", async () => {
     render(
       <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
         <MemoryRouter>
           <GameTopicSelection />
         </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
     
@@ -120,6 +134,12 @@ describe("GameTopicSelection Component", () => {
       expect(screen.getByText(/HISTORICAL WOMEN/i)).toBeInTheDocument();
       expect(screen.getByText(/FAMOUS PLACES/i)).toBeInTheDocument();
     });
+
+    // Click on the accordions
+    const historyAccordion = screen.getByText(/History/i);
+    fireEvent.click(historyAccordion);
+    const geographyAccordion = screen.getByText(/Geography/i);
+    fireEvent.click(geographyAccordion);
     
     // Select HISTORICAL WOMEN topic
     const historicalWomenTopic = screen.getByRole('button', { name: /HISTORICAL WOMEN/i });
@@ -145,9 +165,11 @@ describe("GameTopicSelection Component", () => {
   test("Wild Mode selects all topics", async () => {
     render(
       <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
         <MemoryRouter>
           <GameTopicSelection />
         </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
     
@@ -168,9 +190,11 @@ describe("GameTopicSelection Component", () => {
   test("Custom mode clears all selections", async () => {
     render(
       <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
         <MemoryRouter>
           <GameTopicSelection />
         </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
     
@@ -195,9 +219,11 @@ describe("GameTopicSelection Component", () => {
   test("Search functionality filters topics correctly", async () => {
     render(
       <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
         <MemoryRouter>
           <GameTopicSelection />
         </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
     
@@ -233,9 +259,11 @@ describe("GameTopicSelection Component", () => {
     
     render(
       <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
         <MemoryRouter>
           <GameTopicSelection />
         </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
     
@@ -246,6 +274,10 @@ describe("GameTopicSelection Component", () => {
     
     // Select HISTORICAL WOMEN topic
     await waitFor(() => {
+       // Click on the accordion with the text "History"
+      const historyAccordion = screen.getByText(/History/i);
+      fireEvent.click(historyAccordion); 
+
       // Check that the button is enabled before clicking
       const historicalWomenTopic = screen.getByRole('button', { name: /HISTORICAL WOMEN/i });
       expect(historicalWomenTopic).not.toBeDisabled();
@@ -279,14 +311,16 @@ describe("GameTopicSelection Component", () => {
     
     render(
       <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
         <MemoryRouter>
           <GameTopicSelection />
         </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
     
     // Click BACK HOME button
-    const backButton = screen.getByText(/BACK HOME/i);
+    const backButton = screen.getByText(/BACK TO HOME/i);
     fireEvent.click(backButton);
     
     // Check that navigate was called with the correct path
@@ -305,11 +339,26 @@ describe("GameTopicSelection Component", () => {
     
     render(
       <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
         <MemoryRouter>
           <GameTopicSelection />
         </MemoryRouter>
+        </I18nextProvider>
       </ThemeProvider>
     );
+
+    //Wait for the genre to be loaded
+    await waitFor(() => {
+      expect(screen.getByText(/History/i)).toBeInTheDocument();
+    });
+
+    //Click on the accordions
+    const historyAccordion = screen.getByText(/History/i);
+    fireEvent.click(historyAccordion);
+    const geographyAccordion = screen.getByText(/Geography/i);
+    fireEvent.click(geographyAccordion);
+
+
     
     // Wait for topics to be loaded
     await waitFor(() => {
