@@ -17,21 +17,36 @@
 | Javier Menéndez Osendi   | uo294866@uniovi.es           |
 | Daniel Rodríguez Fernández| uo293655@uniovi.es          |
 
-# About WICHAT 💡
-Wichat_en3b is a fun and interactive web-based quiz game we created for the Software Architecture course (2024/2025). It’s more than just your average chat app — we’ve packed it with several cool features that make it stand out. At its core, Wichat is built using React for the frontend and Node.js (Express) for the backend, while MongoDB handles the database. But what truly makes it special is the integration with an AI-powered LLM from Empathy, which brings smart assistance to your game experience.
+# brAIn: Your Brain’s New Best Friend
 
-In Wichat Quiz, you can test your knowledge in a variety of engaging and dynamic ways. The game offers multiple quiz modes, so you can choose from categories like Singers 🎤, Flags 🌍, Cities 🏙️, or mix and match two categories for an added challenge. If you can’t pick just one, don’t worry — you can activate Wild Mode 🔥 to throw in all categories for a crazy, unpredictable experience!
+# 💡About brAIn 
+brAIn is a fun and interactive web-based quiz game we created for the Software Architecture course (2024/2025). It’s way more than just your average quiz — we’ve packed it with quirky characters, smart hints, and AI magic to keep you hooked!
+At its core, brAIn is built using React for the frontend and Node.js (Express) for the backend, with MongoDB taking care of the database. But what truly makes it shine is the integration of an AI-powered LLM from Empathy — bringing real smart assistance into your game experience. 🧠✨
 
-There are two exciting ways to play: Round Mode 🏁 or Against the Clock ⏳. In Round Mode, you’ll face a set number of questions, while in Against the Clock, the pressure’s on to answer as many questions as you can before the time runs out. The game keeps things fresh and challenging, with a wide range of questions drawn from Wikidata 🌐, ensuring you always have new content to tackle.
+In brAIn Quiz, you’ll put your knowledge to the test across a variety of lively and dynamic modes. Choose from categories like Singers 🎤, Flags 🌍, Cities 🏙️, and many more!
+Can’t decide? Mix two categories for a double challenge, or go totally wild with Wild Mode 🔥 — where anything (and everything) can happen!
+
+There are three exciting ways to play:
+
+- Round Mode 🏁: Face a set number of questions and see how many you can get right!
+- Against the Clock ⏳: Beat the clock by answering as many questions as you can before time runs out!
+- Hidden Image Mode 🕵️‍♂️: The image starts hidden and is gradually revealed — the faster you guess, the more points you earn!
+
+The game keeps things fresh and challenging, with a wide range of questions drawn from Wikidata 🌐, ensuring you always have new content to tackle.
 
 Need some help? No problem! Our Hint System 💡 has got you covered:
 - 50/50: We’ll eliminate two incorrect answers to make it easier.
 - Ask the Audience: Get the crowd’s opinion on the right answer.
-- LLM Chat: Feeling stuck? Chat with our AI assistant for a bit of guidance!
+- Call a Friend: Ring up one of our quirky "friends" — some are brainiacs, some... not so much. Choose wisely! 📞
+- LLM Chat: Feeling stuck? Chat casually with famous personalities powered by AI! They'll drop tiny hints to guide you — but never reveal the answer directly.
 
-But that’s not all. The game rewards you for quick answers, so the faster you go, the higher your score! Keep answering correctly, collect rewards, and see how high you can climb.
+# 🚀 More Than Just Trivia
 
-Create an account or log in to challenge your friends and see who’s the ultimate trivia champion. Whether you're here to test your own knowledge or compete with others, Wichat Quiz is the perfect way to have fun and learn something new along the way!
+brAIn isn’t just about getting answers right — it’s about how you get them right!
+The faster you guess, the bigger your rewards. Collect coins, unlock achievements, and climb the leaderboard to prove you're the ultimate BrainBuddy! 🏆
+ 
+
+Create an account or log in to challenge your friends and see who’s the ultimate trivia champion. Whether you're here to test your own knowledge or compete with others, brAIn Quiz is the perfect way to have fun and learn something new along the way! 🧠💥
 
 # Technologies
 
@@ -96,7 +111,9 @@ Lastly, go to the webapp directory and launch this component with `npm install` 
 After all the components are launched, the app should be available in localhost in port 3000.
 
 ## Deployment
-For the deployment, we have several options. The first and more flexible is to deploy to a virtual machine using SSH. This will work with any cloud service (or with our own server). Other options include using the container services that all the cloud services provide. This means, deploying our Docker containers directly. Here I am going to use the first approach. I am going to create a virtual machine in a cloud service and after installing docker and docker-compose, deploy our containers there using GitHub Actions and SSH.
+For the deployment of our project, we have chosen to use Oracle Cloud. The main approach is to deploy to a virtual machine using SSH. This gives us full flexibility and control over the environment.
+We have a virtual machine instance on Oracle. We installed Docker and Docker Compose on the server, and we deploy our containers directly from GitHub using GitHub Actions and SSH.
+This approach gives us full flexibility and control over the environment, ensuring an automated, consistent, and easily maintainable deployment process tailored specifically for our application's needs.
 
 ### Machine requirements for deployment
 The machine for deployment can be created in services like Microsoft Azure or Amazon AWS. These are in general the settings that it must have:
@@ -118,7 +135,10 @@ sudo usermod -aG docker ${USER}
 ```
 
 ### Continuous delivery (GitHub Actions)
-Once we have our machine ready, we could deploy by hand the application, taking our docker-compose file and executing it in the remote machine. In this repository, this process is done automatically using **GitHub Actions**. The idea is to trigger a series of actions when some condition is met in the repository. The precondition to trigger a deployment is going to be: "create a new release". The actions to execute are the following:
+Once we have our Oracle Cloud machine ready, we could technically deploy the application manually by copying our docker-compose.yml file and executing it directly on the remote server.
+However, in this project, the deployment process is fully automated using GitHub Actions.
+The idea is simple: whenever a new release is created in the repository, a set of automated steps is triggered.
+The deployment flow is as follows:
 
 ![imagen](https://github.com/user-attachments/assets/7ead6571-0f11-4070-8fe8-1bbc2e327ad2)
 

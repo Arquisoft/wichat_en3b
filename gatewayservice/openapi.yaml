@@ -1,72 +1,14 @@
 openapi: 3.0.0
 info:
-  title: Gatewayservice API
+  title: Gateway Service API
   description: Gateway OpenAPI specification for the trivia game application.
-  version: 0.2.0
+  version: 0.3.3
 servers:
   - url: http://localhost:8000
     description: Development server
   - url: http://SOMEIP:8000
     description: Production server
 paths:
-  /adduser:
-    post:
-      summary: Add a new user to the database.
-      operationId: addUser
-      tags:
-        - User Management
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  description: User ID.
-                  example: student
-                password:
-                  type: string
-                  description: User password.
-                  example: pass
-      responses:
-        '200':
-          description: User added successfully.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-                    description: User ID
-                  password:
-                    type: string
-                    description: Hashed password
-                    example: $2b$10$ZKdNYLWFQxzt5Rei/YTc/OsZNi12YiWz30JeUFHNdAt7MyfmkTuvC
-                  _id:
-                    type: string
-                    description: Identification
-                    example: 65f756db3fa22d227a4b7c7d
-                  createdAt:
-                    type: string
-                    description: Creation date.
-                    example: '2024-03-17T20:47:23.935Z'
-                  ___v:
-                    type: integer
-                    example: '0'                                        
-        '400':
-          description: Failed to add user.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: getaddrinfo EAI_AGAIN mongodb
   /health:
     get:
       summary: Check the health status of the service.
@@ -85,9 +27,11 @@ paths:
                     type: string
                     description: Health status.
                     example: OK
+                    
   /login:
     post:
       summary: Log in to the system.
+      description: Authenticates a user and returns an access token. A refresh token is also set as an HTTP-only cookie.
       operationId: loginUser
       tags:
         - Authentication
@@ -100,63 +44,76 @@ paths:
               properties:
                 username:
                   type: string
-                  description: User ID.
+                  description: Username.
                   example: student
                 password:
                   type: string
                   description: User password.
                   example: pass
+              required:
+                - username
+                - password
       responses:
         '200':
-          description: Login successful. Returns user token, username, and creation date.
+          description: Login successful. Returns access token, username, and creation date. Sets refresh token as HTTP-only cookie.
+          headers:
+            Set-Cookie:
+              description: HTTP-only cookie containing the refresh token
+              schema:
+                type: string
+                example: jwt=eyJhbGci...7d; HttpOnly; Path=/; Max-Age=604800
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  token:
+                  accessToken:
                     type: string
-                    description: User token.
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY3NTZkYjNmYTIyZDIyN2E0YjdjN2QiLCJpYXQiOjE3MTA3MDg3NDUsImV4cCI6MTcxMDcxMjM0NX0.VMG_5DOyQ4GYlJQRcu1I6ICG1IGzuo2Xuei093ONHxw
+                    description: JWT access token valid for 15 minutes.
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY3NTZkYjNmYTIyZDIyN2E0YjdjN2QiLCJ1c2VybmFtZSI6InN0dWRlbnQiLCJpYXQiOjE3MTA3MDg3NDUsImV4cCI6MTcxMDcxMjM0NX0.VMG_5DOyQ4GYlJQRcu1I6ICG1IGzuo2Xuei093ONHxw
                   username:
                     type: string
                     description: Username.
                     example: student
                   createdAt:
                     type: string
-                    description: Creation date.
+                    description: Account creation date.
                     example: '2024-03-17T20:47:23.935Z'
+        '400':
+          description: Invalid request. Missing required fields or validation errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
           description: Invalid credentials.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Shows the error info.
-                    example: Invalid credentials
+                $ref: '#/components/schemas/Error'
         '500':
           description: Internal server error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Internal Server Error
+                $ref: '#/components/schemas/Error'
+
   /logout:
     post:
       summary: Log out from the system.
+      description: Clears the JWT refresh token cookie.
       operationId: logoutUser
       tags:
         - Authentication
       responses:
         '200':
-          description: Logout successful.
+          description: Logout successful. Clears the JWT refresh token cookie.
+          headers:
+            Set-Cookie:
+              description: Clears the JWT refresh token cookie
+              schema:
+                type: string
+                example: jwt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT
           content:
             application/json:
               schema:
@@ -171,15 +128,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Internal Server Error
+                $ref: '#/components/schemas/Error'
+
   /refresh:
     get:
-      summary: Refresh the authentication token.
+      summary: Refresh the access token.
+      description: Uses the refresh token stored in HTTP-only cookie to issue a new access token.
       operationId: refreshToken
       tags:
         - Authentication
@@ -191,35 +145,104 @@ paths:
               schema:
                 type: object
                 properties:
+                  username:
+                    type: string
+                    description: Username.
+                    example: student
                   accessToken:
                     type: string
-                    description: New access token.
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InN0dWRlbnQiLCJpYXQiOjE3MTA3MDg3NDUsImV4cCI6MTcxMDcxMjM0NX0.6JTmywRfXKWgeCmKinEiSLNL8vBxS_M6sSbEBkFwQ9Q
+                    description: New access token valid for 15 minutes.
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY3NTZkYjNmYTIyZDIyN2E0YjdjN2QiLCJ1c2VybmFtZSI6InN0dWRlbnQiLCJpYXQiOjE3MTA3MDg3NDUsImV4cCI6MTcxMDcxMjM0NX0.6JTmywRfXKWgeCmKinEiSLNL8vBxS_M6sSbEBkFwQ9Q
         '401':
-          description: Unauthorized. No refresh token provided.
+          description: Unauthorized. No refresh token cookie provided.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Unauthorized
+                $ref: '#/components/schemas/Error'
         '403':
-          description: Forbidden. Invalid refresh token.
+          description: Forbidden. Invalid or expired refresh token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /adduser:
+    post:
+      summary: Add a new user to the database.
+      operationId: addUser
+      tags:
+        - User Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Username (minimum 3 characters, alphanumeric with underscore only)
+                  example: student
+                  pattern: ^\w+$
+                  minLength: 3
+                  maxLength: 15
+                password:
+                  type: string
+                  description: User password (minimum 8 characters, with at least one capital letter, one digit, and one special character)
+                  example: Pass123!
+                  minLength: 8
+                  pattern: ^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: User added successfully.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  username:
                     type: string
-                    description: Error information.
-                    example: Invalid token
+                    description: Username
+                    example: student
+                  password:
+                    type: string
+                    description: Hashed password
+                    example: $2b$10$ZKdNYLWFQxzt5Rei/YTc/OsZNi12YiWz30JeUFHNdAt7MyfmkTuvC
+                  _id:
+                    type: string
+                    description: User document ID
+                    example: 65f756db3fa22d227a4b7c7d
+                  createdAt:
+                    type: string
+                    description: Account creation date
+                    example: '2024-03-17T20:47:23.935Z'
+                  coins:
+                    type: integer
+                    description: Initial coin balance
+                    example: 1000
+                  __v:
+                    type: integer
+                    example: 0
+        '400':
+          description: Bad request. Missing required fields, validation errors, or username already taken.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /askllm:
     post:
       summary: Send a query to the LLM service.
+      description: Forwards a question to the configured LLM models (Mistral or Qwen) and returns the generated response.
       operationId: askLLM
       tags:
         - Game
@@ -232,10 +255,23 @@ paths:
             schema:
               type: object
               properties:
-                query:
+                question:
                   type: string
                   description: The question to ask the LLM.
                   example: "Tell me something important about the city in the image."
+                model:
+                  type: string
+                  description: The LLM model to use for generating the response.
+                  enum: ["mistral", "qwen"]
+                  example: "mistral"
+                prompt:
+                  type: string
+                  description: System prompt to guide the LLM's response.
+                  example: "You are a helpful trivia assistant. Provide interesting facts about the given topic."
+              required:
+                - question
+                - model
+                - prompt
       responses:
         '200':
           description: Successful response from LLM.
@@ -247,114 +283,71 @@ paths:
                   answer:
                     type: string
                     description: Answer from the LLM.
-                    example: "It is the city of love, with some of the most beautiful monuments in the world."
-        '401':
-          description: Unauthorized. No access token provided.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Unauthorized
-        '403':
-          description: Forbidden. Invalid access token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Invalid token
-  /loadQuestion:
-    post:
-      summary: Searches for information of the selected topics in Wikidata and loads it in the database.
-      operationId: loadQuestion
-      tags:
-        - Game
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                modes:
-                  type: array
-                  description: List of game topics to load information for.
-                  items:
-                    type: string
-                  example: ["city", "flag", "athlete"]
-      responses:
-        '200':
-          description: Information loaded successfully.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Success message.
-                    example: "Information loaded successfully"
+                    example: "Paris is known as the City of Light. It's home to iconic landmarks like the Eiffel Tower, the Louvre Museum, and Notre-Dame Cathedral. The city is renowned for its art, culture, cuisine, and fashion."
         '400':
-          description: Invalid topics parameter.
+          description: Bad request. Missing required fields or invalid parameters.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: "Invalid topics parameter"
+                $ref: '#/components/schemas/Error'
         '401':
           description: Unauthorized. No access token provided.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Unauthorized
+                $ref: '#/components/schemas/Error'
         '403':
           description: Forbidden. Invalid access token.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Invalid token
+                $ref: '#/components/schemas/Error'
         '500':
-          description: Error fetching question data.
+          description: Internal server error or issue with the LLM service.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: "Error fetching question data"
+                $ref: '#/components/schemas/Error'
+
   /getRound:
     get:
-      summary: Get a round of questions for the game.
+      summary: Get a round of questions for the game from WikiData.
       operationId: getRound
       tags:
         - Game
       security:
         - bearerAuth: []
+      parameters:
+        - name: topics
+          in: query
+          description: Topic(s) to include in the round (comma-separated or array)
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+            example: ["city", "flag"]
+          style: form
+          explode: false
+        - name: mode
+          in: query
+          description: Game mode (special handling for "rounds" and "hide" modes)
+          required: false
+          schema:
+            type: string
+            enum: ["rounds", "time", "hide"]
+            example: "rounds"
+        - name: usedImages
+          in: query
+          description: Previously used images to exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+          style: form
+          explode: false
       responses:
         '200':
           description: Round retrieved successfully.
@@ -363,51 +356,64 @@ paths:
               schema:
                 type: object
                 properties:
-                  questions:
+                  topic:
+                    type: string
+                    description: The randomly selected topic for this round.
+                    example: "city"
+                  items:
                     type: array
-                    description: Question for the round.
+                    description: Possible answers for the question.
                     items:
                       type: object
                       properties:
-                        mode:
+                        name:
                           type: string
-                          description: The mode/category of the question.
-                          example: "city"
-                        items:
-                          type: array
-                          description: Possible answers.
-                          items:
-                            type: string
-                          example: ["Paris", "London", "Berlin", "Madrid"]
-                        itemWithImage:
-                          type: object
-                          description: The correct answer.
-                          example: {"name": "Paris", "image": "https://example.com/paris.jpg"}
+                          example: "Paris"
+                    example: [{"name": "Paris"}, {"name": "London"}, {"name": "Berlin"}, {"name": "Madrid"}]
+                  itemWithImage:
+                    type: object
+                    description: The correct answer with its details.
+                    properties:
+                      id:
+                        type: string
+                        example: "Q90"
+                      name:
+                        type: string
+                        example: "Paris"
+                      imageUrl:
+                        type: string
+                        example: "https://commons.wikimedia.org/wiki/Special:FilePath/Paris%20-%20Eiffelturm%20und%20Marsfeld2.jpg"
+                      topic:
+                        type: string
+                        example: "city"
+        '400':
+          description: Bad request. Missing or invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
           description: Unauthorized. No access token provided.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Unauthorized
+                $ref: '#/components/schemas/Error'
         '403':
           description: Forbidden. Invalid access token.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Invalid token
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /getTopics:
     get:
-      summary: Get available game modes.
+      summary: Get all configured game topics.
       operationId: getTopics
       tags:
         - Game
@@ -421,9 +427,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  modes:
+                  topics:
                     type: array
-                    description: List of available game topics.
+                    description: List of all configured game topics.
                     items:
                       type: string
                     example: ["city", "flag", "athlete", "singer"]
@@ -432,23 +438,61 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Unauthorized
+                $ref: '#/components/schemas/Error'
         '403':
           description: Forbidden. Invalid access token.
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /getAvailableTopics:
+    get:
+      summary: Get only topics that have data available in the database.
+      operationId: getAvailableTopics
+      tags:
+        - Game
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Available topics retrieved successfully.
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Invalid token
+                  availableTopics:
+                    type: array
+                    description: List of topics with data available in the database.
+                    items:
+                      type: string
+                    example: ["city", "flag", "athlete"]
+        '401':
+          description: Unauthorized. No access token provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden. Invalid access token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /addgame:
     post:
       summary: Add a completed game to the user's history and update statistics.
@@ -466,18 +510,22 @@ paths:
               properties:
                 username:
                   type: string
-                  description: User ID.
+                  description: Username.
                   example: student
+                mode:
+                  type: string
+                  description: Game mode.
+                  example: "rounds"
                 questions:
                   type: array
                   description: Array of question objects with results.
                   items:
                     type: object
                     properties:
-                      mode:
+                      topic:
                         type: string
-                        description: Game mode of the question.
-                        example: city
+                        description: Topic category of the question.
+                        example: "city"
                       isCorrect:
                         type: boolean
                         description: Whether the user answered correctly.
@@ -488,6 +536,7 @@ paths:
                         example: 10
               required:
                 - username
+                - mode
                 - questions
       responses:
         '200':
@@ -495,43 +544,70 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Game'
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    description: Game ID
+                    example: 65f756db3fa22d227a4b7c7d
+                  username:
+                    type: string
+                    description: Username
+                    example: student
+                  score:
+                    type: integer
+                    description: Total score achieved in the game
+                    example: 80
+                  correctRate:
+                    type: number
+                    description: Rate of correct answers (0-1)
+                    example: 0.8
+                  gameMode:
+                    type: string
+                    description: Game mode
+                    example: "rounds"
+                  gameTopic:
+                    type: array
+                    description: Topics played in this session
+                    items:
+                      type: string
+                    example: ["city", "flag"]
+                  createdAt:
+                    type: string
+                    description: Game creation date
+                    example: '2024-03-17T20:47:23.935Z'
+                  updatedAt:
+                    type: string
+                    description: Last update date
+                    example: '2024-03-17T20:47:23.935Z'
         '400':
           description: Bad request. Missing required fields.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: "Missing required field: questions"
+                $ref: '#/components/schemas/Error'
         '401':
           description: Unauthorized. No access token provided.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Unauthorized
+                $ref: '#/components/schemas/Error'
         '403':
           description: Forbidden. Invalid access token.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Invalid token
-  /userstats/user/{username}:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /userstats:
     get:
-      summary: Get all statistics for a specific user across different game modes.
+      summary: Get statistics for a user, optionally filtered by mode and topic.
       operationId: getUserStats
       tags:
         - Statistics
@@ -539,12 +615,26 @@ paths:
         - bearerAuth: []
       parameters:
         - name: username
-          in: path
+          in: query
           required: true
           description: The username to get statistics for.
           schema:
             type: string
           example: student
+        - name: mode
+          in: query
+          required: false
+          description: Game mode to filter by.
+          schema:
+            type: string
+          example: city
+        - name: topic
+          in: query
+          required: false
+          description: Topic to filter by.
+          schema:
+            type: string
+          example: europe
       responses:
         '200':
           description: User statistics retrieved successfully.
@@ -556,10 +646,10 @@ paths:
                   message:
                     type: string
                     description: Description of the response.
-                    example: "Fetched statistics for user: student"
+                    example: "Fetched statistics"
                   stats:
                     type: array
-                    description: List of statistics objects for each game mode.
+                    description: List of statistics objects.
                     items:
                       $ref: '#/components/schemas/UserStatistics'
         '401':
@@ -567,153 +657,167 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Unauthorized
+                $ref: '#/components/schemas/Error'
         '403':
           description: Forbidden. Invalid access token.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Invalid token
+                $ref: '#/components/schemas/Error'
         '500':
           description: Internal server error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: "Internal server error"
-  /userstats/mode/{mode}:
+                $ref: '#/components/schemas/Error'
+
+  /usercoins/{username}:
     get:
-      summary: Get statistics for all users in a specific game mode or across all modes.
-      operationId: getModeStats
+      summary: Get a user's coin balance.
+      operationId: getUserCoins
       tags:
-        - Statistics
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: mode
-          in: path
-          required: true
-          description: The game mode to get statistics for. Use "all" to get combined statistics across all modes.
-          schema:
-            type: string
-          example: city
-      responses:
-        '200':
-          description: Mode statistics retrieved successfully.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Description of the response.
-                    example: "Fetched statistics for mode: city"
-                  stats:
-                    type: array
-                    description: List of user statistics for the requested mode.
-                    items:
-                      oneOf:
-                        - $ref: '#/components/schemas/UserStatistics'
-                        - type: object
-                          description: Aggregated statistics across all modes.
-                          properties:
-                            _id:
-                              type: string
-                              description: Username used as the aggregation key.
-                            username:
-                              type: string
-                              description: User ID.
-                              example: student
-                            totalScore:
-                              type: integer
-                              description: Total score across all modes.
-                              example: 350
-                            correctRate:
-                              type: number
-                              description: Average correct rate across all modes.
-                              example: 0.85
-                            totalQuestions:
-                              type: integer
-                              description: Total questions answered across all modes.
-                              example: 120
-                            totalGamesPlayed:
-                              type: integer
-                              description: Total games played across all modes.
-                              example: 15
-        '401':
-          description: Unauthorized. No access token provided.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Unauthorized
-        '403':
-          description: Forbidden. Invalid access token.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Invalid token
-        '500':
-          description: Internal server error.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: "Internal server error"
-  /userstats/{username}/{mode}:
-    get:
-      summary: Get statistics for a specific user in a specific game mode or across all modes.
-      operationId: getUserModeStats
-      tags:
-        - Statistics
+        - User Management
       security:
         - bearerAuth: []
       parameters:
         - name: username
           in: path
           required: true
-          description: The username to get statistics for.
+          description: The username to get coins for.
           schema:
             type: string
           example: student
-        - name: mode
-          in: path
-          required: true
-          description: The game mode to get statistics for. Use "all" to get combined statistics across all modes.
-          schema:
-            type: string
-          example: city
       responses:
         '200':
-          description: User mode statistics retrieved successfully.
+          description: User coins retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: Username.
+                    example: student
+                  coins:
+                    type: integer
+                    description: User's coin balance.
+                    example: 250
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized. No access token provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden. Invalid access token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /updatecoins:
+    post:
+      summary: Update a user's coin balance.
+      operationId: updateCoins
+      tags:
+        - User Management
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Username.
+                  example: student
+                amount:
+                  type: integer
+                  description: Coins to add or subtract.
+                  example: 50
+              required:
+                - username
+                - amount
+      responses:
+        '200':
+          description: Coins updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: Username.
+                    example: student
+                  coinsAdded:
+                    type: integer
+                    description: Amount of coins added or subtracted.
+                    example: 50
+                  newBalance:
+                    type: integer
+                    description: New coin balance.
+                    example: 300
+        '400':
+          description: Bad request. Missing required fields or invalid amount.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized. No access token provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden. Invalid access token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /games/{username}:
+    get:
+      summary: Get a user's game history.
+      operationId: getUserGames
+      tags:
+        - User Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: The username to get game history for.
+          schema:
+            type: string
+          example: student
+      responses:
+        '200':
+          description: User games retrieved successfully.
           content:
             application/json:
               schema:
@@ -722,73 +826,38 @@ paths:
                   message:
                     type: string
                     description: Description of the response.
-                    example: "Fetched statistics for user student in mode city"
-                  stats:
-                    oneOf:
-                      - $ref: '#/components/schemas/UserStatistics'
-                      - type: object
-                        description: Aggregated statistics for a user across all modes.
-                        properties:
-                          username:
-                            type: string
-                            description: User ID.
-                            example: student
-                          totalScore:
-                            type: integer
-                            description: Total score across all modes.
-                            example: 350
-                          correctRate:
-                            type: number
-                            description: Weighted average correct rate across all modes.
-                            example: 0.85
-                          totalGamesPlayed:
-                            type: integer
-                            description: Total games played across all modes.
-                            example: 15
-                          totalQuestions:
-                            type: integer
-                            description: Total questions answered across all modes.
-                            example: 120
+                    example: "Fetched games for user: student"
+                  games:
+                    type: array
+                    description: List of games played by the user.
+                    items:
+                      $ref: '#/components/schemas/Game'
         '401':
           description: Unauthorized. No access token provided.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Unauthorized
+                $ref: '#/components/schemas/Error'
         '403':
           description: Forbidden. Invalid access token.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: Invalid token
+                $ref: '#/components/schemas/Error'
         '500':
           description: Internal server error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error information.
-                    example: "Internal server error"
+                $ref: '#/components/schemas/Error'
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: JWT token obtained from the login endpoint
+      description: JWT access token obtained from the login or refresh endpoints
   schemas:
     Error:
       type: object
@@ -796,20 +865,9 @@ components:
         error:
           type: string
           description: Error message
+          example: "Unauthorized"
       required:
         - error
-    User:
-      type: object
-      properties:
-        username:
-          type: string
-          description: User ID
-        password:
-          type: string
-          description: User password (hashed when returned)
-      required:
-        - username
-        - password
     Game:
       type: object
       properties:
@@ -819,7 +877,7 @@ components:
           example: 65f756db3fa22d227a4b7c7d
         username:
           type: string
-          description: User ID
+          description: Username
           example: student
         score:
           type: integer
@@ -830,8 +888,12 @@ components:
           description: Rate of correct answers (0-1)
           example: 0.8
         gameMode:
+          type: string
+          description: Game mode
+          example: "rounds"
+        gameTopic:
           type: array
-          description: Game modes played in this session
+          description: Topics played in this session
           items:
             type: string
           example: ["city", "flag"]
@@ -839,11 +901,16 @@ components:
           type: string
           description: Game creation date
           example: '2024-03-17T20:47:23.935Z'
+        updatedAt:
+          type: string
+          description: Last update date
+          example: '2024-03-17T20:47:23.935Z'
       required:
         - username
         - score
         - correctRate
         - gameMode
+        - gameTopic
     UserStatistics:
       type: object
       properties:
@@ -853,12 +920,16 @@ components:
           example: 65f756db3fa22d227a4b7c7e
         username:
           type: string
-          description: User ID
+          description: Username
           example: student
         mode:
           type: string
           description: Game mode
           example: city
+        topic:
+          type: string
+          description: Game topic
+          example: all
         totalScore:
           type: integer
           description: Total accumulated score in this mode
@@ -867,28 +938,43 @@ components:
           type: number
           description: Average rate of correct answers (0-1)
           example: 0.82
-        totalQuestions:
-          type: integer
-          description: Total questions answered in this mode
-          example: 50
         totalGamesPlayed:
           type: integer
           description: Total games played in this mode
           example: 5
-        createdAt:
-          type: string
-          description: Record creation date
-          example: '2024-03-17T20:47:23.935Z'
       required:
         - username
         - mode
+        - topic
         - totalScore
         - correctRate
-        - totalQuestions
         - totalGamesPlayed
+    WikidataObject:
+      type: object
+      properties:
+        id:
+          type: string
+          description: WikiData ID
+          example: "Q90"
+        name:
+          type: string
+          description: Item name
+          example: "Paris"
+        imageUrl:
+          type: string
+          description: URL to the image
+          example: "https://commons.wikimedia.org/wiki/Special:FilePath/Paris%20-%20Eiffelturm%20und%20Marsfeld2.jpg"
+        topic:
+          type: string
+          description: Item topic/category
+          example: "city"
+      required:
+        - id
+        - name
+        - topic
 tags:
   - name: Authentication
-    description: Endpoints for user authentication
+    description: Endpoints for user authentication and token management
   - name: User Management
     description: Endpoints for managing users and game records
   - name: Game
