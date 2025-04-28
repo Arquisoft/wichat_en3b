@@ -6,6 +6,7 @@ import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
 import useTheme from "../hooks/useTheme";
 import {useTranslation} from "react-i18next";
+import {Flag, Public, Sports, Map, Event, PushPin, Piano, Female, SportsSoccer, Language, SportsMotorsports,Landscape, SportsTennis, InterpreterMode, Theaters, Restaurant, Code, ColorLens, Tv } from "@mui/icons-material"
 
 const Home = () => {
     const axios = useAxios();
@@ -92,6 +93,38 @@ const Home = () => {
             "city": <LocationCity sx={{ p: 0.5, color: "green", bgcolor: "rgba(0, 128, 0, 0.2)", borderRadius: "100%" }} />,
             "athlete": <SportsBasketball sx={{ p: 0.5, color: "orange", bgcolor: "rgba(255, 165, 0, 0.2)", borderRadius: "100%" }} />,
             "singer": <MusicNote sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "country": <Public sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "spanishProvince": <Map sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "spanishCity": <LocationCity sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "famousPlace": <PushPin sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "asturianCouncil": <Landscape sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "spanishCommunityFlag": <Flag sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "language": <Language sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "historicalEvent": <Event sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "historicalWomen": <Female sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "latinSinger": <MusicNote sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "musicalInstrument": <Piano sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "rockBand": <InterpreterMode sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "sport": <Sports sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "sportingGijonPlayer": <SportsSoccer sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "oviedoPlayer": <SportsSoccer sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "realMadridPlayer": <SportsSoccer sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "barcelonaPlayer": <SportsSoccer sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "atleticoMadridPlayer": <SportsSoccer sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "nbaPlayer": <SportsBasketball sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "wnbaPlayer": <SportsBasketball sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "euroleaguePlayer": <SportsBasketball sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "atpPlayer": <SportsTennis sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "wtaPlayer": <SportsTennis sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "f1Driver": <SportsMotorsports sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "racingCircuit": <SportsMotorsports sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "actor": <Theaters sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "actress": <Theaters sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "painter": <ColorLens sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "fictionalCharacter": <Tv sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "asturianFamous": <People sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "softwareEngineer": <Code sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
+            "food": <Restaurant sx={{ p: 0.5, color: "blue", bgcolor: "rgba(0, 0, 255, 0.2)", borderRadius: "100%" }} />,
         }
 
         return topics.length > 1 ? icons["all"] : icons[topics[0]];
