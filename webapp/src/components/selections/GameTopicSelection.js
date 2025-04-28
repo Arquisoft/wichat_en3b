@@ -137,7 +137,7 @@ const GameTopicSelection = () => {
 
 
   return (
-    <StyledContainer maxWidth="md">
+    <StyledContainer maxWidth="md" data-testid="game-topic-selection">
       <Typography variant="h3" align="center" fontWeight="bold" color="primary.main">
         TRIVIA GAME
       </Typography>
@@ -150,6 +150,7 @@ const GameTopicSelection = () => {
           margin="normal"
           variant="outlined"
           label="Search topics..."
+          data-testid="search-input"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
@@ -181,6 +182,7 @@ const GameTopicSelection = () => {
         <Box sx={{ display: "flex", justifyContent: "center", gap: 2, flexWrap: "wrap", mt: 2 }}>
           <StyledButton
             variant={isWild ? "outlined" : "contained"}
+            data-testid="custom-button"
             onClick={handleCustomSelection}
             color="primary"
             sx={{
@@ -196,6 +198,7 @@ const GameTopicSelection = () => {
             variant={isWild ? "contained" : "outlined"}
             onClick={handleWildSelection}
             color="secondary"
+            data-testid="wild-button"
             sx={{
               background: isWild ? "linear-gradient(to right, #3f51b5, #7e57c2)" : "transparent",
               border: !isWild ? "2px solid #3f51b5" : "none",
@@ -244,6 +247,7 @@ const GameTopicSelection = () => {
 
         <StyledButton
           variant="contained"
+          data-testid="next-button"
           color="primary"
           size="large"
           onClick={startGame}

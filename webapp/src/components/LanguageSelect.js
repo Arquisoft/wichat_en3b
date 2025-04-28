@@ -17,6 +17,7 @@ const LanguageSelect = () => {
     <FormControl fullWidth variant="outlined" size="small">
       <Select
         value={i18n.language}
+        data-testid="language-select"
         onChange={handleChange}
         displayEmpty
         input={
