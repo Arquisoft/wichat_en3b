@@ -11,6 +11,9 @@ import {
 } from "@mui/icons-material"
 import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton, TopicButton } from './SelectionStyles'
 import useAxios from "../../hooks/useAxios";
+import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 
 
 const CATEGORY_MAP = {
@@ -229,26 +232,37 @@ const GameTopicSelection = () => {
         <Collapse in={!isWild}>
           {filterBySearch(CATEGORY_MAP, searchTerm).map(({ category, topics }) => {
             return (
-              <Box key={category} sx={{ mt: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: "bold", color: "#5e35b1", mb: 1 }}>
-                  {t(category)}
-                </Typography>
-                <Grid container spacing={2}>
-                  {topics.map(({ key, label, icon }) => (
-                    <Grid item xs={6} sm={4} md={3} key={key}>
-                      <TopicButton
-                        startIcon={icon}
-                        onClick={() => handleTopicChange(key)}
-                        isSelected={selectedTopics.includes(key)}
-                        disabled={!isWild && (!Array.isArray(availableTopics) || !availableTopics.includes(key))}
+              <Accordion data-testid={category} key={category} sx={{ mt: 2 }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls={`${category}-content`}
+                  id={`${category}-header`}
+                  sx={{
+                    backgroundColor: "#f0f4ff",
+                    "&.Mui-expanded": { backgroundColor: "#e8f0fe" },
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "#5e35b1" }}>
+                    {t(category)}
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container spacing={2}>
+                    {topics.map(({ key, label, icon }) => (
+                      <Grid item xs={6} sm={4} md={3} key={key}>
+                        <TopicButton
+                          startIcon={icon}
+                          onClick={() => handleTopicChange(key)}
+                          isSelected={selectedTopics.includes(key)}
+                          disabled={!isWild && (!Array.isArray(availableTopics) || !availableTopics.includes(key))}
                         >
-                        {t(label)}
-                      </TopicButton>
-                    </Grid>
-                  ))}
-                </Grid>
-                <Divider sx={{ mt: 2 }} />
-              </Box>
+                          {t(label)}
+                        </TopicButton>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
             );
           })}
         </Collapse>

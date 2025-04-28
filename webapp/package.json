@@ -10,6 +10,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
+    "express": "^5.1.0",
     "framer-motion": "^12.9.2",
     "i18next": "^24.2.3",
     "react": "^19.1.0",
