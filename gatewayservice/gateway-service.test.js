@@ -381,4 +381,200 @@ describe('Gateway Service', () => {
         expect(response.statusCode).toBe(400);
         expect(response.body.error).toBe('Invalid operation');
     });
+
+    // Test /getAvailableTopics endpoint
+it('should fetch available topics from the question service', async () => {
+    // Mock the axios response for this specific endpoint
+    axios.get.mockImplementationOnce((url) => {
+      if (url.endsWith('/getAvailableTopics')) {
+        return Promise.resolve({ data: { availableTopics: ['city', 'athlete'] } });
+      }
+    });
+  
+    const response = await request(app)
+      .get('/getAvailableTopics')
+      .set('Authorization', `Bearer ${token}`);
+  
+    expect(response.statusCode).toBe(200);
+    expect(response.body.availableTopics).toEqual(['city', 'athlete']);
+  });
+  
+  // Test getAvailableTopics error handling
+  it('should handle errors from getAvailableTopics endpoint', async () => {
+    axios.get.mockImplementationOnce((url) => {
+      if (url.endsWith('/getAvailableTopics')) {
+        return Promise.reject({
+          response: {
+            status: 500,
+            data: { error: 'Question service error' }
+          }
+        });
+      }
+    });
+  
+    const response = await request(app)
+      .get('/getAvailableTopics')
+      .set('Authorization', `Bearer ${token}`);
+      
+    expect(response.statusCode).toBe(500);
+    expect(response.body.error).toBe('Question service error');
+  });
+  
+  // Test /isAdmin/:username endpoint
+  it('should check if user is admin', async () => {
+    // Mock the axios response for this specific endpoint
+    axios.get.mockImplementationOnce((url) => {
+      if (url.endsWith('/isAdmin/testuser')) {
+        return Promise.resolve({ data: { isAdmin: true } });
+      }
+    });
+  
+    const response = await request(app)
+      .get('/isAdmin/testuser')
+      .set('Authorization', `Bearer ${token}`);
+  
+    expect(response.statusCode).toBe(200);
+    expect(response.body.isAdmin).toBe(true);
+  });
+  
+  // Test isAdmin error handling
+  it('should handle errors from isAdmin endpoint', async () => {
+    axios.get.mockImplementationOnce((url) => {
+      if (url.endsWith('/isAdmin/testuser')) {
+        return Promise.reject({
+          response: {
+            status: 404,
+            data: { error: 'User not found' }
+          }
+        });
+      }
+    });
+  
+    const response = await request(app)
+      .get('/isAdmin/testuser')
+      .set('Authorization', `Bearer ${token}`);
+      
+    expect(response.statusCode).toBe(404);
+    expect(response.body.error).toBe('User not found');
+  });
+  
+  // Test /games/:username endpoint
+  it('should fetch games for a specific user from the user service', async () => {
+    // Mock the axios response for this specific endpoint
+    axios.get.mockImplementationOnce((url) => {
+      if (url.endsWith('/games/testuser')) {
+        return Promise.resolve({ 
+          data: { 
+            games: [
+              { id: 1, score: 100, date: '2025-04-20' },
+              { id: 2, score: 150, date: '2025-04-21' }
+            ] 
+          } 
+        });
+      }
+    });
+  
+    const response = await request(app)
+      .get('/games/testuser')
+      .set('Authorization', `Bearer ${token}`);
+  
+    expect(response.statusCode).toBe(200);
+    expect(response.body.games).toHaveLength(2);
+    expect(response.body.games[0].score).toBe(100);
+    expect(response.body.games[1].score).toBe(150);
+  });
+  
+  // Test games error handling
+  it('should handle errors from games endpoint', async () => {
+    axios.get.mockImplementationOnce((url) => {
+      if (url.endsWith('/games/testuser')) {
+        return Promise.reject({
+          response: {
+            status: 404,
+            data: { error: 'User games not found' }
+          }
+        });
+      }
+    });
+  
+    const response = await request(app)
+      .get('/games/testuser')
+      .set('Authorization', `Bearer ${token}`);
+      
+    expect(response.statusCode).toBe(404);
+    expect(response.body.error).toBe('User games not found');
+  });
+  
+  // Test non-admin access to Grafana monitoring (should be forbidden)
+  it('should forbid non-admin users from accessing monitoring routes', async () => {
+    // Create a token with user role (not admin)
+    const userToken = jwt.sign({ username: 'user', role: 'user' }, "accessTokenSecret");
+    
+    const response = await request(app)
+      .get('/admin/monitoring/dashboard')
+      .set('Authorization', `Bearer ${userToken}`);
+    
+    expect(response.statusCode).toBe(403);
+    expect(response.body.error).toBe('Forbidden');
+  });
+  
+  // Test JWT verification with cookies instead of Authorization header
+  it('should accept JWT token from cookies', async () => {
+    // Mock the axios response
+    axios.get.mockImplementationOnce((url) => {
+      if (url.endsWith('/getRound')) {
+        return Promise.resolve({ data: { round: 'mockedRoundData' } });
+      }
+    });
+  
+    const response = await request(app)
+      .get('/getRound')
+      .set('Cookie', [`accessToken=${token}`]);
+  
+    expect(response.statusCode).toBe(200);
+    expect(response.body.round).toBe('mockedRoundData');
+  });
+  
+  // Test /getTopics error handling
+  it('should handle errors from getTopics endpoint', async () => {
+    axios.get.mockImplementationOnce((url) => {
+      if (url.endsWith('/getTopics')) {
+        return Promise.reject({
+          response: {
+            status: 500,
+            data: { error: 'Failed to retrieve topics' }
+          }
+        });
+      }
+    });
+  
+    const response = await request(app)
+      .get('/getTopics')
+      .set('Authorization', `Bearer ${token}`);
+      
+    expect(response.statusCode).toBe(500);
+    expect(response.body.error).toBe('Failed to retrieve topics');
+  });
+  
+  // Test /userstats error handling
+  it('should handle errors from userstats endpoint', async () => {
+    axios.get.mockImplementationOnce((url) => {
+      if (url.includes('/userstats')) {
+        return Promise.reject({
+          response: {
+            status: 500,
+            data: { error: 'Failed to retrieve user statistics' }
+          }
+        });
+      }
+    });
+  
+    const response = await request(app)
+      .get('/userstats')
+      .set('Authorization', `Bearer ${token}`)
+      .query({ username: 'testuser' });
+      
+    expect(response.statusCode).toBe(500);
+    expect(response.body.error).toBe('Failed to retrieve user statistics');
+  });
 });
