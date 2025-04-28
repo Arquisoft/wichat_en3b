@@ -55,7 +55,83 @@
     "gameTopic": "Game Topic",
     "readyToPlay": "Ready to play?",
     "chooseGameTopicMsg": "Choose the type of game you want and start playing!",
-    "playNow": "Play a game now"
+    "playNow": "Play a game now",
+    "triviaGame": "Trivia Game",
+    "chooseTopics": "Choose your topics",
+    "searchBar": "Search topics...",
+    "custom": "Custom",
+    "wild": "Wild Mode",
+    "Geography": "Geography",
+    "History": "History",
+    "Music": "Music",
+    "Sports": "Sports",
+    "Famous People & Characters" : "Famous People & Characters",
+    "Miscellaneous": "Miscellaneous",
+    "CITIES": "CITIES",
+    "COUNTRIES": "COUNTRIES",
+    "SPANISH PROVINCES": "SPANISH PROVINCES",
+    "FAMOUS PLACES": "FAMOUS PLACES",
+    "ASTURIAN COUNCILS": "ASTURIAN COUNCILS",
+    "FLAGS": "FLAGS",
+    "SPANISH COMMUNITIES FLAGS": "SPANISH COMMUNITIES FLAGS",
+    "LANGUAGES": "LANGUAGES",
+    "HISTORICAL EVENTS": "HISTORICAL EVENTS",
+    "HISTORICAL WOMEN": "HISTORICAL WOMEN",
+    "SINGERS": "SINGERS",
+    "LATIN SINGERS": "LATINO SINGERS",
+    "MUSICAL INSTRUMENTS": "MUSICAL INSTRUMENTS",
+    "ROCK BANDS": "ROCK BANDS",
+    "ATHLETES": "ATHLETES",
+    "SPORTS": "SPORTS",
+    "SPORTING GIJON PLAYERS": "SPORTING GIJON PLAYERS",
+    "OVIEDO PLAYERFS": "REAL OVIEDO PLAYERS",
+    "REAL MADRID PLAYERS": "REAL MADRID PLAYERS",
+    "BARCELONA PLAYERS": "BARCELONA PLAYERS",
+    "ATLETICO MADRID PLAYERS": "ATLETICO MADRID PLAYERS",
+    "NBA PLAYERS": "NBA PLAYERS",
+    "WNBA PLAYERS": "WNBA PLAYERS",
+    "EUROLEAGUE PLAYERS": "EUROLEAGUE PLAYERS",
+    "ATP PLAYERS": "ATP PLAYERS",
+    "WTA PLAYERS": "WTA PLAYERS",
+    "F1 DRIVERS": "F1 DRIVERS",
+    "RACING CIRCUITS": "RACING CIRCUITS",
+    "ACTORS": "ACTORS",
+    "ACTRESSES": "ACTRESSES",
+    "PAINTERS": "PAINTERS",
+    "FICTIONAL CHARACTERS": "FICTIONAL CHARACTERS",
+    "MANGA CHARACTERS": "MANGA CHARACTERS",
+    "ASTURIAN FAMOUS": "FAMOUS ASTURIANS",
+    "SOFTWARE ENGINEERS": "SOFTWARE ENGINEERS",
+    "FOODS": "FOODS",
+    "next": "NEXT",
+    "backHome": "BACK TO HOME",
+    "all": "All",
+    "topic": "Topic",
+    "selected plural": "s Selected",
+    "selected singular":" Selected"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
 
     
 }
