@@ -43,13 +43,6 @@ const Login = () => {
   const loginUser = async () => {
     try {
       const response = await axios.post("/login", { username, password }, { withCredentials: true });
-
-      // Check if a redirect URL is provided (for admin users)
-      if (response.data.redirectUrl) {
-        window.location.href = `${process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000"}${response.data.redirectUrl}`;
-        return;
-      }
-
       setAuth({ username, accessToken: response.data.accessToken });
       navigate(from, { replace: true });
     } catch (error) {

@@ -81,6 +81,20 @@ app.post('/adduser', async (req, res) => {
   }
 });
 
+app.get("/isAdmin/:username", async (req, res) => {
+  try {
+    const sanitizedUsername = checkInput(req.params.username);
+    const user = await User.findOne({ username: sanitizedUsername }).select('role');
+
+    if (!user)
+      return res.status(404).json({ error: 'User not found' });
+    
+    res.json({ isAdmin: user.role === 'admin' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 //Saves a completed game to the database and updates the user stats
 app.post('/addgame', async (req, res) => {
   try {
@@ -273,7 +287,7 @@ const server = app.listen(port, async () => {
 
   if (await User.findOne({ username: "admin" }))
     return console.log("Admin user already exists");
-  
+
   await new User({
     username: "admin",
     password: await bcrypt.hash("admin", 10),

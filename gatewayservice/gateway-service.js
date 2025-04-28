@@ -8,6 +8,7 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml')
 const httpProxy = require('http-proxy');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const port = 8000;
@@ -20,6 +21,7 @@ const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const grafanaUrl = process.env.GRAFANA_URL || 'http://localhost:9091';
 
 app.use(express.json());
+app.use(cookieParser());
 
 // Read the OpenAPI YAML file synchronously
 const openapiPath = './openapi.yaml'
@@ -45,6 +47,7 @@ if (fs.existsSync(openapiPath)) {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
 
+// CORS configuration
 const allowedOrigins = [
   frontendUrl,
   `http://localhost:${port}`
@@ -62,6 +65,12 @@ app.use(cors({
   allowedHeaders: "Content-Type, Authorization, X-Requested-With, Accept, Origin"
 }));
 
+//Prometheus configuration
+const metricsMiddleware = promBundle({ includeMethod: true });
+app.use(metricsMiddleware);
+
+// Set up a proxy server for Grafana
+// This proxy server will forward requests to the Grafana service
 const serverProxy = httpProxy.createProxyServer();
 serverProxy.on("proxyReq", (proxyReq, req, res) => {
   if (req.body) {
@@ -72,9 +81,9 @@ serverProxy.on("proxyReq", (proxyReq, req, res) => {
   }
 });
 
-app.all("/monitoring/*", (req, res) => {
+app.all("/admin/monitoring/*", (req, res) => {
   console.log("Proxying request to Grafana:", req.url);
-  serverProxy.web(req, res, { target: grafanaUrl, prependPath: false });
+  serverProxy.web(req, res, { target: grafanaUrl, prependPath: false, headers: { ...req.headers } });
 });
 
 serverProxy.on("error", (err, req, res) => {
@@ -85,8 +94,10 @@ serverProxy.on("error", (err, req, res) => {
 // Define a middleware to check authentication
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
-  if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
+  if (!authHeader?.startsWith('Bearer '))
+    return res.status(401).json({ error: 'Unauthorized' });
   const token = authHeader.split(' ')[1];
+
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "accessTokenSecret", (err, decoded) => {
     if (err) return res.status(403).json({ error: 'Invalid token' });
     req.user = decoded.username;
@@ -104,14 +115,6 @@ app.post('/login', async (req, res) => {
   try {
     // Forward the login request to the authentication service
     const authResponse = await axios.post(authServiceUrl + '/login', req.body, { withCredentials: true, headers: { ...req.headers } });
-
-    // For admin users, provide a full URL to the monitoring dashboard
-    if (authResponse.data.isAdmin) {
-      return res.json({
-        ...authResponse.data,
-        redirectUrl: "/monitoring/" // Direct URL to Grafana
-      });
-    }
 
     // Forward the cookie to the client from the authentication service
     if (authResponse.headers && authResponse.headers["set-cookie"])
@@ -160,6 +163,16 @@ app.post('/adduser', async (req, res) => {
 
 // Add the verifyJWT middleware to private endpoints
 app.use(verifyJWT);
+
+app.get('/isAdmin/:username', async (req, res) => {
+  try {
+    // Forward the isAdmin request to the user service
+    const userResponse = await axios.get(userServiceUrl + '/isAdmin/' + req.params.username);
+    res.json(userResponse.data);
+  } catch (error) {
+    res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
 
 app.post('/askllm', async (req, res) => {
   try {

@@ -139,7 +139,7 @@ services:
       - GF_AUTH_PROXY_HEADER_NAME=X-WEBAUTH-USER
       - GF_AUTH_PROXY_HEADER_PROPERTY=username
       - GF_AUTH_PROXY_AUTO_SIGN_UP=true
-      - GF_SERVER_ROOT_URL=http://localhost:8000/monitoring/
+      - GF_SERVER_ROOT_URL=http://localhost:8000/admin/monitoring/
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
     expose:
       - "9091"
