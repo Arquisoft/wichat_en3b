@@ -157,7 +157,7 @@ const PhoneDialog = ({ roundData, spendCoins, canAfford }) => {
             variant="contained"
             color="primary"
             onClick={handleUnlock}
-            disabled={!canAfford(25)}
+            disabled={isLocked && !canAfford(25)}
             sx={{
               padding: "12px 24px",
               fontSize: "1rem",
