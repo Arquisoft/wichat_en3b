@@ -184,7 +184,7 @@ describe('Gateway Service', () => {
             .get('/getRound')
             .set('Authorization', `Bearer ${invalidToken}`);
         expect(response.statusCode).toBe(403);
-        expect(response.body.error).toBe('Invalid token');
+        expect(response.body.error).toBe('Invalid token. Please log in again.');
     });
 
 
