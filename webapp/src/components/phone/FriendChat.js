@@ -58,6 +58,8 @@ Context:
 - You know about: ${selectedContact.mainTopic}.
 - The topic now is: ${roundData.mainTopic}.
 - The correct answer is: ${roundData.itemWithImage?.name}.
+- You are given a history of the conversation, with the format: "user: question llm: answer".
+  Do not include the history in your answer or add "llm:" or "user:" to your answer.
 
 Rules:
 
