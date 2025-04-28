@@ -95,13 +95,11 @@ const verifyJWT = (req, res, next) => {
   else if (req.cookies?.accessToken)
     token = req.cookies.accessToken;
 
-  console.log("Cookies:", req.cookies, "Token:", token);
-
   if (!token)
     return res.status(401).json({ error: 'Unauthorized' });
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "accessTokenSecret", (err, decoded) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
+    if (err) return res.status(403).json({ error: 'Invalid token. Please log in again.' });
     req.user = decoded.username;
     req.role = decoded.role;
     next();
