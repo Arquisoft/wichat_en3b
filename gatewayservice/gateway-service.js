@@ -68,10 +68,27 @@ const allowedOrigins = [
 ];
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true); // Origin is allowed
-    } else {
+    if (!origin) {
+      // Allow non-browser requests (e.g., server-to-server requests)
+      return callback(null, true);
+    }
+
+    try {
+      const url = new URL(origin);
+      const isAllowed = allowedOrigins.some(allowedOrigin => {
+        const allowedUrl = new URL(allowedOrigin);
+        return allowedUrl.hostname === url.hostname; // Match hostname only
+      });
+
+      if (isAllowed) {
+        return callback(null, true); // Origin is allowed
+      }
+
+      console.error(`Origin ${origin} not allowed by CORS`);
       callback(new Error(`Origin ${origin} not allowed by CORS`));
+    } catch (err) {
+      console.error(`Invalid origin: ${origin}`);
+      callback(new Error(`Invalid origin: ${origin}`));
     }
   },
   credentials: true,
