@@ -24,7 +24,7 @@ brAIn is a fun and interactive web-based quiz game we created for the Software A
 At its core, brAIn is built using React for the frontend and Node.js (Express) for the backend, with MongoDB taking care of the database. But what truly makes it shine is the integration of an AI-powered LLM from Empathy — bringing real smart assistance into your game experience. 🧠✨
 
 In brAIn Quiz, you’ll put your knowledge to the test across a variety of lively and dynamic modes. Choose from categories like Singers 🎤, Flags 🌍, Cities 🏙️, and many more!
-Can’t decide? Mix two categories for a double challenge, or go totally wild with Wild Mode 🔥 — where anything (and everything) can happen!
+Can’t decide? Mix multiple categories for a bigger challenge, or go totally wild with Wild Mode 🔥 — where anything (and everything) can happen!
 
 There are three exciting ways to play:
 
@@ -43,10 +43,9 @@ Need some help? No problem! Our Hint System 💡 has got you covered:
 # 🚀 More Than Just Trivia
 
 brAIn isn’t just about getting answers right — it’s about how you get them right!
-The faster you guess, the bigger your rewards. Collect coins, unlock achievements, and climb the leaderboard to prove you're the ultimate BrainBuddy! 🏆
- 
+Collect coins and climb the leaderboard to prove you're the ultimate BrainBuddy! 🏆
 
-Create an account or log in to challenge your friends and see who’s the ultimate trivia champion. Whether you're here to test your own knowledge or compete with others, brAIn Quiz is the perfect way to have fun and learn something new along the way! 🧠💥
+Create an account or log in to challenge your friends and see who’s the ultimate trivia champion! brAIn Quiz is the perfect way to have fun and learn something new along the way! 🧠💥
 
 # Technologies
 
