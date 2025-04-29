@@ -66,7 +66,17 @@ app.use(cors({
 }));
 
 //Prometheus configuration
-const metricsMiddleware = promBundle({ includeMethod: true });
+const metricsMiddleware = promBundle({
+  includeMethod: true,
+  includePath: true,
+  includeStatusCode: true,
+  includeDefaultMetrics: true,
+  normalizePath: true,
+  promClient: {
+      collectDefaultMetrics: {
+      }
+  },
+});
 app.use(metricsMiddleware);
 
 // Set up a proxy server for Grafana
