@@ -54,21 +54,17 @@ defineFeature(feature, test => {
     });
 
     when('They Click on "Play a game now"', async () => {
-      await page.waitForSelector('button[data-testid="play-button"]');
-      await expect(page).toMatchElement('div[data-testid="dashboard-readyToPlay"]');
-      await expect(page).toClick('[data-testid="play-button"]');
+      await match(page, 'div[data-testid="dashboard-readyToPlay"]');
+      await click(page, '[data-testid="play-button"]');
     });
 
     then('They can choose the gametopic they want to play', async () => {
       //Check if the user arrived to the game topic selection page
-      await page.waitForSelector('div[data-testid="game-topic-selection"]');
-      await expect(page).toMatchElement('div[data-testid="game-topic-selection"]');
+      await match(page, 'div[data-testid="game-topic-selection"]');
       //Click on wild
-      await page.waitForSelector('[data-testid="wild-button"]');
-      await expect(page).toClick('[data-testid="wild-button"]');
+      await click(page, '[data-testid="wild-button"]');
       //Click back on custom
-      await page.waitForSelector('div[data-testid="game-topic-selection"]');
-      await expect(page).toClick('[data-testid="custom-button"]');
+      await click(page, '[data-testid="custom-button"]');
     });
   });
 
@@ -76,40 +72,34 @@ defineFeature(feature, test => {
 
     given('The user is on the game topic selection window and has chosen Custom', async () => {
       //Click on custom
-      await page.waitForSelector('div[data-testid="game-topic-selection"]');
-      await expect(page).toClick('[data-testid="custom-button"]');
+      await click(page, '[data-testid="custom-button"]');
     });
 
     when('They search for specific topics', async () => {
       let searchInput = "cities";
-      await page.waitForSelector("[data-testid='search-input'] input");
-      await expect(page).toFill("[data-testid='search-input'] input", searchInput);
+      await type(page, "[data-testid='search-input'] input", searchInput);
     });
 
     then('They can choose that topic and go to the next screen', async () => {
       // Click on the accordion with the text "Geography"
-      await page.waitForSelector("[data-testid='Geography']");
-      await expect(page).toClick("[data-testid='Geography']");
-
+      await click(page, "[data-testid='Geography']");
       // Wait for the accordion to expand
       await wait(500);
-
       //Click on the topic
-      await expect(page).toClick("button", { text: "CITIES" });
+      await click(page, "button", { text: "CITIES" });
       //Click on the next button
-      await expect(page).toClick("button", { text: "NEXT" });
+      await click(page, "button", { text: "NEXT" });
     });
   });
 
   test('User in the game mode screen', ({ given, when, then }) => {
 
     given('The user is the the game mode selection screen', async () => {
-      await page.waitForSelector('div[data-testid="game-mode-selection"]');
-      await expect(page).toMatchElement('div[data-testid="game-mode-selection"]');
+      await match(page, 'div[data-testid="game-mode-selection"]');
     });
 
     when('They choose any game mode', async () => {
-      await expect(page).toClick("button[data-testid='TIME']");
+      await click(page, "button[data-testid='TIME']");
     });
 
     then('They are able to play a game of that gamemode', async () => {
