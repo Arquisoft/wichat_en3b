@@ -367,7 +367,7 @@ describe("Express Service API Endpoints Extended Tests", () => {
             results: {
               bindings: [
                 {
-                  city: { value: "http://www.wikidata.org/entity/Q90" },
+                  city: { value: "https://www.wikidata.org/entity/Q90" },
                   cityLabel: { value: "Paris" },
                   image: { value: "https://example.com/paris.jpg" }
                 }
