@@ -1,16 +1,13 @@
 import { useState } from "react"
 
 const useLifeLinesHandler = (roundData, spendCoins) => {
-
   const [fiftyFiftyUsed, setFiftyFiftyUsed] = useState(false);
   const [callFriendUsed, setCallFriendUsed] = useState(false);
-  const [phoneOut, setPhoneOut] = useState(false);
   const [askAudience, setAskAudience] = useState(false);
-  const [useChatUsed, setUseChatUsed] = useState(false);
   const [isCallFriendOpen, setIsCallFriendOpen] = useState(false);
   const [hiddenOptions, setHiddenOptions] = useState([]);
   const [showGraph, setShowGraph] = useState(false); // State to control the visibility of GraphComponent
-  const [_, setSelectedCharacter] = useState(null);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
 
   const handleFiftyFifty = () => {
     if (fiftyFiftyUsed || !roundData || !spendCoins(100)) return
@@ -59,10 +56,8 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
     switch(lifeLine) {
       case "50": return fiftyFiftyUsed;
       case "AskAudience": return askAudience;
-      case "UseChat": return useChatUsed;
       case "CallFriend": return callFriendUsed;
       case "CallFriendOpen": return isCallFriendOpen;
-      case "PhoneOut": return phoneOut;
       case "ShowGraph": return showGraph;
       default: alert("Unknown");
     }
@@ -71,14 +66,12 @@ const useLifeLinesHandler = (roundData, spendCoins) => {
   const newGame = () => {
     setFiftyFiftyUsed(false);
     setCallFriendUsed(false);
-    setPhoneOut(false);
     setAskAudience(false);
-    setUseChatUsed(false);
     setHiddenOptions([]);
     setSelectedCharacter(null);
   }
 
-  return { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall,
+  return { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, selectedCharacter,
     handleSelectCharacter, hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame }
 }
 
