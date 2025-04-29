@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const { defineFeature, loadFeature } = require('jest-cucumber');
 const setDefaultOptions = require('expect-puppeteer').setDefaultOptions
 const feature = loadFeature('./features/game-select.feature');
+const { click, type, match, wait } = require('../test-helper.js');
 
 let page;
 let browser;
@@ -10,8 +11,8 @@ defineFeature(feature, test => {
 
   beforeAll(async () => {
     browser = process.env.GITHUB_ACTIONS
-      ? await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] })
-      : await puppeteer.launch({ headless: false, slowMo: 30 });
+      ? await puppeteer.launch({ headless: "new", slowMo: 1, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
+      : await puppeteer.launch({ headless: false, slowMo: 1 });
     page = await browser.newPage();
 
     //Way of setting up the timeout
@@ -33,26 +34,23 @@ defineFeature(feature, test => {
       username = "GameSelUsr"
       password = "GameSelectPass123$"
       //Go from landing page to login page
-      await page.waitForSelector("button", { text: "Login" });
-      await expect(page).toClick("button", { text: "Login" });
+      await click(page, "button", { text: "Login" });
       //Go to the register page to add the user credentials to the database
-      await page.waitForSelector("a", { text: "Don’t have an account? Sign up here" });
-      await expect(page).toClick("a", { text: "Don’t have an account? Sign up here" });
+      await click(page, "a", { text: "Don’t have an account? Sign up here" });
       //Fill the register form with the user credentials
-      await expect(page).toFill('input[name="username"]', username);
-      await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button[data-testid="add-user-button"]');
+      await type(page, 'input[name="username"]', username);
+      await type(page, 'input[name="password"]', password);
+      await wait(100);
+      await click(page, 'button[data-testid="add-user-button"]');
       //You are redirected to the login page
-      await page.waitForSelector('[data-testid="login-submit"]');
-      await expect(page).toMatchElement("div", { text: "Ready to test your knowledge? Log in and let's go!" });
+      await match(page, "div", { text: "Ready to test your knowledge? Log in and let's go!" });
       //Fill the register form with the user credentials
-      await expect(page).toFill('input[name="username"]', username);
-      await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('[data-testid="login-submit"]')
+      await type(page, 'input[name="username"]', username);
+      await type(page, 'input[name="password"]', password);
+      await wait(100);
+      await click(page, 'button[data-testid="login-submit"]');
       //Check if the user arrived to the dashboard
-      await page.waitForSelector('div[data-testid="dashboard-welcomeMsg"]');
-      await expect(page).toMatchElement('div[data-testid="dashboard-welcomeMsg"]');
-
+      await match(page, 'div[data-testid="dashboard-welcomeMsg"]');
     });
 
     when('They Click on "Play a game now"', async () => {
@@ -90,9 +88,13 @@ defineFeature(feature, test => {
 
     then('They can choose that topic and go to the next screen', async () => {
       // Click on the accordion with the text "Geography"
+      await page.waitForSelector("[data-testid='Geography']");
       await expect(page).toClick("[data-testid='Geography']");
+
+      // Wait for the accordion to expand
+      await wait(500);
+
       //Click on the topic
-      await page.waitForSelector("button", { text: "Cities" });
       await expect(page).toClick("button", { text: "CITIES" });
       //Click on the next button
       await expect(page).toClick("button", { text: "NEXT" });
