@@ -32,7 +32,6 @@ endif::arc42help[]
 [options="header",cols="1,3"]
 |===
 |Constraint|Explanation
-|Name|The application must be called WIChat.
 |Game description|The game will consist of showing a picture and the users guessing what it is about.
 |Obtaining the hints|Some hints for the game must be obtained from an external Large Language Model (LLM) through an API. 
 |Source of information|Information about the questions and answers must be directly obtained from Wikidata. So should be the disctractors and the images.

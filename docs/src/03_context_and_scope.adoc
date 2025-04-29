@@ -31,7 +31,7 @@ See https://docs.arc42.org/section-3/[Context and Scope] in the arc42 documentat
 endif::arc42help[]
 
 === Introduction
-WiChat is a game designed for an online experiment done by RTVE, with the typical TV quiz contest format. To implement this application, we need to call several external APIs. Wikidata is the one in charge of giving us the information we require for the questions and the answers, and also the images the user is going to see, which are the main part of the application. We also use an LLM for generating some hints for the user (in form of wildcards) and a database for storing the user log-in information.
+brAIn is a game designed for an online experiment done by RTVE, with the typical TV quiz contest format. To implement this application, we need to call several external APIs. Wikidata is the one in charge of giving us the information we require for the questions and the answers, and also the images the user is going to see, which are the main part of the application. We also use an LLM for generating some hints for the user (in form of wildcards) and a database for storing the user log-in information.
 
 === Business Context
 

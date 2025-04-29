@@ -7,7 +7,7 @@
 include::src/config.adoc[]
 
 = image:brain_logo.jpg[arc42] Documentation
-:revnumber: 1.0.8 EN
+:revnumber: 1.0 EN
 :revdate: April 2025
 //:revremark: (based upon AsciiDoc version)
 // toc-title definition MUST follow document title without blank line!
