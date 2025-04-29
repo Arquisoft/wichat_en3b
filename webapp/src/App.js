@@ -6,6 +6,7 @@ import { Outlet, useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import logInPic from "./components/photos/homeLogo.png";
+import { keyframes } from "@mui/system";
 
 //animation to fadeIn
 const ZoomInPaper = styled(Paper)(({ theme }) => ({
@@ -111,13 +112,30 @@ const SpeechBubble = styled(Box)(({ theme }) => ({
   },
 }));
 
-const TitleTypography = styled(Typography)(({ theme }) => ({
-  fontWeight: "bold",
-  background: theme.palette.gradient.main.right,
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
+export const TitleTypography = styled(Typography)(({ theme }) => ({
+  textTransform: "uppercase",
+  fontSize: "2.5rem",
+  letterSpacing: "0.1em",
+  color: theme.palette.primary.main,
   marginBottom: theme.spacing(3),
+  display: "inline-block",
 }));
+
+const pulse = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+`;
+
+export const AISpan = styled('span')(({ theme }) => ({
+  fontWeight: 900,
+  display: "inline-block",
+  // animation: `${pulse} 1.5s infinite ease-in-out`,
+  color: theme.palette.secondary.main,
+}));
+
+
+
 
 function App() {
   const {t} = useTranslation();
@@ -131,9 +149,9 @@ function App() {
   return (
     <Container maxWidth="sm">
       <ZoomInPaper elevation={3}>
-        <Box sx={{ textAlign: "center", mb: 4 }}>
+        <Box data-testid="app-name-div" sx={{ textAlign: "center", mb: 4 }}>
           <TitleTypography component="h1" variant="h4">
-            WICHAT
+              BR<AISpan>AI</AISpan>N      
           </TitleTypography>
           <SpeechBubble variant="h5" color="textSecondary">
             {t("welcomeMsg")}

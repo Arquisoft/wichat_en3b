@@ -35,7 +35,7 @@ async function startUp() {
 }
 
 // Function to clear the database (just for development)
-/** 
+/**
 async function clearDatabase() {
     try {
         console.log("Clearing the database...");
@@ -54,176 +54,145 @@ function sleep(ms) {
 
 async function fetchAndStoreData() {
     console.log("Fetching data from Wikidata and storing it in the database");
-    
-    // Define the freshness threshold (15 days in milliseconds)
-    const FRESHNESS_THRESHOLD = 15 * 24 * 60 * 60 * 1000; // 15 days in ms
+
+    // Define the freshness threshold (15 days in milliseconds) if needed
+    const FRESHNESS_THRESHOLD = 15 * 24 * 60 * 60 * 1000; // 15 days
     const now = new Date();
-    
-    // Get all topics from the database
+
+    // Get all topics from the database and determine which to update
     const topicUpdates = await TopicUpdate.find().lean();
     const topicUpdateMap = topicUpdates.reduce((acc, update) => {
         acc[update.topic] = update;
         return acc;
     }, {});
-    
-    // Filter topics that need updating (not in DB or older than threshold)
+
     const topicsToUpdate = [];
     for (const topic of Object.keys(QUERIES)) {
         const update = topicUpdateMap[topic];
         if (!update || (now - new Date(update.lastUpdated) > FRESHNESS_THRESHOLD)) {
             topicsToUpdate.push(topic);
-        } else {
-            console.log(`Topic '${topic}' is up to date (last updated: ${update.lastUpdated})`);
         }
     }
-    
+
     if (topicsToUpdate.length === 0) {
-        console.log("✅ All topics are up to date (updated within the last 15 days).");
+        console.log("✅ All topics are up to date.");
         return;
     }
-    
-    console.log(`Found ${topicsToUpdate.length} topics that need updating: ${topicsToUpdate.join(', ')}`);
-    
-    // Create a map to track the processing status of each topic
+
+    console.log(`Found ${topicsToUpdate.length} topics to update: ${topicsToUpdate.join(", ")}`);
+
+    // Track status per topic
     const topicStatus = topicsToUpdate.reduce((acc, topic) => {
-        acc[topic] = { 
-            processed: false, 
-            attempts: 0,
-            processing: false,
-            lastAttemptTime: 0
-        };
+        acc[topic] = { processed: false, attempts: 0, processing: false, intervalId: null };
         return acc;
     }, {});
-    
-    // Function to process a single topic
+
+    // Kick off initial processing of each topic
+    topicsToUpdate.forEach(topic => processTopic(topic));
+
     async function processTopic(topic) {
-        if (topicStatus[topic].processed || topicStatus[topic].processing) {
-            return; // Skip if already processed or currently being processed
-        }
-        
-        // Mark as being processed to prevent concurrent processing
-        topicStatus[topic].processing = true;
-        topicStatus[topic].attempts += 1;
-        topicStatus[topic].lastAttemptTime = Date.now();
-        
-        const query = QUERIES[topic];
-        console.log(`-> Fetching data for topic: ${topic} (Attempt ${topicStatus[topic].attempts})`);
+        const status = topicStatus[topic];
+        if (status.processed || status.processing) return;
+
+        status.processing = true;
+        status.attempts += 1;
+        console.log(`🤔 Fetching data for topic: ${topic} (Attempt ${status.attempts})`);
         console.time(`Time taken for ${topic}`);
-        
+
         try {
+            const query = QUERIES[topic];
             const response = await axios.get(SPARQL_ENDPOINT, {
                 params: { query, format: "json" },
                 headers: { "User-Agent": "QuizGame/1.0 (student project)" }
             });
 
             const items = response.data.results.bindings.map(item => ({
-                id: item[topic]?.value?.split("/").pop() || "Unknown",
+                id: item[topic]?.value.split("/").pop() || "Unknown",
                 name: item[`${topic}Label`]?.value || "No Name",
                 imageUrl: item.image?.value || "",
                 topic
             })).filter(item => !/^Q\d+$/.test(item.name));
 
-            const bulkOps = items.map(item => ({
-                updateOne: {
-                    filter: { id: item.id },
-                    update: { $set: item },
-                    upsert: true
-                }
-            }));
+            console.log(`🔎 ​${items.length} items for topic: ${topic}`);
 
-            if (bulkOps.length > 0) {
+            await WikidataObject.deleteMany({ topic }); // Clear old data for the topic
+
+            if (items.length > 0) {
+                const bulkOps = items.map(item => ({
+                    updateOne: { filter: { id: item.id }, update: { $set: item }, upsert: true }
+                }));
                 await WikidataObject.bulkWrite(bulkOps);
-                console.log(`✅ Stored ${bulkOps.length} items for topic '${topic}'`);
-                
-                // Log a sample of what was stored
-                if (bulkOps.length > 0) {
-                    const sampleItem = bulkOps[0].updateOne.update.$set;
-                    console.log(`Sample item stored for '${topic}':`, JSON.stringify(sampleItem, null, 2));
-                }
-                
-                // Update the last updated timestamp
-                await TopicUpdate.findOneAndUpdate(
-                    { topic },
-                    { lastUpdated: new Date() },
-                    { upsert: true }
-                );
             }
 
+            // Check in the database the number of items stored
+            const count = await WikidataObject.countDocuments({ topic });
+            console.log(`📈​ ${count} items stored for topic: ${topic}`);
+
+            await TopicUpdate.findOneAndUpdate(
+                { topic },
+                { lastUpdated: new Date() },
+                { upsert: true }
+            );
+
             console.timeEnd(`Time taken for ${topic}`);
-            console.log(`✔ Finished storing ${topic} data.`);
-            
-            // Mark as successfully processed
-            topicStatus[topic].processed = true;
-            topicStatus[topic].processing = false;
-            
+            console.log(`✅ Finished storing ${topic} data.`);
+
+            status.processed = true;
+            status.processing = false;
+
+            // Stop retry interval if running
+            if (status.intervalId) {
+                clearInterval(status.intervalId);
+                status.intervalId = null;
+            }
+
+            checkCompletion();
         } catch (error) {
             console.timeEnd(`Time taken for ${topic}`);
             console.error(`❌ Error processing topic ${topic}:`, error.message);
-            
-            // Mark as not being processed anymore (will be retried)
-            topicStatus[topic].processing = false;
+
+            status.processing = false;
+
+            // Start retry loop if not already set
+            if (!status.intervalId) {
+                status.intervalId = setInterval(() => processTopic(topic), 2000);
+            }
         }
     }
-    
-    // Start processing all topics that need updating
-    const initialPromises = topicsToUpdate.map(topic => processTopic(topic));
-    await Promise.all(initialPromises);
-    
-    // Set up interval to check for failed topics and retry them every 2.5 seconds
-    const RETRY_DELAY = 2500; // 2.5 seconds
-    const retryInterval = setInterval(() => {
-        const pendingTopics = Object.entries(topicStatus)
-            .filter(([_, status]) => !status.processed && !status.processing)
-            .map(([topic, _]) => topic);
-        
-        if (pendingTopics.length === 0) {
-            clearInterval(retryInterval);
-            checkCompletion();
-            return;
-        }
-        
-        console.log(`Retrying ${pendingTopics.length} pending topics...`);
-        pendingTopics.forEach(topic => processTopic(topic));
-    }, RETRY_DELAY);
-    
-    // Function to check completion status
+
     function checkCompletion() {
-        const remainingTopics = Object.entries(topicStatus)
-            .filter(([_, status]) => !status.processed)
-            .map(([topic, _]) => topic);
-        
-        if (remainingTopics.length === 0) {
-            console.log("✅ All topics were processed successfully!");
+        const allDone = Object.values(topicStatus).every(s => s.processed);
+        if (allDone) {
+            console.log("✅✅✅ All topics were processed successfully!");
+
+            // Clear any remaining intervals
+            Object.values(topicStatus).forEach(s => {
+                if (s.intervalId) clearInterval(s.intervalId);
+            });
             logTopicCounts();
-        } else {
-            // Check again in 1 second
-            setTimeout(checkCompletion, 1000);
         }
     }
-    
-    // Log the number of items for each topic
+
     async function logTopicCounts() {
-        console.log("✅ Data successfully stored in the database.");
+        console.log("✅✅✅ Data successfully stored in the database. {");
         for (const topic of Object.keys(QUERIES)) {
-            const topicCount = await WikidataObject.countDocuments({ topic });
-            console.log(`  - Topic '${topic}': ${topicCount} items`);
+            const count = await WikidataObject.countDocuments({ topic });
+            console.log(`  - Topic '${topic}': ${count} items`);
         }
+        console.log("}");
     }
-    
-    // Start checking for completion
-    checkCompletion();
-    
-    // Return a promise that resolves when all topics are processed
-    return new Promise((resolve) => {
-        const checkForCompletion = setInterval(() => {
-            const allDone = Object.values(topicStatus).every(status => status.processed);
-            if (allDone) {
-                clearInterval(checkForCompletion);
+
+    // Return a promise that resolves when all done (optional)
+    return new Promise(resolve => {
+        const interval = setInterval(() => {
+            if (Object.values(topicStatus).every(s => s.processed)) {
+                clearInterval(interval);
                 resolve();
             }
         }, 1000);
     });
 }
+
 
 // Function to get random items from MongoDB
 async function getRandomItems(topics) {

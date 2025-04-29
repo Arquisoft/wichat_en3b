@@ -73,37 +73,40 @@ node Device as device #lightgreen {
 
 cloud "Oracle Cloud Server" as server #lightyellow {
     node "Docker" as docker #lightblue {
-        node "WebApp" as webapp
+        folder "Frontend" as frontend #pink {
+            node "WebApp (GameService)" as webapp
+        }
+
         node "GatewayService" as gateway
-        database "MongoDB" as db
+        database "Database (MongoDB)" as db
 
         folder "Backend" as microservices #pink {
             node "Users" as users {
               component "AuthService" as authservice
               component "UserService" as userservice
             }
-            component "LLMservice" as llmservice
             component "QuestionService" as questionservice
+            component "LLMservice" as llmservice
         }
     }
-    
 }
 
 cloud "External Services" as external #orange {
     node "WikiData" as wikidata
-    node "Empathy" as empathy
+    node "LLM (Empathy)" as empathy
 }
 
 user -left-> device : Interacts With
 browser --> webapp : HTTPS Request
-webapp <--> gateway : Frontend
+webapp <--> gateway
 gateway <--> authservice : Handles Authentication
 gateway <--> userservice : Handles User Data
 gateway <--> llmservice : Handles Hints
-empathy --> llmservice : LLM 
+empathy --> llmservice
 wikidata --> questionservice : Retrieves Pictures & Questions
 userservice <--> db : Stores/Retrieves User Data & Statistics
 authservice <--> db : Authenticates User Data
+questionservice <--> db : Stores/Retrieves data for Q&A
 
 @enduml
 ----
@@ -125,16 +128,16 @@ The web app, gateway, and services run within Docker containers, all hosted on a
 
 [options="header"]
 |===
-| Component          | Description  
-| Web App            | User interface that interacts with the rest of the application.  
-| Gateway            | Manages communication between the web app and various services.  
-| User Service       | Manages user data and statistics, providing some functions for API consumers.  
-| Auth Service       | Handles user authentication.  
-| LLM Service        | Provides hints to the user while playing.
-| Question Service   | Manages pictures and data for the questions.
-| Database (MongoDB) | Stores user data and game history.   
-| Empathy            | External LLM used to obtain the hints.
-| WikiData           | External API used to retrieve information from WikiData.  
+| Component              | Description  
+| WebApp (Game Service)  | User interface that interacts with the rest of the application.  
+| Gateway                | Manages communication between the web app and various services.  
+| User Service           | Manages user data and statistics, providing some functions for API consumers.  
+| Authentication Service | Handles user authentication.  
+| LLM Service            | Provides hints to the user while playing.
+| Question Service       | Manages pictures and data for the questions.
+| Database (MongoDB)     | Stores user data and game history.   
+| LLM (Empathy)          | External LLM used to obtain the hints.
+| WikiData               | External API used to retrieve information from WikiData.  
 |===
 
 ifdef::arc42help[]

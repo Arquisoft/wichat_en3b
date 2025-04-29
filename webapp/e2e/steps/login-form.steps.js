@@ -54,15 +54,15 @@ defineFeature(feature, test => {
 
     given('The user is on the login page', async () => {
       username = "correctUser"
-      password = "correctPassword"
+      password = "correctPassword123$"
       //Go from login page to register page
-      await expect(page).toClick("a", { text: "Don't have an account? Register here." });
+      await expect(page).toClick('a[data-testid="register-link"]');
       //Add the user credentials to the database 
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button', { text: 'Add User' });
-      //Go to the login page
-      await expect(page).toClick("a", { text: "Already have an account? Login here." });
+      await expect(page).toClick('button[data-testid="add-user-button"]');
+      //You are redirected to the login page
+      await expect(page).toMatchElement("div", { text: "Login to Start Playing" });
     });
 
     when('They submit the correct credentials into the login form', async () => {
@@ -72,7 +72,9 @@ defineFeature(feature, test => {
     });
 
     then('They should be redirected to the dashboard', async () => {
-        await expect(page).toMatchElement("div", { text: "Home" });
+      await page.waitForSelector('body');
+      //Check if the user arrived to the dashboard
+      await expect(page).toMatchElement('div[data-testid="dashboard-welcomeMsg"]');
     });
   });
 

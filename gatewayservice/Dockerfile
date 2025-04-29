@@ -7,6 +7,7 @@ WORKDIR /usr/src/gatewayservice
 # Set environment variables
 ARG FRONTEND_URL
 ENV FRONTEND_URL=${FRONTEND_URL}
+ENV ACCESS_TOKEN_SECRET="accessTokenSecret"
 
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./

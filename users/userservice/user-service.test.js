@@ -475,4 +475,120 @@ describe('Game Management', () => {
     expect(stats.totalGamesPlayed).toBe(1);
   }
   });
-}));
+
+  it('should return 404 for non-existent users on GET /isAdmin/:username', async () => {
+    const response = await request(app).get('/isAdmin/NonExistentUser');
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty('error', 'User not found');
+  });
+
+  it('should return false for non-admin users on GET /isAdmin/:username', async () => {
+    // Create a regular user
+    const regularUser = {
+      username: 'RegularUser',
+      password: 'RegPassword1!'
+    };
+    
+    // Add user if it doesn't exist
+    const existingUser = await User.findOne({ username: regularUser.username });
+    if (!existingUser) {
+      await request(app).post('/adduser').send(regularUser);
+    }
+    
+    // Test the endpoint
+    const response = await request(app).get('/isAdmin/RegularUser');
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('isAdmin', false);
+  });
+
+  it('should correctly identify admin users on GET /isAdmin/:username', async () => {
+    // Create an admin user (can leverage the one from startup)
+    // First check if admin exists
+    const adminUser = await User.findOne({ username: 'admin' });
+    if (!adminUser) {
+      // Create admin user if needed for testing
+      await new User({
+        username: 'admin',
+        password: await bcrypt.hash('admin', 10),
+        role: 'admin',
+      }).save();
+    }
+    
+    // Test the endpoint
+    const response = await request(app).get('/isAdmin/admin');
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('isAdmin', true);
+  });
+
+  it('should sanitize username input in isAdmin endpoint', async () => {
+    // Create a user with a valid username
+    const testUser = {
+      username: 'ValidUser123',
+      password: 'ValidPass1!'
+    };
+    
+    // Add user if it doesn't exist
+    const existingUser = await User.findOne({ username: testUser.username });
+    if (!existingUser) {
+      await request(app).post('/adduser').send(testUser);
+    }
+    
+    // Test the endpoint with potential injection characters
+    const response = await request(app).get('/isAdmin/ValidUser123;drop%20database');
+    expect(response.status).toBe(404); // Should be sanitized to ValidUser123dropdatabase which doesn't exist
+  });
+
+  it('should throw error when username contains invalid characters', async () => {
+    const invalidUser = {
+      username: 'Invalid User!',  // Contains space and special character
+      password: 'ValidPassword1!'
+    };
+    
+    const response = await request(app).post('/adduser').send(invalidUser);
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'The username is not valid.');
+  });
+
+  it('should return user object with expected properties on successful creation', async () => {
+    const uniqueUsername = `TestUser1234`;
+    const newUser = {
+      username: uniqueUsername,
+      password: 'TestPassword1!'
+    };
+    
+    const response = await request(app).post('/adduser').send(newUser);
+    expect(response.status).toBe(200);
+    
+    // Testing line 78: res.json(newUser)
+    expect(response.body).toHaveProperty('username', uniqueUsername);
+    expect(response.body).toHaveProperty('role', 'user');
+    expect(response.body).toHaveProperty('coins', 1000);
+    expect(response.body).toHaveProperty('_id');
+    
+    // Make sure password is not returned in response
+    expect(response.body.password).not.toBe(newUser.password);
+  });
+
+  /*
+  it('should correctly calculate new average with calculateNewAvg function', () => {
+    // Import the function directly from the module if possible
+    // Otherwise test through a proxy
+    
+    // Test case 1: First game (no previous games)
+    const newAvg1 = calculateNewAvg(0.8, 0, 0);
+    expect(newAvg1).toBeCloseTo(0.8);
+    
+    // Test case 2: After one game
+    const newAvg2 = calculateNewAvg(0.6, 1, 0.8);
+    expect(newAvg2).toBeCloseTo(0.7);
+    
+    // Test case 3: After multiple games
+    const newAvg3 = calculateNewAvg(1.0, 5, 0.6);
+    expect(newAvg3).toBeCloseTo((5*0.6 + 1.0)/6);
+  });
+  */
+  
+})
+
+  
+);
