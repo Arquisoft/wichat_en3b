@@ -6,11 +6,7 @@ Scenario: The user is not registered in the site
   Then I am redirected to the login page
 
 
-# Uncomment this when the backend is ready to handle the case of registering
-# twice with the same user 
-
-# Scenario: The user is already registered in the site
-  # Given A registered user
-  # When I fill the data in the form and press submit
-  # Then An error message should be shown in the screen
-
+Scenario: The user is already registered in the site
+  Given A registered user
+  When I fill the data in the form and press submit
+  Then An error message should be shown in the screen

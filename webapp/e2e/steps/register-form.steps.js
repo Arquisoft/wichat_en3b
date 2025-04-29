@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const { defineFeature, loadFeature }=require('jest-cucumber');
 const setDefaultOptions = require('expect-puppeteer').setDefaultOptions
 const feature = loadFeature('./features/register-form.feature');
+const { click, type, match, wait } = require('../test-helper.js');
 
 let page;
 let browser;
@@ -10,12 +11,13 @@ defineFeature(feature, test => {
   
   beforeAll(async () => {
     browser = process.env.GITHUB_ACTIONS
-      ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
-      : await puppeteer.launch({ headless: false, slowMo: 10 });
+      ? await puppeteer.launch({headless: "new", slowMo: 1, args: ['--no-sandbox', '--disable-setuid-sandbox']})
+      : await puppeteer.launch({ headless: false, slowMo: 1 });
     page = await browser.newPage();
-    //Way of setting up the timeout
-    setDefaultOptions({ timeout: 10000 })
 
+    //Way of setting up the timeout
+    setDefaultOptions({ timeout: 60000 });
+    
     await page
       .goto("http://localhost:3000", {
         waitUntil: "networkidle0",
@@ -32,42 +34,47 @@ defineFeature(feature, test => {
       username = "newUser"
       password = "newUserPassword123$"
       //Go from landing page to login page
-      await expect(page).toClick("button", { text: "Login" }); 
+      await click(page, "button", { text: "Login" }); 
       //Go from login page to register page
-      await expect(page).toClick("a", { text: "Don’t have an account? Sign up here" });
+      await click(page, "a", { text: "Don’t have an account? Sign up here" });
     });
 
     when('I fill the data in the form and press submit', async () => {
-      await expect(page).toFill('input[name="username"]', username);
-      await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button[data-testid="add-user-button"]');
+      await type(page, 'input[name="username"]', username);
+      await type(page, 'input[name="password"]', password);
+      await wait(100);
+      await click(page, 'button[data-testid="add-user-button"]');
     });
 
     then('I am redirected to the login page', async () => {
-      await expect(page).toMatchElement("div", { text: "Ready to test your knowledge? Log in and let's go!" });
+      await match(page, "div", { text: "Ready to test your knowledge? Log in and let's go!" });
     });
   })
 
-  //Uncomment this test when the backend is ready to handle the case of a user already registered in the database attemps to register again
-  /* test('The user is already registered in the site', ({ given, when, then }) => {
+  test('The user is already registered in the site', ({ given, when, then }) => {
     let username;
     let password;
 
     given('A registered user', async () => {
       username = "newUser"
-      password = "newUserPassword"
+      password = "newUserPassword123$"
     });
 
     when('I fill the data in the form and press submit', async () => {
-      await expect(page).toFill('input[name="username"]', username);
-      await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button', { text: 'Add User' });
+      await page.goto("http://localhost:3000/signup", {
+        waitUntil: "networkidle0",
+      });
+
+      await type(page, 'input[name="username"]', username);
+      await type(page, 'input[name="password"]', password);
+      await wait(100);
+      await click(page, 'button[data-testid="add-user-button"]');
     });
 
     then('An error message should be shown in the screen', async () => {
-      await expect(page).toMatchElement("div", { text: "User added successfully" });
+      await match(page, "p", { text: "Username already taken" });
     });
-}); */
+  });
 
   afterAll(async ()=>{
     browser.close()

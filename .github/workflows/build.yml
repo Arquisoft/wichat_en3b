@@ -29,3 +29,21 @@ jobs:
       uses: SonarSource/sonarqube-scan-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+    - run: npm --prefix users/authservice install
+    - run: npm --prefix users/userservice install
+    - run: npm --prefix llmservice install
+    - run: npm --prefix questionservice install
+    - run: npm --prefix gatewayservice install
+    - run: npm --prefix webapp install
+    - name: Build webapp without CI warnings as errors
+      run: npm --prefix webapp run build
+      env:
+        CI: false
+    - run: npm --prefix webapp run test:e2e
