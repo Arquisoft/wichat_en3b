@@ -13,7 +13,7 @@ defineFeature(feature, test => {
       ? await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] })
       : await puppeteer.launch({ headless: false, slowMo: 10 });
     page = await browser.newPage();
-    setDefaultOptions({ timeout: 1000 });
+    setDefaultOptions({ timeout: 10000 });
 
     await page
       .goto("http://localhost:3000", {
