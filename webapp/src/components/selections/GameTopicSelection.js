@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Typography, Box, Grid, TextField, Collapse, Divider } from "@mui/material"
+import { Typography, Box, Grid, TextField, Collapse, Divider, useTheme } from "@mui/material"
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router"
 import {
@@ -13,8 +13,6 @@ import { StyledContainer, SectionPaper, SectionTitle, StyledButton, ModeButton, 
 import useAxios from "../../hooks/useAxios";
 import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
-
 
 const CATEGORY_MAP = {
   "Geography": [
@@ -68,7 +66,6 @@ const CATEGORY_MAP = {
   ]
 }
 
-
 const GameTopicSelection = () => {
   const axios = useAxios()
   const navigate = useNavigate()
@@ -76,6 +73,7 @@ const GameTopicSelection = () => {
   const [isWild, setIsWild] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [availableTopics, setAvailableTopics] = useState([])
+  const theme = useTheme() // Get the current theme
 
   const ALL_TOPICS = Object.values(CATEGORY_MAP).flat().map((t) => t.key)
 
@@ -154,7 +152,6 @@ const GameTopicSelection = () => {
 
   const {t} = useTranslation();
 
-
   return (
     <StyledContainer maxWidth="md" data-testid="game-topic-selection">
       <Typography variant="h3" align="center" fontWeight="bold" color="primary.main">
@@ -174,29 +171,28 @@ const GameTopicSelection = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
             sx: {
-              backgroundColor: "#f0f4ff",
+              backgroundColor: theme.palette.background.paper,
               borderRadius: 2,
               fontSize: "1rem",
               boxShadow: 1,
               transition: "all 0.3s ease",
               "&:hover": {
                 boxShadow: 3,
-                backgroundColor: "#e8f0fe",
+                backgroundColor: theme.palette.action.hover,
               },
               "&.Mui-focused": {
                 boxShadow: 4,
-                backgroundColor: "#e3ecff",
+                backgroundColor: theme.palette.action.selected,
               },
             }
           }}
           InputLabelProps={{
             sx: {
-              color: "primary.main",
+              color: theme.palette.primary.main,
               fontWeight: "bold",
             }
           }}
         />
-
 
         <Box sx={{ display: "flex", justifyContent: "center", gap: 2, flexWrap: "wrap", mt: 2 }}>
           <StyledButton
@@ -205,9 +201,9 @@ const GameTopicSelection = () => {
             onClick={handleCustomSelection}
             color="primary"
             sx={{
-              background: !isWild ? "linear-gradient(to right, #3f51b5, #7e57c2)" : "transparent",
-              border: isWild ? "2px solid #7e57c2" : "none",
-              color: isWild ? "#7e57c2" : "#fff",
+              background: !isWild ? `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.primary.dark})` : "transparent",
+              border: isWild ? `2px solid ${theme.palette.primary.main}` : "none",
+              color: isWild ? theme.palette.primary.main : theme.palette.primary.contrastText,
             }}
           >
             🎯 {t("custom")}
@@ -216,18 +212,17 @@ const GameTopicSelection = () => {
           <StyledButton
             variant={isWild ? "contained" : "outlined"}
             onClick={handleWildSelection}
-            color="secondary"
+            color="primary"
             data-testid="wild-button"
             sx={{
-              background: isWild ? "linear-gradient(to right, #3f51b5, #7e57c2)" : "transparent",
-              border: !isWild ? "2px solid #3f51b5" : "none",
-              color: !isWild ? "#3f51b5" : "#fff",
+              background: isWild ? `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.primary.dark})` : "transparent",
+              border: !isWild ? `2px solid ${theme.palette.primary.main}` : "none",
+              color: !isWild ? theme.palette.primary.main : theme.palette.primary.contrastText,
             }}
           >
             🌀 {t("wild")}
           </StyledButton>
         </Box>
-
 
         <Collapse in={!isWild}>
           {filterBySearch(CATEGORY_MAP, searchTerm).map(({ category, topics }) => {
@@ -238,11 +233,11 @@ const GameTopicSelection = () => {
                   aria-controls={`${category}-content`}
                   id={`${category}-header`}
                   sx={{
-                    backgroundColor: "#f0f4ff",
-                    "&.Mui-expanded": { backgroundColor: "#e8f0fe" },
+                    backgroundColor: theme.palette.background.paper,
+                    "&.Mui-expanded": { backgroundColor: theme.palette.action.hover },
                   }}
                 >
-                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "#5e35b1" }}>
+                  <Typography variant="h6" sx={{ fontWeight: "bold", color: theme.palette.primary.main }}>
                     {t(category)}
                   </Typography>
                 </AccordionSummary>
@@ -267,8 +262,6 @@ const GameTopicSelection = () => {
           })}
         </Collapse>
 
-
-
         <Typography variant="subtitle1" color="primary" sx={{ textAlign: "center", mt: 2 }}>
           {formatSelectedMessage(selectedTopics, ALL_TOPICS, isWild)}
         </Typography>
@@ -292,9 +285,9 @@ const GameTopicSelection = () => {
           onClick={() => navigate("/home")}
           fullWidth
           sx={{
-            background: "linear-gradient(to right, #9e9e9e, #616161)",
+            background: `linear-gradient(to right, ${theme.palette.grey[500]}, ${theme.palette.grey[700]})`,
             "&:hover": {
-              background: "linear-gradient(to right, #757575, #424242)",
+              background: `linear-gradient(to right, ${theme.palette.grey[600]}, ${theme.palette.grey[800]})`,
             }
           }}
         >
