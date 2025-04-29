@@ -13,8 +13,6 @@ defineFeature(feature, test => {
       ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
       : await puppeteer.launch({ headless: false, slowMo: 30 });
     page = await browser.newPage();
-    //Way of setting up the timeout
-    setDefaultOptions({ timeout: 10000 })
 
     await page
       .goto("http://localhost:3000", {
@@ -34,22 +32,22 @@ defineFeature(feature, test => {
       await new Promise((resolve) => setTimeout(resolve, 500)); 
       //Go from landing page to login page
       await expect(page).toClick("button", { text: "Login" }); 
-      await new Promise((resolve) => setTimeout(resolve, 500)); 
       //Go to the register page to add the user credentials to the database
+      await page.waitForSelector("a", { text: "Don’t have an account? Sign up here" });
       await expect(page).toClick("a", { text: "Don’t have an account? Sign up here" });
       //Fill the register form with the user credentials
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
       await expect(page).toClick('button[data-testid="add-user-button"]');
       //You are redirected to the login page
+      await page.waitForSelector('[data-testid="login-submit"]');
       await expect(page).toMatchElement("div", { text: "Ready to test your knowledge? Log in and let's go!" });
       //Fill the register form with the user credentials
-      await new Promise((resolve) => setTimeout(resolve, 500)); 
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
       await expect(page).toClick('[data-testid="login-submit"]')
-      await new Promise((resolve) => setTimeout(resolve, 500)); 
       //Check if the user arrived to the dashboard
+      await page.waitForSelector('div[data-testid="dashboard-welcomeMsg"]');
       await expect(page).toMatchElement('div[data-testid="dashboard-welcomeMsg"]');
 
     });
