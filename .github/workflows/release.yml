@@ -188,10 +188,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Upload Prometheus and Grafana configuration
+    - name: Add host to known_hosts
       run: |
         echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
         chmod 600 deploy_key.pem
+        ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Upload Prometheus and Grafana configuration
+      run: |
         scp -i deploy_key.pem -r ./gatewayservice/monitoring/prometheus/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:~/
         scp -i deploy_key.pem -r ./gatewayservice/monitoring/grafana/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:~/
         rm deploy_key.pem
