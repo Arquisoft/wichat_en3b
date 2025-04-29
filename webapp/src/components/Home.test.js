@@ -185,48 +185,45 @@ describe("Ranking sorting logic", () => {
       { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
   ];
 
-  it("should sort by points when stat is 'points'", () => {
-      const stat = "points";
-      const sorted = [...mockStats].sort((a, b) => {
+  const sortByStat = (stat, stats) => {
+      return [...stats].sort((a, b) => {
           if (stat === "points") return b.totalScore - a.totalScore;
           if (stat === "accuracy") return b.correctRate - a.correctRate;
           if (stat === "gamesPlayed") return b.totalGamesPlayed - a.totalGamesPlayed;
       });
+  };
 
-      expect(sorted).toEqual([
-          { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
-          { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
-          { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
-      ]);
-  });
+  const testCases = [
+      {
+          stat: "points",
+          expected: [
+              { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
+              { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
+              { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
+          ],
+      },
+      {
+          stat: "accuracy",
+          expected: [
+              { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
+              { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
+              { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
+          ],
+      },
+      {
+          stat: "gamesPlayed",
+          expected: [
+              { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
+              { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
+              { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
+          ],
+      },
+  ];
 
-  it("should sort by accuracy when stat is 'accuracy'", () => {
-      const stat = "accuracy";
-      const sorted = [...mockStats].sort((a, b) => {
-          if (stat === "points") return b.totalScore - a.totalScore;
-          if (stat === "accuracy") return b.correctRate - a.correctRate;
-          if (stat === "gamesPlayed") return b.totalGamesPlayed - a.totalGamesPlayed;
+  testCases.forEach(({ stat, expected }) => {
+      it(`should sort by ${stat}`, () => {
+          const sorted = sortByStat(stat, mockStats);
+          expect(sorted).toEqual(expected);
       });
-
-      expect(sorted).toEqual([
-          { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
-          { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
-          { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
-      ]);
-  });
-
-  it("should sort by gamesPlayed when stat is 'gamesPlayed'", () => {
-      const stat = "gamesPlayed";
-      const sorted = [...mockStats].sort((a, b) => {
-          if (stat === "points") return b.totalScore - a.totalScore;
-          if (stat === "accuracy") return b.correctRate - a.correctRate;
-          if (stat === "gamesPlayed") return b.totalGamesPlayed - a.totalGamesPlayed;
-      });
-
-      expect(sorted).toEqual([
-          { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
-          { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
-          { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
-      ]);
   });
 });
