@@ -9,6 +9,7 @@ import useAuth from "../hooks/useAuth";
 import { ThemeProvider } from "../context/ThemeContext";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../utils/i18n";
+import { formatGameTopics } from "./Home";
 
 
 // Mock the hooks
@@ -156,3 +157,23 @@ describe("Home component", () => {
     });
   });
 });
+
+describe("formatGameTopics function", () => {
+  const mockT =(key) => {
+      if (key === "and") return "and";
+      if (key === "more") return "more";
+      return key; // Default behavior for other keys
+  };
+
+  it("should return topics joined by commas when the number of topics is less than or equal to the maximum length", () => {
+      const topics = ["history", "science", "math"];
+      const result = formatGameTopics(topics, mockT);
+      expect(result).toBe("history, science, math");
+  });
+
+  it("should truncate topics and append '... and X more' when the number of topics exceeds the maximum length", () => {
+      const topics = ["history", "science", "math", "geography", "art"];
+      const result = formatGameTopics(topics, mockT);
+      expect(result).toBe("history, science, math... and 2 more");
+  });
+})

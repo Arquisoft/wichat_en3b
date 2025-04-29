@@ -8,6 +8,16 @@ import useTheme from "../hooks/useTheme";
 import {useTranslation} from "react-i18next";
 import {Flag, Public, Sports, Map, Event, PushPin, Piano, Female, SportsSoccer, Language, SportsMotorsports,Landscape, SportsTennis, InterpreterMode, Theaters, Restaurant, Code, ColorLens, Tv } from "@mui/icons-material"
 
+export const formatGameTopics = (topics, t) => {
+    
+    const maxLength = 3;
+    if(topics.length <= maxLength) {
+        return topics.join(", ");
+    }else{
+        return `${topics.slice(0, maxLength).join(", ")}... ${t("and")} ${topics.length - maxLength} ${t("more")}`
+    }
+};
+
 const Home = () => {
     const axios = useAxios();
     const { auth } = useAuth();
@@ -140,14 +150,7 @@ const Home = () => {
 
     const { t, i18n } = useTranslation();
 
-    const formatGameTopics = (topics) => {
-        const maxLength = 3;
-        if(topics.length <= maxLength) {
-            return topics.join(", ");
-        }else{
-            return topics.slice(0, maxLength).join(", ") + "... " + t("and") + (topics.length - maxLength) +  t("more");
-        }
-    }
+    
 
     return (
         <Container sx={{
@@ -259,7 +262,7 @@ const Home = () => {
                                         {getIconForTopics(game.gameTopic)}
                                         <Box>
                                             <Typography variant="body1" fontWeight="bold">
-                                                {t(game.gameMode).toUpperCase()} - {t("topics")}: {formatGameTopics(game.gameTopic)}
+                                                {t(game.gameMode).toUpperCase()} - {t("topics")}: {formatGameTopics(game.gameTopic, t)}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
                                                 {t("playedAt")}{new Date(game.createdAt).toLocaleDateString(i18n.language)}
