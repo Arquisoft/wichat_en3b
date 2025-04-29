@@ -193,37 +193,22 @@ describe("Ranking sorting logic", () => {
       });
   };
 
-  const testCases = [
-      {
-          stat: "points",
-          expected: [
-              { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
-              { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
-              { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
-          ],
-      },
-      {
-          stat: "accuracy",
-          expected: [
-              { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
-              { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
-              { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
-          ],
-      },
-      {
-          stat: "gamesPlayed",
-          expected: [
-              { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
-              { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
-              { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
-          ],
-      },
-  ];
+  const sortedStats = [
+      { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
+      { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
+      { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
+  ]
 
-  testCases.forEach(({ stat, expected }) => {
+  const stats = [
+      { stat: "points"},
+      { stat: "accuracy"},
+      { stat: "gamesPlayed"},
+  ]
+
+  stats.forEach(({stat}) => {
       it(`should sort by ${stat}`, () => {
           const sorted = sortByStat(stat, mockStats);
-          expect(sorted).toEqual(expected);
+          expect(sorted).toEqual(sortedStats);
       });
   });
 });
