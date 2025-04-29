@@ -109,9 +109,9 @@ Contained Building Blocks::
 |===
 
 Important interfaces::
- * User ↔ WIChat: Direct interaction through UI.
- * WIChat ↔ Wikidata: Structured data retrieval for factual information and images.
- * WIChat ↔ LLM: Natural language understanding and response generation.
+ * User ↔ brAIn: Direct interaction through UI.
+ * brAIn ↔ Wikidata: Structured data retrieval for factual information and images.
+ * brAIn ↔ LLM: Natural language understanding and response generation.
 
 ifdef::arc42help[]
 [role="arc42help"]
