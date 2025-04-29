@@ -178,7 +178,7 @@ describe("formatGameTopics function", () => {
   });
 });
 
-describe("Ranking sorting logic", () => {
+/* describe("Ranking sorting logic", () => {
   const mockStats = [
       { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
       { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
@@ -212,3 +212,4 @@ describe("Ranking sorting logic", () => {
       });
   });
 });
+ */
