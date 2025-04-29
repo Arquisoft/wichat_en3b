@@ -47,6 +47,20 @@ if (fs.existsSync(openapiPath)) {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
 
+//Prometheus configuration
+const metricsMiddleware = promBundle({
+  includeMethod: true,
+  includePath: true,
+  includeStatusCode: true,
+  includeDefaultMetrics: true,
+  normalizePath: true,
+  promClient: {
+      collectDefaultMetrics: {
+      }
+  },
+});
+app.use(metricsMiddleware);
+
 // CORS configuration
 const allowedOrigins = [
   frontendUrl,
@@ -64,20 +78,6 @@ app.use(cors({
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   allowedHeaders: "Content-Type, Authorization, X-Requested-With, Accept, Origin"
 }));
-
-//Prometheus configuration
-const metricsMiddleware = promBundle({
-  includeMethod: true,
-  includePath: true,
-  includeStatusCode: true,
-  includeDefaultMetrics: true,
-  normalizePath: true,
-  promClient: {
-      collectDefaultMetrics: {
-      }
-  },
-});
-app.use(metricsMiddleware);
 
 // Set up a proxy server for Grafana
 // This proxy server will forward requests to the Grafana service
