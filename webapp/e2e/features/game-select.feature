@@ -3,7 +3,7 @@ Feature: Game Select
   Scenario: User logged in the application
     Given The user is on the dashboard
     When They Click on "Play a game now"
-    Then They can choose the gamemode they want to play
+    Then They can choose the gametopic they want to play
 
   Scenario: User in the game topic selection window
     Given The user is on the game topic selection window and has chosen Custom
