@@ -185,6 +185,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [docker-push-userservice,docker-push-authservice,docker-push-llmservice,docker-push-questionservice,docker-push-gatewayservice,docker-push-webapp]
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Upload Prometheus and Grafana configuration
       run: |
         echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
