@@ -176,4 +176,57 @@ describe("formatGameTopics function", () => {
       const result = formatGameTopics(topics, mockT);
       expect(result).toBe("history, science, math... and 2 more");
   });
-})
+});
+
+describe("Ranking sorting logic", () => {
+  const mockStats = [
+      { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
+      { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
+      { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
+  ];
+
+  it("should sort by points when stat is 'points'", () => {
+      const stat = "points";
+      const sorted = [...mockStats].sort((a, b) => {
+          if (stat === "points") return b.totalScore - a.totalScore;
+          if (stat === "accuracy") return b.correctRate - a.correctRate;
+          if (stat === "gamesPlayed") return b.totalGamesPlayed - a.totalGamesPlayed;
+      });
+
+      expect(sorted).toEqual([
+          { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
+          { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
+          { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
+      ]);
+  });
+
+  it("should sort by accuracy when stat is 'accuracy'", () => {
+      const stat = "accuracy";
+      const sorted = [...mockStats].sort((a, b) => {
+          if (stat === "points") return b.totalScore - a.totalScore;
+          if (stat === "accuracy") return b.correctRate - a.correctRate;
+          if (stat === "gamesPlayed") return b.totalGamesPlayed - a.totalGamesPlayed;
+      });
+
+      expect(sorted).toEqual([
+          { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
+          { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
+          { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
+      ]);
+  });
+
+  it("should sort by gamesPlayed when stat is 'gamesPlayed'", () => {
+      const stat = "gamesPlayed";
+      const sorted = [...mockStats].sort((a, b) => {
+          if (stat === "points") return b.totalScore - a.totalScore;
+          if (stat === "accuracy") return b.correctRate - a.correctRate;
+          if (stat === "gamesPlayed") return b.totalGamesPlayed - a.totalGamesPlayed;
+      });
+
+      expect(sorted).toEqual([
+          { totalScore: 200, correctRate: 0.9, totalGamesPlayed: 20 },
+          { totalScore: 150, correctRate: 0.85, totalGamesPlayed: 15 },
+          { totalScore: 100, correctRate: 0.8, totalGamesPlayed: 10 },
+      ]);
+  });
+});
