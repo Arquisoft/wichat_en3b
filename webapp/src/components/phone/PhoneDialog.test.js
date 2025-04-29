@@ -35,8 +35,8 @@ jest.mock('./FriendChat', () => jest.fn(() => <div data-testid="friend-chat">Fri
 jest.mock('../photos/lockedPic.png', () => 'locked-screen-image.png');
 
 describe('PhoneDialog Component', () => {
-  const mockOnClose = jest.fn();
-  const mockChatKey = 'test-chat-key';
+  const mockSpendCoins = async () => true;
+  const mockCanAfford = () => true;
   const mockRoundData = {
     mainTopic: 'Test Topic',
     itemWithImage: { name: 'Test Item' }
@@ -55,13 +55,13 @@ describe('PhoneDialog Component', () => {
 
   test('renders locked screen initially', () => {
     render(
-      <PhoneDialog 
-        onClose={mockOnClose} 
-        chatKey={mockChatKey} 
-        roundData={mockRoundData} 
+      <PhoneDialog
+        roundData={mockRoundData}
+        spendCoins={mockSpendCoins}
+        canAfford={mockCanAfford}
       />
     );
-    
+
     // Check for locked screen elements
     expect(screen.getByText('Your phone is locked now')).toBeInTheDocument();
     expect(screen.getByText(/Tap the button below to unlock/)).toBeInTheDocument();
@@ -71,95 +71,100 @@ describe('PhoneDialog Component', () => {
 
   test('shows status bar with icons and time', () => {
     render(
-      <PhoneDialog 
-        onClose={mockOnClose} 
-        chatKey={mockChatKey} 
-        roundData={mockRoundData} 
+      <PhoneDialog
+        roundData={mockRoundData}
+        spendCoins={mockSpendCoins}
+        canAfford={mockCanAfford}
       />
     );
-    
+
     expect(screen.getByTestId('wifi-icon')).toBeInTheDocument();
     expect(screen.getByTestId('signal-icon')).toBeInTheDocument();
     expect(screen.getByTestId('battery-icon')).toBeInTheDocument();
-    
+
     // Check that time is displayed (format might vary)
     const timeRegex = /\d{1,2}:\d{2}/;
     const timeElement = screen.getByText(timeRegex);
     expect(timeElement).toBeInTheDocument();
   });
 
-  test('unlocks to contacts view when unlock button is clicked', () => {
+  test('unlocks to contacts view when unlock button is clicked', async () => {
     render(
-      <PhoneDialog 
-        onClose={mockOnClose} 
-        chatKey={mockChatKey} 
-        roundData={mockRoundData} 
+      <PhoneDialog
+        roundData={mockRoundData}
+        spendCoins={mockSpendCoins}
+        canAfford={mockCanAfford}
       />
     );
-    
+
     const unlockButton = screen.getByText('Press here to unlock');
     fireEvent.click(unlockButton);
-    
+
     // Check that we're in contacts view
-    expect(screen.getByPlaceholderText(/Search \d+ contacts/)).toBeInTheDocument();
-    expect(screen.getByTestId('close-icon')).toBeInTheDocument();
-    
-    // Check that at least some contacts are rendered
-    expect(screen.getByText('Fernando Alonso')).toBeInTheDocument();
-    expect(screen.getByText('F1 driver')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/Search \d+ contacts/)).toBeInTheDocument();
+      expect(screen.getByTestId('close-icon')).toBeInTheDocument();
+
+      // Check that at least some contacts are rendered
+      expect(screen.getByText('Fernando Alonso')).toBeInTheDocument();
+      expect(screen.getByText('F1 driver')).toBeInTheDocument();
+    });
   });
 
-  test('locks screen when close button is clicked in contacts view', () => {
+  test('locks screen when close button is clicked in contacts view', async () => {
     render(
-      <PhoneDialog 
-        onClose={mockOnClose} 
-        chatKey={mockChatKey} 
-        roundData={mockRoundData} 
+      <PhoneDialog
+        roundData={mockRoundData}
+        spendCoins={mockSpendCoins}
+        canAfford={mockCanAfford}
       />
     );
-    
+
     // First unlock
     const unlockButton = screen.getByText('Press here to unlock');
     fireEvent.click(unlockButton);
-    
-    // Then lock again
-    const closeButton = screen.getByTestId('close-icon').closest('button');
-    fireEvent.click(closeButton);
-    
-    // Check we're back to locked screen
-    expect(screen.getByText('Your phone is locked now')).toBeInTheDocument();
-  });
 
+    // Then lock again
+    await waitFor(() => {
+      const closeButton = screen.getByTestId('close-icon').closest('button');
+      fireEvent.click(closeButton);
+
+      // Check we're back to locked screen
+      expect(screen.getByText('Your phone is locked now')).toBeInTheDocument();
+    });
+  });
 
   test('returns to contacts view when chat is ended', async () => {
     render(
-      <PhoneDialog 
-        onClose={mockOnClose} 
-        chatKey={mockChatKey} 
-        roundData={mockRoundData} 
+      <PhoneDialog
+        roundData={mockRoundData}
+        spendCoins={mockSpendCoins}
+        canAfford={mockCanAfford}
       />
     );
-    
+
     // Unlock and navigate to chat
     const unlockButton = screen.getByText('Press here to unlock');
     fireEvent.click(unlockButton);
-    
-    const contact = screen.getByText('Picasso').closest('div[role="button"]') || 
-                    screen.getByText('Picasso').closest('div');
-    fireEvent.click(contact);
-    
+
+    await waitFor(() => {
+      const contact = screen.getByText('Picasso').closest('div[role="button"]') ||
+        screen.getByText('Picasso').closest('div');
+      fireEvent.click(contact);
+    });
+
     act(() => {
       jest.advanceTimersByTime(1000);
     });
-    
+
     // Get the onEndChat prop that was passed to FriendChat
     const { onEndChat } = FriendChat.mock.calls[0][0];
-    
+
     // Call onEndChat to simulate ending the chat
     act(() => {
       onEndChat();
     });
-    
+
     // Should be back in contacts view
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/Search \d+ contacts/)).toBeInTheDocument();
@@ -168,25 +173,25 @@ describe('PhoneDialog Component', () => {
 
   test('updates time display every minute', () => {
     jest.spyOn(global.Date.prototype, 'toLocaleTimeString').mockImplementation(() => '10:30');
-    
+
     render(
-      <PhoneDialog 
-        onClose={mockOnClose} 
-        chatKey={mockChatKey} 
-        roundData={mockRoundData} 
+      <PhoneDialog
+        roundData={mockRoundData}
+        spendCoins={mockSpendCoins}
+        canAfford={mockCanAfford}
       />
     );
-    
+
     expect(screen.getByText('10:30')).toBeInTheDocument();
-    
+
     // Change the mock time and advance timer
     jest.spyOn(global.Date.prototype, 'toLocaleTimeString').mockImplementation(() => '10:31');
-    
+
     act(() => {
       jest.advanceTimersByTime(60000); // Advance by one minute
     });
-    
+
     expect(screen.getByText('10:31')).toBeInTheDocument();
   });
-  
+
 });

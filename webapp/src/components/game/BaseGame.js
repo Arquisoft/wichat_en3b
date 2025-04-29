@@ -14,8 +14,6 @@ import useAuth from "../../hooks/useAuth";
 import useCoinHandler from "../../handlers/CoinHandler";
 import useLifeLinesHandler from "../../handlers/LifeLinesHandler";
 import { TOPIC_QUESTION_MAP } from "../../utils/topicQuestionMap";
-import { motion } from "framer-motion";
-
 
 const BaseGame = React.forwardRef(({
   children,
@@ -42,9 +40,8 @@ const BaseGame = React.forwardRef(({
   const answerTimer = useRef(null); // Holds the timer for the answer selection
 
   const { coins, spentCoins, setSpentCoins, canAfford, spendCoins, fetchUserCoins, updateUserCoins } = useCoinHandler(axios, auth);
-  const { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall, handlePhoneOut, handlePhoneOutClose, handleUseChat,
+  const { handleFiftyFifty, handleCallFriend, handleCloseCallFriend, handleAudienceCall,
     handleSelectCharacter, hiddenOptions, isTrue, setHiddenOptions, setShowGraph, newGame } = useLifeLinesHandler(roundData, spendCoins);
-
 
   // Load rounds every time the roundsPlayed changes and on start up
   useEffect(() => {
@@ -294,6 +291,20 @@ const BaseGame = React.forwardRef(({
                 Audience Call - 150 🪙 {isTrue("AskAudience") && "(Used)"}
               </LifelineButton>
 
+              <LifelineButton
+                variant="contained"
+                startIcon={<InterpreterMode />}
+                onClick={() => {
+                  console.log("CallFriend");
+                  handleCallFriend();
+                }}
+                disabled={isTrue("CallFriend")}
+                isUsed={isTrue("CallFriend")}
+                colorVariant="green"
+              >
+                Call a Friend {isTrue("CallFriend") && "(Used)"}
+              </LifelineButton>
+
               {isTrue("CallFriend") && (<CallFriend
                 open={isTrue("CallFriendOpen")}
                 onClose={handleCloseCallFriend}
@@ -372,7 +383,7 @@ const BaseGame = React.forwardRef(({
 
         {/* Right Side (Chat) */}
         <Grid item xs={12} md={3}>
-          {roundData && <PhoneDialog key={chatKey} roundData={roundData} />}
+          {roundData && <PhoneDialog key={chatKey} roundData={roundData} spendCoins={spendCoins} canAfford={canAfford} />}
         </Grid>
       </Grid>
 

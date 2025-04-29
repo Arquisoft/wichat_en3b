@@ -25,10 +25,8 @@ const mockRoundData = {
       
       expect(result.current.isTrue('50')).toBe(false);
       expect(result.current.isTrue('AskAudience')).toBe(false);
-      expect(result.current.isTrue('UseChat')).toBe(false);
       expect(result.current.isTrue('CallFriend')).toBe(false);
       expect(result.current.isTrue('CallFriendOpen')).toBe(false);
-      expect(result.current.isTrue('PhoneOut')).toBe(false);
       expect(result.current.isTrue('ShowGraph')).toBe(false);
       expect(result.current.hiddenOptions).toEqual([]);
       expect(result.current.selectedCharacter).toBe(null);
@@ -128,53 +126,6 @@ const mockRoundData = {
       expect(result.current.isTrue('ShowGraph')).toBe(false);
     });
   
-    test('handlePhoneOut debería activar el estado de teléfono', () => {
-      const { result } = renderHook(() => useLifeLinesHandler(mockRoundData, mockSpendCoins));
-      
-      act(() => {
-        result.current.handlePhoneOut(mockRoundData);
-      });
-      
-      expect(result.current.isTrue('PhoneOut')).toBe(true);
-    });
-  
-    test('handlePhoneOutClose debería desactivar el estado de teléfono', () => {
-      const { result } = renderHook(() => useLifeLinesHandler(mockRoundData, mockSpendCoins));
-      
-      act(() => {
-        result.current.handlePhoneOut(mockRoundData);
-      });
-      
-      act(() => {
-        result.current.handlePhoneOutClose();
-      });
-      
-      expect(result.current.isTrue('PhoneOut')).toBe(false);
-    });
-  
-    test('handleUseChat debería activar el chat y gastar monedas', () => {
-      const { result } = renderHook(() => useLifeLinesHandler(mockRoundData, mockSpendCoins));
-      
-      act(() => {
-        result.current.handleUseChat();
-      });
-      
-      expect(mockSpendCoins).toHaveBeenCalledWith(200);
-      
-      expect(result.current.isTrue('UseChat')).toBe(false);
-      
-    });
-  
-    test('handleUseChat no debería funcionar si no puede gastar monedas', () => {
-      const { result } = renderHook(() => useLifeLinesHandler(mockRoundData, mockSpendCoinsFail));
-      
-      act(() => {
-        result.current.handleUseChat();
-      });
-      
-      expect(result.current.isTrue('UseChat')).toBe(false);
-    });
-  
     test('handleSelectCharacter debería seleccionar un personaje si puede gastar monedas', () => {
       const mockCharacter = { name: 'Personaje 1', price: 300 };
       const { result } = renderHook(() => useLifeLinesHandler(mockRoundData, mockSpendCoins));
@@ -209,16 +160,12 @@ const mockRoundData = {
         result.current.handleFiftyFifty();
         result.current.handleCallFriend();
         result.current.handleAudienceCall();
-        result.current.handlePhoneOut(mockRoundData);
-        result.current.handleUseChat();
         result.current.handleSelectCharacter({ name: 'Personaje', price: 100 });
       });
       
       expect(result.current.isTrue('50')).toBe(false);
       expect(result.current.isTrue('CallFriend')).toBe(true);
       expect(result.current.isTrue('AskAudience')).toBe(false);
-      expect(result.current.isTrue('PhoneOut')).toBe(true);
-      expect(result.current.isTrue('UseChat')).toBe(false);
       expect(result.current.hiddenOptions.length).toBe(0);
       expect(result.current.selectedCharacter).toBe(null);
       
@@ -228,9 +175,7 @@ const mockRoundData = {
       
       expect(result.current.isTrue('50')).toBe(false);
       expect(result.current.isTrue('AskAudience')).toBe(false);
-      expect(result.current.isTrue('UseChat')).toBe(false);
       expect(result.current.isTrue('CallFriend')).toBe(false);
-      expect(result.current.isTrue('PhoneOut')).toBe(false);
       expect(result.current.hiddenOptions).toEqual([]);
       expect(result.current.selectedCharacter).toBe(null);
     });
